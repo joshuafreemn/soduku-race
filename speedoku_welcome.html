@@ -2072,6 +2072,7 @@
                 document.querySelectorAll('#guestColorSwatches .color-swatch-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 roomState.myColor = btn.dataset.color;
+                broadcastGuestUpdate();
             });
         });
 
@@ -2083,6 +2084,36 @@
                 broadcastLobbyState();
             }
         });
+
+        guestPlayerName.addEventListener('input', () => {
+            broadcastGuestUpdate();
+        });
+
+        function broadcastGuestUpdate() {
+            if (roomState.isHost) return;
+            const packet = {
+                type: 'PLAYER_JOIN',
+                roomCode: roomState.roomCode,
+                player: {
+                    id: roomState.myId,
+                    name: guestPlayerName.value.trim() || 'Guest Racer',
+                    color: roomState.myColor,
+                    isHost: false,
+                    ready: true
+                }
+            };
+            if (roomState.broadcastChannel) {
+                try { roomState.broadcastChannel.postMessage(packet); } catch(e){}
+            }
+            if (roomState.peer) {
+                // Send to the host
+                const hostPeerId = `spd26-${roomState.roomCode.toLowerCase().replace(/[^a-z0-9]/g, '')}-host`;
+                const conn = roomState.peerConns.get(hostPeerId);
+                if (conn && conn.open) {
+                    try { conn.send(packet); } catch(e){}
+                }
+            }
+        }
 
         joinRoomSubmitBtn.addEventListener('click', () => {
             const targetCode = joinRoomCodeInput.value.trim().toUpperCase();

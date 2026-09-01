@@ -1825,11 +1825,36 @@
                     } else {
                         matchPeer.on('open', () => {
                             const hostPeerId = `spd26-${cleanCode}-mhost`;
-                            const conn = matchPeer.connect(hostPeerId, { reliable: true });
-                            conn.on('open', () => {
-                                matchPeerConns.set(hostPeerId, conn);
-                            });
-                            conn.on('data', (data) => handleMatchNetworkMessage(data));
+                            
+                            function connectToHost(retriesLeft = 15) {
+                                const conn = matchPeer.connect(hostPeerId, { reliable: true });
+                                conn.on('open', () => {
+                                    matchPeerConns.set(hostPeerId, conn);
+                                });
+                                conn.on('data', (data) => handleMatchNetworkMessage(data));
+                                
+                                conn.on('error', () => {
+                                    if (retriesLeft > 0) {
+                                        setTimeout(() => connectToHost(retriesLeft - 1), 1500);
+                                    }
+                                });
+                            }
+                            connectToHost();
+                        });
+
+                        matchPeer.on('error', (err) => {
+                            if (err.type === 'peer-unavailable') {
+                                // Host might not be ready yet, handled by our manual retry mechanism above if we implemented it there.
+                                // Actually, peer-unavailable is emitted on the main peer object for connect() failures.
+                                const hostPeerId = `spd26-${cleanCode}-mhost`;
+                                setTimeout(() => {
+                                    if (!matchPeerConns.has(hostPeerId)) {
+                                        const conn = matchPeer.connect(hostPeerId, { reliable: true });
+                                        conn.on('open', () => matchPeerConns.set(hostPeerId, conn));
+                                        conn.on('data', (data) => handleMatchNetworkMessage(data));
+                                    }
+                                }, 1500);
+                            }
                         });
                     }
                 } catch(e){}
@@ -2018,6 +2043,7 @@
             penaltySeconds = 0;
             startTime = Date.now();
 
+            p1Solved = 0;
             totalEmptyCells = 0;
             for (let r = 0; r < 9; r++) {
                 for (let c = 0; c < 9; c++) {
