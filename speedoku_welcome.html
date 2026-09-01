@@ -102,6 +102,57 @@
             --track-bg: #ded7cb;
         }
 
+        /* 6. OBSIDIAN CRIMSON */
+        body.theme-obsidian-crimson {
+            --bg-color: #0b0d10;
+            --surface-color: #12161b;
+            --surface-card: #161b22;
+            --border-color: #2e3842;
+            --text-primary: #f3f4f6;
+            --text-muted: #8896a6;
+            --accent: #f43f5e;
+            --accent-glow: rgba(244, 63, 94, 0.25);
+            --sketch-line: #3b444e;
+            --ink-note: #fb7185;
+            --highlight-bg: rgba(244, 63, 94, 0.12);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #1e252d;
+        }
+
+        /* 7. NORDIC FROST */
+        body.theme-nordic-frost {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --surface-card: #243247;
+            --border-color: #384e68;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --sketch-line: #475569;
+            --ink-note: #7dd3fc;
+            --highlight-bg: rgba(56, 189, 248, 0.12);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #1e293b;
+        }
+
+        /* 8. CYBER SUNSET */
+        body.theme-cyber-sunset {
+            --bg-color: #130e24;
+            --surface-color: #1d1636;
+            --surface-card: #251d45;
+            --border-color: #4a386d;
+            --text-primary: #fdf4ff;
+            --text-muted: #a78bfa;
+            --accent: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.3);
+            --sketch-line: #5b4685;
+            --ink-note: #f472b6;
+            --highlight-bg: rgba(249, 115, 22, 0.14);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #271f48;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -1206,7 +1257,7 @@
             <div class="palette-dropdown" id="paletteDropdown">
                 <div class="dropdown-title">
                     <span>Theme Palettes</span>
-                    <span>(5)</span>
+                    <span>(8)</span>
                 </div>
 
                 <!-- 1. Nighttime -->
@@ -1272,6 +1323,45 @@
                         <span>Daylight</span>
                     </span>
                     <span class="check-mark">✓</span>
+                </button>
+
+                <!-- 6. Obsidian Crimson -->
+                <button class="theme-item-btn" data-theme="theme-obsidian-crimson">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #0b0d10;"></span>
+                            <span class="swatch-dot" style="background: #f43f5e;"></span>
+                            <span class="swatch-dot" style="background: #8896a6;"></span>
+                        </span>
+                        <span>Obsidian Crimson</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 7. Nordic Frost -->
+                <button class="theme-item-btn" data-theme="theme-nordic-frost">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #0f172a;"></span>
+                            <span class="swatch-dot" style="background: #38bdf8;"></span>
+                            <span class="swatch-dot" style="background: #94a3b8;"></span>
+                        </span>
+                        <span>Nordic Frost</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 8. Cyber Sunset -->
+                <button class="theme-item-btn" data-theme="theme-cyber-sunset">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #130e24;"></span>
+                            <span class="swatch-dot" style="background: #f97316;"></span>
+                            <span class="swatch-dot" style="background: #a78bfa;"></span>
+                        </span>
+                        <span>Cyber Sunset</span>
+                    </span>
+                    <span class="check-mark"></span>
                 </button>
             </div>
         </div>
@@ -1357,11 +1447,16 @@
                                 <div class="id-row">
                                     <label class="id-label">Pencil Color:</label>
                                     <div class="color-swatches" id="hostColorSwatches">
-                                        <button class="color-swatch-btn active" data-color="#3b82f6" style="background:#3b82f6;" title="Blue"></button>
-                                        <button class="color-swatch-btn" data-color="#ec4899" style="background:#ec4899;" title="Pink"></button>
-                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Green"></button>
-                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></button>
-                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></button>
+                                        <button class="color-swatch-btn active" data-color="#3b82f6" style="background:#3b82f6;" title="Electric Blue"></button>
+                                        <button class="color-swatch-btn" data-color="#ec4899" style="background:#ec4899;" title="Rose Pink"></button>
+                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></button>
+                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Royal Violet"></button>
+                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Vivid Amber"></button>
+                                        <button class="color-swatch-btn" data-color="#06b6d4" style="background:#06b6d4;" title="Cyan Teal"></button>
+                                        <button class="color-swatch-btn" data-color="#f43f5e" style="background:#f43f5e;" title="Coral Flame"></button>
+                                        <button class="color-swatch-btn" data-color="#84cc16" style="background:#84cc16;" title="Lime Green"></button>
+                                        <button class="color-swatch-btn" data-color="#ea580c" style="background:#ea580c;" title="Sunset Orange"></button>
+                                        <button class="color-swatch-btn" data-color="#6366f1" style="background:#6366f1;" title="Indigo Glow"></button>
                                     </div>
                                 </div>
                             </div>
@@ -1405,11 +1500,16 @@
                                 <div class="id-row">
                                     <label class="id-label">Pencil Color:</label>
                                     <div class="color-swatches" id="guestColorSwatches">
-                                        <button class="color-swatch-btn" data-color="#3b82f6" style="background:#3b82f6;" title="Blue"></button>
-                                        <button class="color-swatch-btn active" data-color="#ec4899" style="background:#ec4899;" title="Pink"></button>
-                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Green"></button>
-                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></button>
-                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></button>
+                                        <button class="color-swatch-btn" data-color="#3b82f6" style="background:#3b82f6;" title="Electric Blue"></button>
+                                        <button class="color-swatch-btn active" data-color="#ec4899" style="background:#ec4899;" title="Rose Pink"></button>
+                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Emerald Green"></button>
+                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Royal Violet"></button>
+                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Vivid Amber"></button>
+                                        <button class="color-swatch-btn" data-color="#06b6d4" style="background:#06b6d4;" title="Cyan Teal"></button>
+                                        <button class="color-swatch-btn" data-color="#f43f5e" style="background:#f43f5e;" title="Coral Flame"></button>
+                                        <button class="color-swatch-btn" data-color="#84cc16" style="background:#84cc16;" title="Lime Green"></button>
+                                        <button class="color-swatch-btn" data-color="#ea580c" style="background:#ea580c;" title="Sunset Orange"></button>
+                                        <button class="color-swatch-btn" data-color="#6366f1" style="background:#6366f1;" title="Indigo Glow"></button>
                                     </div>
                                 </div>
                             </div>
@@ -2339,7 +2439,10 @@
             'theme-stormy-sea',
             'theme-matcha-cafe',
             'theme-garden-walk',
-            'theme-daylight'
+            'theme-daylight',
+            'theme-obsidian-crimson',
+            'theme-nordic-frost',
+            'theme-cyber-sunset'
         ];
 
         // Toggle Burger Menu Dropdown

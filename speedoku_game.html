@@ -40,8 +40,9 @@
             --track-bg: #242b33;
             --cell-bg: #161b20;
             --cell-hover: #222931;
-            --cell-selected: rgba(245, 158, 11, 0.28);
-            --cell-related: rgba(255, 255, 255, 0.035);
+            --cell-selected: rgba(245, 158, 11, 0.22);
+            --cell-related-line: rgba(255, 255, 255, 0.035);
+            --cell-related-box: rgba(255, 255, 255, 0.015);
             --cell-match: rgba(245, 158, 11, 0.38);
             --cell-clue: #f3f4f6;
             --ink-p1: #38bdf8;
@@ -66,8 +67,9 @@
             --track-bg: #304e5d;
             --cell-bg: #213c49;
             --cell-hover: #2a4c5d;
-            --cell-selected: rgba(234, 200, 175, 0.32);
-            --cell-related: rgba(255, 255, 255, 0.035);
+            --cell-selected: rgba(234, 200, 175, 0.25);
+            --cell-related-line: rgba(234, 200, 175, 0.045);
+            --cell-related-box: rgba(234, 200, 175, 0.02);
             --cell-match: rgba(234, 200, 175, 0.42);
             --cell-clue: #f2ece6;
             --ink-p1: #67e8f9;
@@ -92,8 +94,9 @@
             --track-bg: #e2e8dc;
             --cell-bg: #ffffff;
             --cell-hover: #f7faf8;
-            --cell-selected: #fef08a;
-            --cell-related: rgba(19, 103, 51, 0.04);
+            --cell-selected: rgba(254, 240, 138, 0.55);
+            --cell-related-line: rgba(26, 150, 70, 0.04);
+            --cell-related-box: rgba(26, 150, 70, 0.018);
             --cell-match: #fde047;
             --cell-clue: #0f4d26;
             --ink-p1: #2563eb;
@@ -118,8 +121,9 @@
             --track-bg: #c5bcb0;
             --cell-bg: #fdfbf7;
             --cell-hover: #f5f0e6;
-            --cell-selected: #fef08a;
-            --cell-related: rgba(54, 69, 43, 0.035);
+            --cell-selected: rgba(254, 240, 138, 0.55);
+            --cell-related-line: rgba(138, 150, 70, 0.04);
+            --cell-related-box: rgba(138, 150, 70, 0.018);
             --cell-match: #fde047;
             --cell-clue: #1c2417;
             --ink-p1: #2563eb;
@@ -144,13 +148,95 @@
             --track-bg: #ded7cb;
             --cell-bg: #fdfbf7;
             --cell-hover: #f5efe3;
-            --cell-selected: #fef08a;
-            --cell-related: rgba(0, 0, 0, 0.03);
+            --cell-selected: rgba(254, 240, 138, 0.6);
+            --cell-related-line: rgba(0, 0, 0, 0.032);
+            --cell-related-box: rgba(0, 0, 0, 0.014);
             --cell-match: #fde68a;
             --cell-clue: #111827;
             --ink-p1: #2563eb;
             --cell-error: #ef4444;
             --shadow-color: rgba(0,0,0,0.08);
+        }
+
+        /* 6. OBSIDIAN CRIMSON */
+        body.theme-obsidian-crimson {
+            --bg-color: #0b0d10;
+            --surface-color: #12161b;
+            --surface-card: #161b22;
+            --border-color: #2e3842;
+            --text-primary: #f3f4f6;
+            --text-muted: #8896a6;
+            --accent: #f43f5e;
+            --accent-glow: rgba(244, 63, 94, 0.3);
+            --sketch-line: #3b444e;
+            --ink-note: #fb7185;
+            --highlight-bg: rgba(244, 63, 94, 0.12);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #1e252d;
+            --cell-bg: #14181f;
+            --cell-hover: #1f2730;
+            --cell-selected: rgba(244, 63, 94, 0.25);
+            --cell-related-line: rgba(244, 63, 94, 0.035);
+            --cell-related-box: rgba(244, 63, 94, 0.015);
+            --cell-match: rgba(244, 63, 94, 0.38);
+            --cell-clue: #ffffff;
+            --ink-p1: #38bdf8;
+            --cell-error: #ef4444;
+            --shadow-color: rgba(0,0,0,0.55);
+        }
+
+        /* 7. NORDIC FROST */
+        body.theme-nordic-frost {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --surface-card: #243247;
+            --border-color: #384e68;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --sketch-line: #475569;
+            --ink-note: #7dd3fc;
+            --highlight-bg: rgba(56, 189, 248, 0.12);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #1e293b;
+            --cell-bg: #162032;
+            --cell-hover: #223249;
+            --cell-selected: rgba(56, 189, 248, 0.25);
+            --cell-related-line: rgba(56, 189, 248, 0.035);
+            --cell-related-box: rgba(56, 189, 248, 0.015);
+            --cell-match: rgba(56, 189, 248, 0.38);
+            --cell-clue: #f8fafc;
+            --ink-p1: #38bdf8;
+            --cell-error: #f43f5e;
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+
+        /* 8. CYBER SUNSET */
+        body.theme-cyber-sunset {
+            --bg-color: #130e24;
+            --surface-color: #1d1636;
+            --surface-card: #251d45;
+            --border-color: #4a386d;
+            --text-primary: #fdf4ff;
+            --text-muted: #a78bfa;
+            --accent: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.35);
+            --sketch-line: #5b4685;
+            --ink-note: #f472b6;
+            --highlight-bg: rgba(249, 115, 22, 0.14);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #271f48;
+            --cell-bg: #191230;
+            --cell-hover: #2a204f;
+            --cell-selected: rgba(249, 115, 22, 0.28);
+            --cell-related-line: rgba(249, 115, 22, 0.04);
+            --cell-related-box: rgba(249, 115, 22, 0.016);
+            --cell-match: rgba(249, 115, 22, 0.4);
+            --cell-clue: #ffffff;
+            --ink-p1: #38bdf8;
+            --cell-error: #f43f5e;
+            --shadow-color: rgba(0,0,0,0.55);
         }
 
         * {
@@ -665,7 +751,7 @@
             justify-content: center;
             font-family: var(--font-mono);
             font-size: 1.65rem;
-            font-weight: 700;
+            font-weight: 400;
             cursor: pointer;
             position: relative;
             transition: all 0.12s ease;
@@ -688,30 +774,40 @@
             background: var(--cell-hover);
         }
 
-        /* Clue Numbers (Printed Giver Ink on Clean Paper) */
+        /* Clue Numbers (Given Numbers: Bold, Authoritative Giver Clues) */
         .sudoku-cell.clue {
             color: var(--cell-clue);
             font-weight: 800;
             cursor: default;
         }
 
-        /* Player-Entered Solved Numbers: Crisp Fountain Pen Ink (No distracting background box) */
+        /* Player-Entered Solved Numbers: Crisp Fountain Pen Ink, Thinner Font Weight */
         .sudoku-cell.solved-p1 {
             color: var(--ink-p1);
-            font-weight: 700;
+            font-weight: 400;
             background: var(--cell-bg);
             animation: popSolve 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Crosshair: Row, Column & 3x3 Box Guide */
+        /* Crosshair: Row & Column Guide (Faint Tint) */
+        .sudoku-cell.related-line:not(.selected):not(.match-number) {
+            background: var(--cell-related-line);
+        }
+
+        /* Crosshair: 3x3 Subgrid Block (Even Fainter Tint) */
+        .sudoku-cell.related-box:not(.selected):not(.match-number) {
+            background: var(--cell-related-box);
+        }
+
+        /* Crosshair Fallback */
         .sudoku-cell.related:not(.selected):not(.match-number) {
-            background: var(--cell-related);
+            background: var(--cell-related-line);
         }
 
         /* Matching Numbers (Identical Digit Highlight) */
         .sudoku-cell.match-number:not(.selected) {
             background: var(--cell-match) !important;
-            font-weight: 800;
+            font-weight: 700;
             box-shadow: inset 0 0 0 2px var(--accent);
             border-radius: 4px;
         }
@@ -743,14 +839,14 @@
             40%, 80% { transform: translateX(4px); }
         }
 
-        /* 3x3 Candidate Notes Inside Cell */
+        /* 3x3 Candidate Notes Inside Cell (Handwritten Font) */
         .pencil-notes-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
             width: 100%;
             height: 100%;
-            padding: 3px;
+            padding: 2px;
             pointer-events: none;
         }
 
@@ -758,12 +854,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
+            font-family: var(--font-hand);
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--ink-note);
             line-height: 1;
-            opacity: 0.85;
+            opacity: 0.95;
+            user-select: none;
         }
 
         /* ---------------------------------------------------- */
@@ -1226,7 +1323,7 @@
                 <div class="palette-dropdown" id="paletteDropdown">
                     <div class="dropdown-title">
                         <span>Tactical Themes</span>
-                        <span>(5)</span>
+                        <span>(8)</span>
                     </div>
 
                     <button class="theme-item-btn" data-theme="theme-nighttime">
@@ -1282,6 +1379,39 @@
                             <span>Daylight</span>
                         </span>
                         <span class="check-mark">✓</span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-obsidian-crimson">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #0b0d10;"></span>
+                                <span class="swatch-dot" style="background: #f43f5e;"></span>
+                            </span>
+                            <span>Obsidian Crimson</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-nordic-frost">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #0f172a;"></span>
+                                <span class="swatch-dot" style="background: #38bdf8;"></span>
+                            </span>
+                            <span>Nordic Frost</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-cyber-sunset">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #130e24;"></span>
+                                <span class="swatch-dot" style="background: #f97316;"></span>
+                            </span>
+                            <span>Cyber Sunset</span>
+                        </span>
+                        <span class="check-mark"></span>
                     </button>
                 </div>
             </div>
@@ -2043,6 +2173,10 @@
             penaltySeconds = 0;
             startTime = Date.now();
 
+            if (currentMatchConfig.playerColor) {
+                document.documentElement.style.setProperty('--ink-p1', currentMatchConfig.playerColor);
+            }
+
             p1Solved = 0;
             totalEmptyCells = 0;
             for (let r = 0; r < 9; r++) {
@@ -2111,20 +2245,20 @@
         function highlightActiveCells() {
             const cells = document.querySelectorAll('.sudoku-cell');
             const activeVal = boardState[selectedCell.row][selectedCell.col];
+            const selBoxR = Math.floor(selectedCell.row / 3);
+            const selBoxC = Math.floor(selectedCell.col / 3);
 
             cells.forEach(cell => {
                 const r = parseInt(cell.dataset.row);
                 const c = parseInt(cell.dataset.col);
-                cell.classList.remove('selected', 'related', 'match-number');
+                cell.classList.remove('selected', 'related-line', 'related-box', 'related', 'match-number');
 
                 if (r === selectedCell.row && c === selectedCell.col) {
                     cell.classList.add('selected');
-                } else if (
-                    r === selectedCell.row || 
-                    c === selectedCell.col || 
-                    (Math.floor(r / 3) === Math.floor(selectedCell.row / 3) && Math.floor(c / 3) === Math.floor(selectedCell.col / 3))
-                ) {
-                    cell.classList.add('related');
+                } else if (r === selectedCell.row || c === selectedCell.col) {
+                    cell.classList.add('related-line');
+                } else if (Math.floor(r / 3) === selBoxR && Math.floor(c / 3) === selBoxC) {
+                    cell.classList.add('related-box');
                 }
 
                 if (activeVal !== 0 && boardState[r][c] === activeVal) {
@@ -2137,6 +2271,7 @@
         /* 6. INPUT DISPATCHER & NUMBER PLACEMENT               */
         /* ---------------------------------------------------- */
         function enterDigit(digit, forceNote = false) {
+            if (isGameFinished) return;
             const { row, col } = selectedCell;
             if (gameData.puzzle[row][col] !== 0) return;
 
@@ -2156,10 +2291,9 @@
 
             // Pen Mode: Place Digit
             totalPlacements++;
-            const correctVal = gameData.solution[row][col];
 
-            if (digit === correctVal) {
-                // Valid Placement
+            if (!isCountdownMode) {
+                // SPRINT MODE: Errors can be placed freely on the board! Penalties are calculated and shown only at the end.
                 const wasEmpty = (boardState[row][col] === 0);
                 boardState[row][col] = digit;
                 notesState[row][col].clear();
@@ -2170,21 +2304,44 @@
                 updateStatsAndProgress();
                 checkVictory();
             } else {
-                // Error Placement
-                errorCount++;
-                penaltySeconds += 3; // +3s penalty
-                sound.playError();
+                // COUNTDOWN MODE: Instant error checking with progressive heavy penalty (-3s, -6s, -9s, -12s...)
+                const correctVal = gameData.solution[row][col];
+                if (digit === correctVal) {
+                    // Valid Placement
+                    const wasEmpty = (boardState[row][col] === 0);
+                    boardState[row][col] = digit;
+                    notesState[row][col].clear();
+                    if (wasEmpty) p1Solved++;
 
-                const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
-                if (cell) {
-                    cell.classList.add('error');
-                    setTimeout(() => cell.classList.remove('error'), 450);
+                    sound.playPencil();
+                    renderBoard();
+                    updateStatsAndProgress();
+                    checkVictory();
+                } else {
+                    // Error Placement: Progressive heavy penalisation: 1st error -3s, 2nd error -6s, 3rd error -9s, etc.
+                    errorCount++;
+                    const penaltyForThisError = errorCount * 3;
+                    penaltySeconds += penaltyForThisError;
+                    sound.playError();
+
+                    const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) {
+                        cell.classList.add('error');
+                        setTimeout(() => cell.classList.remove('error'), 450);
+                    }
+                    updateStatsAndProgress();
+
+                    // Check if time expired from this penalty
+                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    if (countdownDuration - elapsedMs <= 0) {
+                        handleTimeExpired();
+                    }
                 }
-                updateStatsAndProgress();
             }
         }
 
         function eraseCurrentCell() {
+            if (isGameFinished) return;
             const { row, col } = selectedCell;
             if (gameData.puzzle[row][col] !== 0) return;
 
@@ -2199,6 +2356,7 @@
         }
 
         function useMentalBlockHint() {
+            if (isGameFinished) return;
             sound.init();
             const { row, col } = selectedCell;
             if (gameData.puzzle[row][col] !== 0) return;
@@ -2247,14 +2405,20 @@
                 }
             }
             solvedRatio.textContent = `${currentFilled}/81`;
-            penaltyDisplay.textContent = `+${penaltySeconds}s`;
+            
+            if (isCountdownMode) {
+                penaltyDisplay.textContent = penaltySeconds > 0 ? `-${penaltySeconds}s` : '0s';
+            } else {
+                // Sprint mode: penalties shown only at the end
+                penaltyDisplay.textContent = '+0s';
+            }
 
             // Telemetry updates
-            mistakeCountVal.textContent = errorCount;
+            mistakeCountVal.textContent = isCountdownMode ? errorCount : '--';
             const accuracy = totalPlacements > 0 
                 ? Math.round(((totalPlacements - errorCount) / totalPlacements) * 100)
                 : 100;
-            accuracyVal.textContent = `${Math.max(0, accuracy)}%`;
+            accuracyVal.textContent = isCountdownMode ? `${Math.max(0, accuracy)}%` : '100%';
 
             const elapsedSec = (Date.now() - startTime) / 1000;
             const pace = p1Solved > 0 ? (elapsedSec / p1Solved).toFixed(1) : '--';
@@ -2283,7 +2447,7 @@
                     totalEmpty: totalEmptyCells,
                     pct: p1Pct,
                     errorCount: errorCount,
-                    penaltySeconds: penaltySeconds,
+                    penaltySeconds: isCountdownMode ? penaltySeconds : 0,
                     isFinished: isGameFinished
                 });
             }
@@ -2317,7 +2481,7 @@
                 if (isGameFinished) return;
 
                 if (isCountdownMode) {
-                    // Countdown mode: count down to 0
+                    // Countdown mode: count down to 0, subtract progressive penalties
                     const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
                     const remainingMs = Math.max(0, countdownDuration - elapsedMs);
                     const totalSec = Math.floor(remainingMs / 1000);
@@ -2333,8 +2497,8 @@
                         handleTimeExpired();
                     }
                 } else {
-                    // Sprint mode: count up
-                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    // Sprint mode: pure stopwatch count up during race (penalties shown at the end)
+                    const elapsedMs = Date.now() - startTime;
                     const totalSec = Math.floor(elapsedMs / 1000);
                     const mins = Math.floor(totalSec / 60);
                     const secs = totalSec % 60;
@@ -2356,34 +2520,71 @@
             document.getElementById('modalTitle').textContent = 'TIME EXPIRED!';
             document.getElementById('modalSubtitle').textContent = 'The countdown clock reached zero before grid completion.';
             document.getElementById('vRawTime').textContent = '00:00.00';
-            document.getElementById('vPenalties').textContent = `+${penaltySeconds}s`;
+            document.getElementById('vPenalties').textContent = `-${penaltySeconds}s (${errorCount} err)`;
             document.getElementById('vRank').textContent = 'DNF';
             victoryModal.classList.add('show');
         }
 
         function checkVictory() {
-            let isComplete = true;
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    if (boardState[r][c] !== gameData.solution[r][c]) {
-                        isComplete = false;
-                        break;
-                    }
-                }
-                if (!isComplete) break;
-            }
+            if (isGameFinished) return;
 
-            if (isComplete) {
+            if (!isCountdownMode) {
+                // SPRINT MODE: Finish when all 81 cells are filled
+                let allFilled = true;
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] === 0) {
+                            allFilled = false;
+                            break;
+                        }
+                    }
+                    if (!allFilled) break;
+                }
+
+                if (!allFilled) return;
+
+                // Board filled! Reveal sprint errors and calculate final penalties
                 isGameFinished = true;
                 clearInterval(timerInterval);
-                sound.playVictory();
 
-                const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
-                const totalSec = Math.floor(elapsedMs / 1000);
-                const mins = Math.floor(totalSec / 60);
-                const secs = totalSec % 60;
-                const ms = Math.floor((elapsedMs % 1000) / 10);
-                const finalFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+                let sprintErrors = 0;
+                const errorCells = [];
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] !== gameData.solution[r][c]) {
+                            sprintErrors++;
+                            errorCells.push({ r, c });
+                        }
+                    }
+                }
+
+                errorCount = sprintErrors;
+                penaltySeconds = sprintErrors * 5; // +5s penalty per error in sprint
+
+                // Highlight incorrect cells on the board so user sees where mistakes occurred
+                errorCells.forEach(({ r, c }) => {
+                    const cell = document.querySelector(`.sudoku-cell[data-row="${r}"][data-col="${c}"]`);
+                    if (cell) {
+                        cell.classList.add('error');
+                    }
+                });
+
+                const rawElapsedMs = Date.now() - startTime;
+                const finalElapsedMs = rawElapsedMs + (penaltySeconds * 1000);
+
+                const rawTotalSec = Math.floor(rawElapsedMs / 1000);
+                const rawMins = Math.floor(rawTotalSec / 60);
+                const rawSecs = rawTotalSec % 60;
+                const rawMs = Math.floor((rawElapsedMs % 1000) / 10);
+                const rawFormatted = `${String(rawMins).padStart(2, '0')}:${String(rawSecs).padStart(2, '0')}.${String(rawMs).padStart(2, '0')}`;
+
+                const finTotalSec = Math.floor(finalElapsedMs / 1000);
+                const finMins = Math.floor(finTotalSec / 60);
+                const finSecs = finTotalSec % 60;
+                const finMs = Math.floor((finalElapsedMs % 1000) / 10);
+                const finalFormatted = `${String(finMins).padStart(2, '0')}:${String(finSecs).padStart(2, '0')}.${String(finMs).padStart(2, '0')}`;
+
+                sound.playVictory();
 
                 if (!finishOrder.includes(currentMatchConfig.playerId)) {
                     finishOrder.push(currentMatchConfig.playerId);
@@ -2399,17 +2600,73 @@
                         playerId: currentMatchConfig.playerId,
                         playerName: currentMatchConfig.playerName,
                         finalTime: finalFormatted,
+                        rawTime: rawFormatted,
+                        penalties: penaltySeconds,
+                        errors: sprintErrors,
                         rank: myRank
                     });
                 }
 
-                document.getElementById('modalIcon').textContent = myRank === 1 ? '🏆' : '🏁';
-                document.getElementById('modalTitle').textContent = myRank === 1 ? 'VICTORY // 1ST PLACE!' : `MATCH FINISHED // ${rankText}!`;
-                document.getElementById('modalSubtitle').textContent = 'Sensational speed and logical deduction across the symmetrical grid.';
-                document.getElementById('vRawTime').textContent = finalFormatted;
-                document.getElementById('vPenalties').textContent = `+${penaltySeconds}s`;
+                document.getElementById('modalIcon').textContent = (myRank === 1 && sprintErrors === 0) ? '🏆' : (sprintErrors === 0 ? '✨' : '🏁');
+                document.getElementById('modalTitle').textContent = sprintErrors === 0 ? 'FLAWLESS SPRINT // 1ST PLACE!' : `SPRINT FINISHED // ${rankText}!`;
+                document.getElementById('modalSubtitle').textContent = sprintErrors === 0 
+                    ? 'Sensational flawless run! 0 errors committed across the sprint board.'
+                    : `Sprint finished! ${sprintErrors} ${sprintErrors === 1 ? 'error' : 'errors'} committed (+${penaltySeconds}s penalty applied to raw time).`;
+                document.getElementById('vRawTime').textContent = sprintErrors > 0 ? `${finalFormatted} (Raw: ${rawFormatted})` : finalFormatted;
+                document.getElementById('vPenalties').textContent = sprintErrors > 0 ? `+${penaltySeconds}s (${sprintErrors} err)` : '+0s (Flawless)';
                 document.getElementById('vRank').textContent = rankText;
                 victoryModal.classList.add('show');
+            } else {
+                // COUNTDOWN MODE: Check if solution matches
+                let isComplete = true;
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] !== gameData.solution[r][c]) {
+                            isComplete = false;
+                            break;
+                        }
+                    }
+                    if (!isComplete) break;
+                }
+
+                if (isComplete) {
+                    isGameFinished = true;
+                    clearInterval(timerInterval);
+                    sound.playVictory();
+
+                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    const totalSec = Math.floor(elapsedMs / 1000);
+                    const mins = Math.floor(totalSec / 60);
+                    const secs = totalSec % 60;
+                    const ms = Math.floor((elapsedMs % 1000) / 10);
+                    const finalFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+
+                    if (!finishOrder.includes(currentMatchConfig.playerId)) {
+                        finishOrder.push(currentMatchConfig.playerId);
+                    }
+                    const myRank = finishOrder.indexOf(currentMatchConfig.playerId) + 1;
+                    const rankText = myRank === 1 ? '1st Place 🏆' : myRank === 2 ? '2nd Place 🥈' : myRank === 3 ? '3rd Place 🥉' : `${myRank}th Place`;
+
+                    // Broadcast finish to multiplayer room
+                    if (isMultiplayer) {
+                        broadcastMatchPacket({
+                            type: 'PLAYER_FINISH',
+                            roomId: currentMatchConfig.room,
+                            playerId: currentMatchConfig.playerId,
+                            playerName: currentMatchConfig.playerName,
+                            finalTime: finalFormatted,
+                            rank: myRank
+                        });
+                    }
+
+                    document.getElementById('modalIcon').textContent = myRank === 1 ? '🏆' : '🏁';
+                    document.getElementById('modalTitle').textContent = myRank === 1 ? 'VICTORY // COUNTDOWN BEATEN!' : `MATCH FINISHED // ${rankText}!`;
+                    document.getElementById('modalSubtitle').textContent = 'Successfully cleared the symmetrical grid before the countdown expired!';
+                    document.getElementById('vRawTime').textContent = finalFormatted;
+                    document.getElementById('vPenalties').textContent = penaltySeconds > 0 ? `-${penaltySeconds}s (${errorCount} err)` : '0s (Flawless)';
+                    document.getElementById('vRank').textContent = rankText;
+                    victoryModal.classList.add('show');
+                }
             }
         }
 
@@ -2558,7 +2815,10 @@
             'theme-stormy-sea',
             'theme-matcha-cafe',
             'theme-garden-walk',
-            'theme-daylight'
+            'theme-daylight',
+            'theme-obsidian-crimson',
+            'theme-nordic-frost',
+            'theme-cyber-sunset'
         ];
 
         paletteBurgerBtn.addEventListener('click', (e) => {
