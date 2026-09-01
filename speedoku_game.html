@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPEEDOKU // Live Match Arena</title>
+    <!-- Google Fonts & PeerJS WebRTC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --transition-speed: 0.3s;
+            --font-mono: 'JetBrains Mono', 'SF Mono', SFMono-Regular, Consolas, Menlo, monospace;
+            --font-hand: 'Caveat', cursive;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            
+            /* Player Identity Hues */
+            --player-p1: #3b82f6;
+            --player-p2: #ec4899;
+            --player-p3: #10b981;
+            --player-p4: #8b5cf6;
+        }
+
+        /* 1. NIGHTTIME (Dark Tactical) */
+        body.theme-nighttime {
+            --bg-color: #0e1114;
+            --surface-color: #15191e;
+            --surface-card: #181d22;
+            --border-color: #2b333c;
+            --text-primary: #e2e6eb;
+            --text-muted: #7b8896;
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --sketch-line: #3d4752;
+            --ink-note: #fbbf24;
+            --highlight-bg: rgba(245, 158, 11, 0.12);
+            --grid-major: rgba(255, 255, 255, 0.03);
+            --track-bg: #242b33;
+            --cell-bg: #161b20;
+            --cell-hover: #222931;
+            --cell-selected: rgba(245, 158, 11, 0.28);
+            --cell-related: rgba(255, 255, 255, 0.035);
+            --cell-match: rgba(245, 158, 11, 0.38);
+            --cell-clue: #f3f4f6;
+            --ink-p1: #38bdf8;
+            --cell-error: #ef4444;
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+
+        /* 2. STORMY SEA */
+        body.theme-stormy-sea {
+            --bg-color: #1a2f3a;
+            --surface-color: #203C49;
+            --surface-card: #254452;
+            --border-color: #758E90;
+            --text-primary: #f2ece6;
+            --text-muted: #9fa4c0;
+            --accent: #EAC8AF;
+            --accent-glow: rgba(234, 200, 175, 0.3);
+            --sketch-line: #493A35;
+            --ink-note: #EAC8AF;
+            --highlight-bg: rgba(234, 200, 175, 0.12);
+            --grid-major: rgba(129, 133, 164, 0.08);
+            --track-bg: #304e5d;
+            --cell-bg: #213c49;
+            --cell-hover: #2a4c5d;
+            --cell-selected: rgba(234, 200, 175, 0.32);
+            --cell-related: rgba(255, 255, 255, 0.035);
+            --cell-match: rgba(234, 200, 175, 0.42);
+            --cell-clue: #f2ece6;
+            --ink-p1: #67e8f9;
+            --cell-error: #f87171;
+            --shadow-color: rgba(0,0,0,0.4);
+        }
+
+        /* 3. MATCHA CAFE */
+        body.theme-matcha-cafe {
+            --bg-color: #FFF2DE;
+            --surface-color: #FFFFFF;
+            --surface-card: #FAF6EE;
+            --border-color: #9cbda2;
+            --text-primary: #136733;
+            --text-muted: #3d6a4c;
+            --accent: #1A9646;
+            --accent-glow: rgba(26, 150, 70, 0.3);
+            --sketch-line: #d6ccbe;
+            --ink-note: #c4327a;
+            --highlight-bg: #FFCAEB;
+            --grid-major: rgba(19, 103, 51, 0.06);
+            --track-bg: #e2e8dc;
+            --cell-bg: #ffffff;
+            --cell-hover: #f7faf8;
+            --cell-selected: #fef08a;
+            --cell-related: rgba(19, 103, 51, 0.04);
+            --cell-match: #fde047;
+            --cell-clue: #0f4d26;
+            --ink-p1: #2563eb;
+            --cell-error: #e11d48;
+            --shadow-color: rgba(19, 103, 51, 0.08);
+        }
+
+        /* 4. GARDEN WALK */
+        body.theme-garden-walk {
+            --bg-color: #D7D0C5;
+            --surface-color: #e3dcd1;
+            --surface-card: #eae4da;
+            --border-color: #7F7D74;
+            --text-primary: #36452B;
+            --text-muted: #5e6657;
+            --accent: #8A9646;
+            --accent-glow: rgba(138, 150, 70, 0.3);
+            --sketch-line: #b0a89b;
+            --ink-note: #36452B;
+            --highlight-bg: #EEDADA;
+            --grid-major: rgba(54, 69, 43, 0.06);
+            --track-bg: #c5bcb0;
+            --cell-bg: #fdfbf7;
+            --cell-hover: #f5f0e6;
+            --cell-selected: #fef08a;
+            --cell-related: rgba(54, 69, 43, 0.035);
+            --cell-match: #fde047;
+            --cell-clue: #1c2417;
+            --ink-p1: #2563eb;
+            --cell-error: #be123c;
+            --shadow-color: rgba(54, 69, 43, 0.12);
+        }
+
+        /* 5. DAYLIGHT (Default Light) */
+        body.theme-daylight {
+            --bg-color: #f7f6f0;
+            --surface-color: #eeebe1;
+            --surface-card: #f4f1e8;
+            --border-color: #d2cabb;
+            --text-primary: #181d22;
+            --text-muted: #57626d;
+            --accent: #d97706;
+            --accent-glow: rgba(217, 119, 6, 0.3);
+            --sketch-line: #c8bfb0;
+            --ink-note: #b45309;
+            --highlight-bg: rgba(217, 119, 6, 0.1);
+            --grid-major: rgba(140, 130, 115, 0.08);
+            --track-bg: #ded7cb;
+            --cell-bg: #fdfbf7;
+            --cell-hover: #f5efe3;
+            --cell-selected: #fef08a;
+            --cell-related: rgba(0, 0, 0, 0.03);
+            --cell-match: #fde68a;
+            --cell-clue: #111827;
+            --ink-p1: #2563eb;
+            --cell-error: #ef4444;
+            --shadow-color: rgba(0,0,0,0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed) ease, 
+                        border-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        box-shadow var(--transition-speed) ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(var(--sketch-line) 0.85px, transparent 0.85px),
+                linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+            background-size: 20px 20px, 60px 60px, 60px 60px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem 2.2rem;
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* ---------------------------------------------------- */
+        /* HEADER & CONTROLS HUD                                */
+        /* ---------------------------------------------------- */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed var(--sketch-line);
+            padding-bottom: 1rem;
+            margin-bottom: 1.15rem;
+            position: relative;
+            z-index: 100;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-box {
+            border: 2px solid var(--accent);
+            padding: 0.2rem 0.75rem;
+            border-radius: 255px 12px 225px 10px / 10px 225px 10px 255px;
+            color: var(--accent);
+            background: var(--highlight-bg);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            box-shadow: 2px 2px 0px var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .match-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--surface-card);
+            border: 1.5px solid var(--border-color);
+            padding: 0.25rem 0.65rem;
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+            animation: pulseDot 1.4s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Tactical Timer & Stats Block */
+        .hud-center {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 0.35rem 1.2rem;
+            box-shadow: 2px 3px 0px var(--border-color);
+        }
+
+        .timer-display {
+            font-family: var(--font-mono);
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+        }
+
+        .timer-ms {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-left: 1px dashed var(--sketch-line);
+            padding-left: 1rem;
+        }
+
+        .stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-val {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-val.penalty {
+            color: #ef4444;
+        }
+
+        /* Action Controls (Audio, Setup, Theme) */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .icon-btn {
+            background: var(--surface-color);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.45rem 0.75rem;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            outline: none;
+            box-shadow: 2px 2px 0px var(--border-color);
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 3px 3px 0px var(--accent);
+        }
+
+        .icon-btn:active {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 0px var(--accent);
+        }
+
+        /* Palette Burger Menu */
+        .palette-menu-wrap {
+            position: relative;
+        }
+
+        .palette-burger-btn {
+            background: var(--surface-color);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.45rem 0.75rem;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            outline: none;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .palette-burger-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 3px 3px 0px var(--accent);
+        }
+
+        .burger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            width: 14px;
+        }
+
+        .burger-icon span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        .active-swatch-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 1px solid var(--text-primary);
+        }
+
+        .palette-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 0.75rem;
+            min-width: 210px;
+            box-shadow: 4px 6px 0px var(--shadow-color);
+            display: none;
+            flex-direction: column;
+            gap: 0.35rem;
+            z-index: 1000;
+            animation: dropdownFadeIn 0.18s ease;
+        }
+
+        .palette-dropdown.show {
+            display: flex;
+        }
+
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .dropdown-title {
+            font-family: var(--font-mono);
+            font-size: 0.64rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 0.15rem 0.4rem 0.35rem 0.4rem;
+            border-bottom: 1px dashed var(--sketch-line);
+            margin-bottom: 0.2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .theme-item-btn {
+            background: var(--surface-card);
+            border: 1.5px solid transparent;
+            border-radius: 255px 8px 225px 7px / 7px 225px 7px 255px;
+            padding: 0.45rem 0.65rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            outline: none;
+        }
+
+        .theme-item-btn:hover {
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+        }
+
+        .theme-item-btn.active {
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .theme-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .swatch-group {
+            display: inline-flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .swatch-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        /* ---------------------------------------------------- */
+        /* GLOBAL RACE PROGRESS TRACK (DASHBOARD)               */
+        /* ---------------------------------------------------- */
+        .race-track-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 0.85rem 1.25rem;
+            box-shadow: 3px 4px 0px var(--border-color);
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            position: relative;
+        }
+
+        .race-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .race-lead-tag {
+            font-family: var(--font-hand);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--ink-note);
+            transform: rotate(-1deg);
+        }
+
+        .racers-lanes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .racer-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 50px;
+            align-items: center;
+            gap: 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+        }
+
+        .racer-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .racer-rank-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .racer-rank-badge.rank-1 {
+            background: #f59e0b;
+            color: #0e1114;
+        }
+
+        .racer-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .racer-name.is-you {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .lane-track {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            background: var(--track-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 255px 5px 225px 4px / 4px 225px 4px 255px;
+            overflow: visible;
+        }
+
+        .lane-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .racer-marker-pencil {
+            position: absolute;
+            right: -8px;
+            top: -7px;
+            width: 18px;
+            height: 24px;
+            filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
+            transition: transform 0.2s ease;
+        }
+
+        .racer-row:hover .racer-marker-pencil {
+            transform: scale(1.25) rotate(-5deg);
+        }
+
+        .racer-pct {
+            text-align: right;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* ---------------------------------------------------- */
+        /* MAIN GAMEPLAY LAYOUT (BOARD + CONTROLS HUD)          */
+        /* ---------------------------------------------------- */
+        .game-main-area {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.5rem;
+            align-items: start;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sudoku Graph Sheet Container */
+        .board-container {
+            background: var(--surface-color);
+            border: 2.5px solid var(--border-color);
+            border-radius: 255px 18px 225px 15px / 15px 225px 15px 255px;
+            padding: 1.25rem;
+            box-shadow: 5px 7px 0px var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Spiral binding aesthetic along top */
+        .spiral-rings {
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            display: flex;
+            gap: 14px;
+            pointer-events: none;
+        }
+
+        .spiral-ring {
+            width: 8px;
+            height: 20px;
+            background: var(--sketch-line);
+            border-radius: 4px;
+            border: 1px solid var(--text-primary);
+        }
+
+        /* The 9x9 Sudoku Grid */
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--border-color);
+            gap: 1px;
+            width: 500px;
+            height: 500px;
+            position: relative;
+        }
+
+        .sudoku-cell {
+            background: var(--cell-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.12s ease;
+        }
+
+        /* 3x3 Block Thicker Boundaries */
+        .sudoku-cell:nth-child(3n) {
+            border-right: 2.5px solid var(--border-color);
+        }
+        .sudoku-cell:nth-child(9n) {
+            border-right: none;
+        }
+        .sudoku-cell:nth-child(n+19):nth-child(-n+27),
+        .sudoku-cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2.5px solid var(--border-color);
+        }
+
+        /* Cell States */
+        .sudoku-cell:hover:not(.clue):not(.selected) {
+            background: var(--cell-hover);
+        }
+
+        /* Clue Numbers (Printed Giver Ink on Clean Paper) */
+        .sudoku-cell.clue {
+            color: var(--cell-clue);
+            font-weight: 800;
+            cursor: default;
+        }
+
+        /* Player-Entered Solved Numbers: Crisp Fountain Pen Ink (No distracting background box) */
+        .sudoku-cell.solved-p1 {
+            color: var(--ink-p1);
+            font-weight: 700;
+            background: var(--cell-bg);
+            animation: popSolve 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Crosshair: Row, Column & 3x3 Box Guide */
+        .sudoku-cell.related:not(.selected):not(.match-number) {
+            background: var(--cell-related);
+        }
+
+        /* Matching Numbers (Identical Digit Highlight) */
+        .sudoku-cell.match-number:not(.selected) {
+            background: var(--cell-match) !important;
+            font-weight: 800;
+            box-shadow: inset 0 0 0 2px var(--accent);
+            border-radius: 4px;
+        }
+
+        /* Active Selected Cell Cursor */
+        .sudoku-cell.selected {
+            background: var(--cell-selected) !important;
+            outline: 3px solid var(--accent);
+            outline-offset: -3px;
+            z-index: 10;
+            box-shadow: inset 0 0 10px var(--accent-glow);
+        }
+
+        .sudoku-cell.error {
+            background: rgba(239, 68, 68, 0.25) !important;
+            color: var(--cell-error) !important;
+            animation: shakeError 0.35s ease;
+        }
+
+        @keyframes popSolve {
+            0% { transform: scale(0.7); filter: brightness(1.4); }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
+        /* 3x3 Candidate Notes Inside Cell */
+        .pencil-notes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 100%;
+            height: 100%;
+            padding: 3px;
+            pointer-events: none;
+        }
+
+        .pencil-note-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--ink-note);
+            line-height: 1;
+            opacity: 0.85;
+        }
+
+        /* ---------------------------------------------------- */
+        /* SIDEBAR: PENCIL CASE & ACTION CARDS                  */
+        /* ---------------------------------------------------- */
+        .game-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        /* Pencil Case Hub: Tools & Input Mode */
+        .pencil-case-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 16px 225px 14px / 14px 225px 14px 255px;
+            padding: 1.35rem;
+            box-shadow: 4px 5px 0px var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+            position: relative;
+        }
+
+        .card-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--sketch-line);
+            padding-bottom: 0.65rem;
+        }
+
+        .card-title {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        /* Mode Selector: Pen vs Pencil Notes */
+        .mode-toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: var(--surface-card);
+            padding: 0.35rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: 1.5px solid transparent;
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .mode-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .mode-btn.active {
+            background: var(--highlight-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 1px 2px 0px var(--accent);
+        }
+
+        /* Smart Touch / Mouse Numpad */
+        .numpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+        }
+
+        .numpad-btn {
+            background: var(--surface-card);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 12px 225px 10px / 10px 225px 10px 255px;
+            height: 56px;
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            outline: none;
+            box-shadow: 2px 3px 0px var(--border-color);
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .numpad-btn:hover:not(.completed) {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 3px 4px 0px var(--accent);
+        }
+
+        .numpad-btn:active:not(.completed) {
+            transform: translateY(1px);
+            box-shadow: 1px 1px 0px var(--accent);
+        }
+
+        .numpad-count {
+            position: absolute;
+            bottom: 2px;
+            right: 6px;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .numpad-btn.completed {
+            opacity: 0.35;
+            cursor: not-allowed;
+            border-style: dashed;
+            box-shadow: none;
+        }
+
+        /* Bottom Utility Row (Erase, Mental Block Hint) */
+        .utility-row {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 0.6rem;
+        }
+
+        .util-btn {
+            background: var(--surface-card);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.65rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            outline: none;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .util-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 3px 3px 0px var(--accent);
+        }
+
+        .util-btn.hint-btn {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+        }
+
+        /* Match Telemetry & Speed Benchmark Card */
+        .telemetry-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 16px 225px 14px / 14px 225px 14px 255px;
+            padding: 1.25rem;
+            box-shadow: 4px 5px 0px var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+        }
+
+        .telemetry-box {
+            background: var(--surface-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.65rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .telemetry-label {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* ---------------------------------------------------- */
+        /* MATCH END & VICTORY DIALOG MODAL                     */
+        /* ---------------------------------------------------- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1.5rem;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+            animation: modalFade 0.25s ease;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .victory-card {
+            background: var(--surface-color);
+            border: 2.5px solid var(--accent);
+            border-radius: 255px 20px 225px 18px / 18px 225px 18px 255px;
+            padding: 2.5rem;
+            max-width: 540px;
+            width: 100%;
+            box-shadow: 6px 10px 0px var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .trophy-stamp {
+            font-size: 3.5rem;
+            line-height: 1;
+            filter: drop-shadow(2px 4px 0px var(--border-color));
+        }
+
+        .victory-title {
+            font-family: var(--font-mono);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+        }
+
+        .victory-stats-table {
+            background: var(--surface-card);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+        }
+
+        .vstat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .vstat-label {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .vstat-val {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .modal-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+        }
+
+        .btn-action {
+            background: var(--accent);
+            color: #0e1114;
+            border: 2px solid var(--accent);
+            border-radius: 255px 12px 225px 10px / 10px 225px 10px 255px;
+            padding: 0.85rem 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            box-shadow: 2px 3px 0px var(--border-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-action.secondary {
+            background: var(--surface-card);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 3px 5px 0px var(--accent);
+        }
+
+        /* ---------------------------------------------------- */
+        /* FOOTER & KEYBOARD HINTS                              */
+        /* ---------------------------------------------------- */
+        footer {
+            border-top: 2px dashed var(--sketch-line);
+            padding-top: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .kb-hints {
+            display: flex;
+            gap: 0.85rem;
+            align-items: center;
+        }
+
+        .kb-key {
+            border: 1px solid var(--border-color);
+            background: var(--surface-card);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 980px) {
+            .game-main-area {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+            .sudoku-grid {
+                width: 90vw;
+                max-width: 480px;
+                height: 90vw;
+                max-height: 480px;
+            }
+            .sudoku-cell {
+                font-size: 1.3rem;
+            }
+            .game-sidebar {
+                width: 100%;
+                max-width: 480px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-daylight">
+
+    <!-- Header HUD -->
+    <header>
+        <div class="header-brand">
+            <a href="speedoku_welcome.html" class="logo-box" title="Return to Setup">
+                <span>SPEEDOKU</span>
+            </a>
+            <div class="match-badge">
+                <span class="live-dot"></span>
+                <span id="matchHeaderMode">SPRINT // MEDIUM</span>
+            </div>
+        </div>
+
+        <!-- Live Clock & Penalties -->
+        <div class="hud-center">
+            <div class="timer-display">
+                <span id="timeMinutes">00</span>:<span id="timeSeconds">00</span><span class="timer-ms" id="timeMillis">.00</span>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-label">Penalties</span>
+                <span class="stat-val penalty" id="penaltyDisplay">+0s</span>
+            </div>
+            <div class="stat-pill">
+                <span class="stat-label">Solved</span>
+                <span class="stat-val" id="solvedRatio">0/81</span>
+            </div>
+        </div>
+
+        <!-- Action Controls & Palette Menu -->
+        <div class="header-actions">
+            <!-- Audio Mute Toggle -->
+            <button class="icon-btn" id="soundToggleBtn" title="Toggle Tactile ASMR Sound">
+                <span id="soundIcon">🔊</span>
+                <span>Sound</span>
+            </button>
+
+            <!-- Reset / New Board -->
+            <button class="icon-btn" id="restartMatchBtn" title="Restart Match">
+                <span>↻</span>
+                <span>Restart</span>
+            </button>
+
+            <!-- Back to Setup -->
+            <a href="speedoku_welcome.html" class="icon-btn" title="Back to Setup">
+                <span>⚙</span>
+                <span>Setup</span>
+            </a>
+
+            <!-- Palette Dropdown -->
+            <div class="palette-menu-wrap">
+                <button class="palette-burger-btn" id="paletteBurgerBtn" aria-label="Toggle Theme Menu">
+                    <div class="burger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span>Palette</span>
+                    <span class="active-swatch-dot"></span>
+                </button>
+
+                <div class="palette-dropdown" id="paletteDropdown">
+                    <div class="dropdown-title">
+                        <span>Tactical Themes</span>
+                        <span>(5)</span>
+                    </div>
+
+                    <button class="theme-item-btn" data-theme="theme-nighttime">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #0e1114;"></span>
+                                <span class="swatch-dot" style="background: #f59e0b;"></span>
+                            </span>
+                            <span>Nighttime</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-stormy-sea">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #203C49;"></span>
+                                <span class="swatch-dot" style="background: #EAC8AF;"></span>
+                            </span>
+                            <span>Stormy Sea</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-matcha-cafe">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #FFF2DE;"></span>
+                                <span class="swatch-dot" style="background: #1A9646;"></span>
+                            </span>
+                            <span>Matcha Cafe</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn" data-theme="theme-garden-walk">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #D7D0C5;"></span>
+                                <span class="swatch-dot" style="background: #8A9646;"></span>
+                            </span>
+                            <span>Garden Walk</span>
+                        </span>
+                        <span class="check-mark"></span>
+                    </button>
+
+                    <button class="theme-item-btn active" data-theme="theme-daylight">
+                        <span class="theme-info">
+                            <span class="swatch-group">
+                                <span class="swatch-dot" style="background: #f7f6f0;"></span>
+                                <span class="swatch-dot" style="background: #d97706;"></span>
+                            </span>
+                            <span>Daylight</span>
+                        </span>
+                        <span class="check-mark">✓</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Race Progress Dashboard -->
+    <div class="race-track-card">
+        <div class="race-header">
+            <span id="raceTrackTitle">🏁 Live Speed Race Track // Symmetrical Seed</span>
+            <span class="race-lead-tag" id="raceLeadStatus">✍ You are holding 1st place!</span>
+        </div>
+
+        <div class="racers-lanes" id="racersLanesContainer">
+            <!-- Racer 1: YOU -->
+            <div class="racer-row" id="racerRowP1">
+                <div class="racer-profile">
+                    <span class="racer-rank-badge rank-1" id="badgeP1">1st</span>
+                    <span class="racer-name is-you">YOU (P1)</span>
+                </div>
+                <div class="lane-track">
+                    <div class="lane-progress-bar" id="barP1" style="width: 0%; background: #3b82f6;">
+                        <!-- Pencil Marker -->
+                        <svg class="racer-marker-pencil" viewBox="0 0 24 32">
+                            <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="#3b82f6" stroke="#000" stroke-width="1.5"/>
+                            <polygon points="12 30 8 24 16 24" fill="#1e293b"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="racer-pct" id="pctP1">0%</div>
+            </div>
+
+            <!-- Racer 2: Alex_99 -->
+            <div class="racer-row" id="racerRowP2">
+                <div class="racer-profile">
+                    <span class="racer-rank-badge" id="badgeP2">2nd</span>
+                    <span class="racer-name">Alex_99</span>
+                </div>
+                <div class="lane-track">
+                    <div class="lane-progress-bar" id="barP2" style="width: 0%; background: #ec4899;">
+                        <svg class="racer-marker-pencil" viewBox="0 0 24 32">
+                            <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="#ec4899" stroke="#000" stroke-width="1.5"/>
+                            <polygon points="12 30 8 24 16 24" fill="#1e293b"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="racer-pct" id="pctP2">0%</div>
+            </div>
+
+            <!-- Racer 3: ZenMaster -->
+            <div class="racer-row" id="racerRowP3">
+                <div class="racer-profile">
+                    <span class="racer-rank-badge" id="badgeP3">3rd</span>
+                    <span class="racer-name">ZenMaster</span>
+                </div>
+                <div class="lane-track">
+                    <div class="lane-progress-bar" id="barP3" style="width: 0%; background: #10b981;">
+                        <svg class="racer-marker-pencil" viewBox="0 0 24 32">
+                            <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="#10b981" stroke="#000" stroke-width="1.5"/>
+                            <polygon points="12 30 8 24 16 24" fill="#1e293b"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="racer-pct" id="pctP3">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Gameplay Area (Board + Sidebar) -->
+    <div class="game-main-area">
+        <!-- Sudoku Paper Board -->
+        <div class="board-container">
+            <div class="spiral-rings">
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+                <div class="spiral-ring"></div>
+            </div>
+
+            <!-- 9x9 Sudoku Grid -->
+            <div class="sudoku-grid" id="sudokuGrid">
+                <!-- 81 Cells dynamically generated in JS -->
+            </div>
+        </div>
+
+        <!-- Sidebar: Pencil Case & Race Benchmark -->
+        <div class="game-sidebar">
+            <!-- Pencil Case Controls -->
+            <div class="pencil-case-card">
+                <div class="card-header-bar">
+                    <span class="card-title">
+                        <span>✏</span>
+                        <span>Pencil Case & Tools</span>
+                    </span>
+                    <!-- Input Mode Toggle -->
+                    <div class="mode-toggle-group">
+                        <button class="mode-btn active" id="penModeBtn">
+                            <span>✍</span>
+                            <span>Pen</span>
+                        </button>
+                        <button class="mode-btn" id="pencilModeBtn">
+                            <span>✎</span>
+                            <span>Notes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1-9 Smart Numpad -->
+                <div class="numpad-grid" id="numpad">
+                    <button class="numpad-btn" data-digit="1">1<span class="numpad-count" id="count-1">0/9</span></button>
+                    <button class="numpad-btn" data-digit="2">2<span class="numpad-count" id="count-2">0/9</span></button>
+                    <button class="numpad-btn" data-digit="3">3<span class="numpad-count" id="count-3">0/9</span></button>
+                    <button class="numpad-btn" data-digit="4">4<span class="numpad-count" id="count-4">0/9</span></button>
+                    <button class="numpad-btn" data-digit="5">5<span class="numpad-count" id="count-5">0/9</span></button>
+                    <button class="numpad-btn" data-digit="6">6<span class="numpad-count" id="count-6">0/9</span></button>
+                    <button class="numpad-btn" data-digit="7">7<span class="numpad-count" id="count-7">0/9</span></button>
+                    <button class="numpad-btn" data-digit="8">8<span class="numpad-count" id="count-8">0/9</span></button>
+                    <button class="numpad-btn" data-digit="9">9<span class="numpad-count" id="count-9">0/9</span></button>
+                </div>
+
+                <!-- Utilities: Erase & Mental Block Hint -->
+                <div class="utility-row">
+                    <button class="util-btn" id="eraseBtn">
+                        <span>⌫</span>
+                        <span>Erase</span>
+                    </button>
+                    <button class="util-btn hint-btn" id="mentalHintBtn">
+                        <span>💡</span>
+                        <span>Mental Block (+15s)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Race Benchmark & Telemetry Card -->
+            <div class="telemetry-card">
+                <div class="card-header-bar">
+                    <span class="card-title">
+                        <span>⏱</span>
+                        <span>Match Telemetry</span>
+                    </span>
+                    <span style="font-family: var(--font-hand); color: var(--ink-note); font-weight: bold;">live diagnostics</span>
+                </div>
+
+                <div class="telemetry-grid">
+                    <div class="telemetry-box">
+                        <span class="telemetry-label">Mistakes</span>
+                        <span class="telemetry-val" id="mistakeCountVal">0</span>
+                    </div>
+                    <div class="telemetry-box">
+                        <span class="telemetry-label">Accuracy</span>
+                        <span class="telemetry-val" id="accuracyVal">100%</span>
+                    </div>
+                    <div class="telemetry-box">
+                        <span class="telemetry-label">Solving Pace</span>
+                        <span class="telemetry-val" id="solvingPaceVal">-- s/cell</span>
+                    </div>
+                    <div class="telemetry-box">
+                        <span class="telemetry-label">Difficulty Clues</span>
+                        <span class="telemetry-val" id="cluesVal">34</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div class="modal-backdrop" id="victoryModal">
+        <div class="victory-card">
+            <div class="trophy-stamp" id="modalIcon">🏆</div>
+            <div class="victory-title" id="modalTitle">VICTORY // MATCH FINISHED!</div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;" id="modalSubtitle">
+                Sensational speed and logical deduction across the symmetrical grid.
+            </p>
+
+            <div class="victory-stats-table">
+                <div class="vstat-item">
+                    <span class="vstat-label">Final Time</span>
+                    <span class="vstat-val" id="vRawTime">02:14.30</span>
+                </div>
+                <div class="vstat-item">
+                    <span class="vstat-label">Penalties</span>
+                    <span class="vstat-val" id="vPenalties">+0s</span>
+                </div>
+                <div class="vstat-item">
+                    <span class="vstat-label">Final Rank</span>
+                    <span class="vstat-val" style="color: #f59e0b;" id="vRank">1st Place</span>
+                </div>
+            </div>
+
+            <div class="modal-btn-row">
+                <button class="btn-action" id="modalPlayAgainBtn">
+                    <span>↻</span>
+                    <span>Play Again</span>
+                </button>
+                <a href="speedoku_welcome.html" class="btn-action secondary">
+                    <span>⚙</span>
+                    <span>Lobby Setup</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Telemetry -->
+    <footer>
+        <div class="kb-hints">
+            <span>Keys:</span>
+            <span><span class="kb-key">1-9</span> Enter Num</span>
+            <span><span class="kb-key">Shift + 1-9</span> Pencil Note</span>
+            <span><span class="kb-key">Space</span> Pen/Pencil</span>
+            <span><span class="kb-key">Del</span> Erase</span>
+            <span><span class="kb-key">Arrows</span> Move</span>
+            <span><span class="kb-key">H</span> Hint</span>
+        </div>
+        <div>Speedoku Clean Race Engine v2026.03 <span style="color: var(--accent);">★</span></div>
+    </footer>
+
+    <script>
+        /* ---------------------------------------------------- */
+        /* 1. PROCEDURAL SOUND SYNTHESIZER (WEB AUDIO API ASMR) */
+        /* ---------------------------------------------------- */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+            }
+
+            playPencil() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(450 + Math.random() * 150, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.05);
+
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.06);
+                } catch(e){}
+            }
+
+            playStamp() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
+
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.13);
+                } catch(e){}
+            }
+
+            playError() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(110, this.ctx.currentTime + 0.1);
+
+                    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.26);
+                } catch(e){}
+            }
+
+            playPowerup() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(950, this.ctx.currentTime + 0.2);
+
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.26);
+                } catch(e){}
+            }
+
+            playVictory() {
+                if (!this.enabled || !this.ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        try {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start();
+                            osc.stop(this.ctx.currentTime + 0.36);
+                        } catch(e){}
+                    }, idx * 100);
+                });
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        /* ---------------------------------------------------- */
+        /* 2. URL PARAMS & GAME MODE CONFIGURATION              */
+        /* ---------------------------------------------------- */
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentMatchConfig = {
+            playType: urlParams.get('playType') || 'Play with friends',
+            room: urlParams.get('room') || '',
+            isHost: urlParams.get('isHost') === 'true',
+            playerId: urlParams.get('playerId') || ('p_' + Math.random().toString(36).substring(2, 7)),
+            playerName: urlParams.get('playerName') || 'YOU',
+            playerColor: urlParams.get('playerColor') || '#3b82f6',
+            seed: parseInt(urlParams.get('seed') || Math.floor(Math.random() * 1000000)),
+            gameMode: urlParams.get('gameMode') || 'Sprint',
+            difficulty: urlParams.get('difficulty') || 'Medium',
+            countdownMinutes: parseFloat(urlParams.get('countdownMinutes') || '0'),
+            clues: parseInt(urlParams.get('clues') || '0')
+        };
+
+        const clueCountsMap = {
+            'Super Easy': 48,
+            'Easy': 40,
+            'Medium-Easy': 38,
+            'Medium': 34,
+            'Medium-Hard': 30,
+            'Hard': 28,
+            'Expert': 24,
+            'Super Hard': 22
+        };
+
+        const isCountdownMode = (currentMatchConfig.gameMode === 'Countdown');
+        const activeClueCount = currentMatchConfig.clues || clueCountsMap[currentMatchConfig.difficulty] || 34;
+
+        // Determine countdown duration
+        let countdownDuration = 3.5 * 60 * 1000;
+        if (isCountdownMode) {
+            if (currentMatchConfig.countdownMinutes > 0) {
+                countdownDuration = currentMatchConfig.countdownMinutes * 60 * 1000;
+            } else {
+                const countdownTimeMap = {
+                    'Super Easy': 2.5 * 60 * 1000,
+                    'Easy': 5.0 * 60 * 1000,
+                    'Medium-Easy': 7.5 * 60 * 1000,
+                    'Medium': 10.0 * 60 * 1000,
+                    'Medium-Hard': 12.5 * 60 * 1000,
+                    'Hard': 15.0 * 60 * 1000,
+                    'Expert': 17.5 * 60 * 1000,
+                    'Super Hard': 20.0 * 60 * 1000
+                };
+                countdownDuration = countdownTimeMap[currentMatchConfig.difficulty] || (10.0 * 60 * 1000);
+            }
+        }
+
+        const headerTitle = isCountdownMode
+            ? `COUNTDOWN // ${currentMatchConfig.countdownMinutes > 0 ? currentMatchConfig.countdownMinutes + 'M' : ''} (${currentMatchConfig.difficulty.toUpperCase()})`
+            : `SPRINT // ${currentMatchConfig.difficulty.toUpperCase()}`;
+
+        document.getElementById('matchHeaderMode').textContent = headerTitle;
+        document.getElementById('cluesVal').textContent = activeClueCount;
+        document.getElementById('raceTrackTitle').textContent = currentMatchConfig.room 
+            ? `🏁 Room [${currentMatchConfig.room}] // Live Symmetrical Match`
+            : (isCountdownMode 
+                ? `⏱ Countdown Race Against Clock (${(countdownDuration / 60000).toFixed(1)}m) // Live Field` 
+                : '🏁 Sprint Race To The Finish // Live Field');
+
+        /* ---------------------------------------------------- */
+        /* 3. DETERMINISTIC SEEDED SUDOKU GENERATOR             */
+        /* ---------------------------------------------------- */
+        function createSeededRandom(seed) {
+            let s = seed % 2147483647;
+            if (s <= 0) s += 2147483646;
+            return function() {
+                return (s = s * 16807 % 2147483647) / 2147483647;
+            };
+        }
+
+        function generateValidSudoku(clueTotal, rng = Math.random) {
+            // Seed a valid base 9x9 sudoku solution
+            const baseSolution = [
+                [5, 3, 4, 6, 7, 8, 9, 1, 2],
+                [6, 7, 2, 1, 9, 5, 3, 4, 8],
+                [1, 9, 8, 3, 4, 2, 5, 6, 7],
+                [8, 5, 9, 7, 6, 1, 4, 2, 3],
+                [4, 2, 6, 8, 5, 3, 7, 9, 1],
+                [7, 1, 3, 9, 2, 4, 8, 5, 6],
+                [9, 6, 1, 5, 3, 7, 2, 8, 4],
+                [2, 8, 7, 4, 1, 9, 6, 3, 5],
+                [3, 4, 5, 2, 8, 6, 1, 7, 9]
+            ];
+
+            // Permute numbers randomly (1-9 map) with seeded rng
+            const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+            for (let i = nums.length - 1; i > 0; i--) {
+                const j = Math.floor(rng() * (i + 1));
+                [nums[i], nums[j]] = [nums[j], nums[i]];
+            }
+
+            const solution = baseSolution.map(row => row.map(val => nums[val - 1]));
+            const puzzle = solution.map(row => [...row]);
+
+            const positions = [];
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    positions.push([r, c]);
+                }
+            }
+
+            // Shuffle positions to remove cells with seeded rng
+            for (let i = positions.length - 1; i > 0; i--) {
+                const j = Math.floor(rng() * (i + 1));
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+
+            const toRemove = 81 - clueTotal;
+            for (let i = 0; i < toRemove; i++) {
+                const [r, c] = positions[i];
+                puzzle[r][c] = 0;
+            }
+
+            return { solution, puzzle };
+        }
+
+        /* ---------------------------------------------------- */
+        /* 4. GAME STATE & MULTIPLAYER ROSTER                   */
+        /* ---------------------------------------------------- */
+        let matchPRNG = createSeededRandom(currentMatchConfig.seed);
+        let gameData = generateValidSudoku(activeClueCount, matchPRNG);
+        let boardState = Array.from({ length: 9 }, () => Array(9).fill(0));
+        let notesState = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
+        let selectedCell = { row: 0, col: 0 };
+        let isPencilMode = false;
+        let isGameFinished = false;
+
+        // Timer & Error Penalty State
+        let startTime = Date.now();
+        let timerInterval = null;
+        let penaltySeconds = 0;
+        let errorCount = 0;
+        let totalPlacements = 0;
+
+        // Racers State
+        let p1Solved = 0;
+        let totalEmptyCells = 0;
+        let matchRacers = [];
+        let finishOrder = [];
+
+        // DOM References
+        const sudokuGrid = document.getElementById('sudokuGrid');
+        const timeMinutes = document.getElementById('timeMinutes');
+        const timeSeconds = document.getElementById('timeSeconds');
+        const timeMillis = document.getElementById('timeMillis');
+        const penaltyDisplay = document.getElementById('penaltyDisplay');
+        const solvedRatio = document.getElementById('solvedRatio');
+        const penModeBtn = document.getElementById('penModeBtn');
+        const pencilModeBtn = document.getElementById('pencilModeBtn');
+        const eraseBtn = document.getElementById('eraseBtn');
+        const mentalHintBtn = document.getElementById('mentalHintBtn');
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const soundIcon = document.getElementById('soundIcon');
+        const restartMatchBtn = document.getElementById('restartMatchBtn');
+        const victoryModal = document.getElementById('victoryModal');
+        const modalPlayAgainBtn = document.getElementById('modalPlayAgainBtn');
+        const mistakeCountVal = document.getElementById('mistakeCountVal');
+        const accuracyVal = document.getElementById('accuracyVal');
+        const solvingPaceVal = document.getElementById('solvingPaceVal');
+        const racersLanesContainer = document.getElementById('racersLanesContainer');
+
+        /* ---------------------------------------------------- */
+        /* MULTIPLAYER NETWORKING CONTROLLER                    */
+        /* ---------------------------------------------------- */
+        const isMultiplayer = Boolean(currentMatchConfig.room && currentMatchConfig.playType === 'Play with friends');
+        let matchBroadcast = null;
+        let matchPeer = null;
+        let matchPeerConns = new Map();
+
+        function initMultiplayerNetworking() {
+            if (!isMultiplayer) return;
+
+            const roomCode = currentMatchConfig.room;
+            const cleanCode = roomCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            // 1. BroadcastChannel (Instant multi-window local sync)
+            try {
+                matchBroadcast = new BroadcastChannel('spd_match_' + roomCode);
+                matchBroadcast.onmessage = (e) => {
+                    handleMatchNetworkMessage(e.data);
+                };
+            } catch(e){}
+
+            // 2. PeerJS WebRTC Channel (Cross-device sync)
+            if (window.Peer) {
+                try {
+                    const peerId = currentMatchConfig.isHost 
+                        ? `spd26-${cleanCode}-mhost` 
+                        : `spd26-${cleanCode}-mp${Math.random().toString(36).substring(2, 7)}`;
+                    
+                    matchPeer = new Peer(peerId, { debug: 0 });
+
+                    if (currentMatchConfig.isHost) {
+                        matchPeer.on('connection', (conn) => {
+                            matchPeerConns.set(conn.peer, conn);
+                            conn.on('data', (data) => handleMatchNetworkMessage(data));
+                        });
+                    } else {
+                        matchPeer.on('open', () => {
+                            const hostPeerId = `spd26-${cleanCode}-mhost`;
+                            const conn = matchPeer.connect(hostPeerId, { reliable: true });
+                            conn.on('open', () => {
+                                matchPeerConns.set(hostPeerId, conn);
+                            });
+                            conn.on('data', (data) => handleMatchNetworkMessage(data));
+                        });
+                    }
+                } catch(e){}
+            }
+        }
+
+        function broadcastMatchPacket(packet) {
+            if (!isMultiplayer) return;
+            if (matchBroadcast) {
+                try { matchBroadcast.postMessage(packet); } catch(e){}
+            }
+            matchPeerConns.forEach(conn => {
+                if (conn && conn.open) {
+                    try { conn.send(packet); } catch(e){}
+                }
+            });
+        }
+
+        function handleMatchNetworkMessage(data) {
+            if (!data || !data.type) return;
+
+            if (data.type === 'PROGRESS_UPDATE' && data.playerId !== currentMatchConfig.playerId) {
+                const racer = matchRacers.find(r => r.id === data.playerId);
+                if (racer) {
+                    racer.solved = data.solvedCount || 0;
+                    racer.pct = data.pct || 0;
+                    racer.errors = data.errorCount || 0;
+                    racer.isFinished = Boolean(data.isFinished);
+                    updateRacersDOM();
+                }
+            }
+
+            if (data.type === 'PLAYER_FINISH') {
+                if (!finishOrder.includes(data.playerId)) {
+                    finishOrder.push(data.playerId);
+                }
+                const rankNum = finishOrder.indexOf(data.playerId) + 1;
+                const racer = matchRacers.find(r => r.id === data.playerId);
+                if (racer) {
+                    racer.pct = 100;
+                    racer.isFinished = true;
+                    racer.finalTime = data.finalTime;
+                    racer.rank = rankNum;
+                }
+                updateRacersDOM();
+
+                const leadStatusEl = document.getElementById('raceLeadStatus');
+                if (data.playerId !== currentMatchConfig.playerId) {
+                    leadStatusEl.textContent = `🏆 ${data.playerName} finished in ${rankNum === 1 ? '1st' : rankNum === 2 ? '2nd' : '3rd'} place (${data.finalTime})!`;
+                    leadStatusEl.style.color = '#f59e0b';
+                }
+            }
+
+            if (data.type === 'REMATCH') {
+                currentMatchConfig.seed = data.newSeed;
+                initMatch();
+            }
+        }
+
+        /* ---------------------------------------------------- */
+        /* 5. BOARD RENDERING & INITIALIZATION                  */
+        /* ---------------------------------------------------- */
+        function initRacers() {
+            matchRacers = [];
+            finishOrder = [];
+
+            if (isMultiplayer) {
+                let savedPlayers = [];
+                try {
+                    savedPlayers = JSON.parse(sessionStorage.getItem('speedoku_lobby_players') || '[]');
+                } catch(e){}
+
+                if (savedPlayers && savedPlayers.length > 0) {
+                    savedPlayers.forEach(p => {
+                        matchRacers.push({
+                            id: p.id,
+                            name: p.name,
+                            color: p.color || '#3b82f6',
+                            isYou: p.id === currentMatchConfig.playerId,
+                            solved: 0,
+                            pct: 0,
+                            errors: 0,
+                            isFinished: false
+                        });
+                    });
+                } else {
+                    // Fallback multiplayer racers
+                    matchRacers.push({
+                        id: currentMatchConfig.playerId,
+                        name: currentMatchConfig.playerName,
+                        color: currentMatchConfig.playerColor,
+                        isYou: true,
+                        solved: 0,
+                        pct: 0,
+                        errors: 0,
+                        isFinished: false
+                    });
+                }
+            } else {
+                // Solo mode bots
+                matchRacers = [
+                    { id: 'p1', name: 'YOU', color: '#3b82f6', isYou: true, solved: 0, pct: 0, errors: 0, isFinished: false },
+                    { id: 'bot_alex', name: 'Alex_99', color: '#ec4899', isYou: false, solved: 0, pct: 0, errors: 0, isFinished: false },
+                    { id: 'bot_zen', name: 'ZenMaster', color: '#10b981', isYou: false, solved: 0, pct: 0, errors: 0, isFinished: false }
+                ];
+            }
+
+            renderRacersLanes();
+        }
+
+        function renderRacersLanes() {
+            if (!racersLanesContainer) return;
+            racersLanesContainer.innerHTML = '';
+
+            matchRacers.forEach((r, idx) => {
+                const row = document.createElement('div');
+                row.className = 'racer-row';
+                row.id = `racerRow_${r.id}`;
+                row.innerHTML = `
+                    <div class="racer-profile">
+                        <span class="racer-rank-badge ${idx === 0 ? 'rank-1' : ''}" id="badge_${r.id}">${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}</span>
+                        <span class="racer-name ${r.isYou ? 'is-you' : ''}">${r.name} ${r.isYou ? '(You)' : ''}</span>
+                    </div>
+                    <div class="lane-track">
+                        <div class="lane-progress-bar" id="bar_${r.id}" style="width: ${r.pct}%; background: ${r.color};">
+                            <svg class="racer-marker-pencil" viewBox="0 0 24 32">
+                                <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="${r.color}" stroke="#000" stroke-width="1.5"/>
+                                <polygon points="12 30 8 24 16 24" fill="#1e293b"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="racer-pct" id="pct_${r.id}">${r.pct}%</div>
+                `;
+                racersLanesContainer.appendChild(row);
+            });
+        }
+
+        function updateRacersDOM() {
+            matchRacers.forEach(r => {
+                const bar = document.getElementById(`bar_${r.id}`);
+                const pctEl = document.getElementById(`pct_${r.id}`);
+                if (bar) bar.style.width = `${r.pct}%`;
+                if (pctEl) pctEl.textContent = `${r.pct}%`;
+            });
+
+            // Sort by finished first, then highest %
+            const sorted = [...matchRacers].sort((a, b) => {
+                if (a.isFinished && !b.isFinished) return -1;
+                if (!a.isFinished && b.isFinished) return 1;
+                return b.pct - a.pct;
+            });
+
+            sorted.forEach((r, idx) => {
+                const badge = document.getElementById(`badge_${r.id}`);
+                if (badge) {
+                    badge.textContent = `${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}`;
+                    badge.className = `racer-rank-badge ${idx === 0 ? 'rank-1' : ''}`;
+                }
+            });
+
+            const youRank = sorted.findIndex(r => r.isYou) + 1;
+            const leadStatusEl = document.getElementById('raceLeadStatus');
+            if (leadStatusEl && !isGameFinished) {
+                if (youRank === 1) {
+                    leadStatusEl.textContent = '✍ You are holding 1st place!';
+                    leadStatusEl.style.color = 'var(--ink-note)';
+                } else if (youRank === 2) {
+                    leadStatusEl.textContent = '⚡ 2nd place — closing the gap!';
+                    leadStatusEl.style.color = '#3b82f6';
+                } else {
+                    leadStatusEl.textContent = `⚠ ${youRank}th place — speed up deduction!`;
+                    leadStatusEl.style.color = '#ef4444';
+                }
+            }
+        }
+
+        function initMatch() {
+            matchPRNG = createSeededRandom(currentMatchConfig.seed);
+            gameData = generateValidSudoku(activeClueCount, matchPRNG);
+            boardState = gameData.puzzle.map(row => [...row]);
+            notesState = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
+            selectedCell = { row: 0, col: 0 };
+            isGameFinished = false;
+            errorCount = 0;
+            totalPlacements = 0;
+            penaltySeconds = 0;
+            startTime = Date.now();
+
+            totalEmptyCells = 0;
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (gameData.puzzle[r][c] === 0) totalEmptyCells++;
+                }
+            }
+
+            initRacers();
+            renderBoard();
+            updateStatsAndProgress();
+            startTimer();
+        }
+
+        function renderBoard() {
+            sudokuGrid.innerHTML = '';
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sudoku-cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+
+                    const val = boardState[r][c];
+                    const isClue = gameData.puzzle[r][c] !== 0;
+
+                    if (isClue) {
+                        cell.classList.add('clue');
+                        cell.textContent = val;
+                    } else if (val !== 0) {
+                        cell.classList.add('solved-p1');
+                        cell.textContent = val;
+                    } else {
+                        // Render pencil notes grid
+                        const notesGrid = document.createElement('div');
+                        notesGrid.className = 'pencil-notes-grid';
+                        for (let n = 1; n <= 9; n++) {
+                            const nEl = document.createElement('span');
+                            nEl.className = 'pencil-note-num';
+                            if (notesState[r][c].has(n)) {
+                                nEl.textContent = n;
+                            }
+                            notesGrid.appendChild(nEl);
+                        }
+                        cell.appendChild(notesGrid);
+                    }
+
+                    cell.addEventListener('click', () => {
+                        selectCell(r, c);
+                        sound.init();
+                    });
+
+                    sudokuGrid.appendChild(cell);
+                }
+            }
+
+            highlightActiveCells();
+            updateNumpadBadges();
+        }
+
+        function selectCell(r, c) {
+            selectedCell = { row: r, col: c };
+            highlightActiveCells();
+        }
+
+        function highlightActiveCells() {
+            const cells = document.querySelectorAll('.sudoku-cell');
+            const activeVal = boardState[selectedCell.row][selectedCell.col];
+
+            cells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                cell.classList.remove('selected', 'related', 'match-number');
+
+                if (r === selectedCell.row && c === selectedCell.col) {
+                    cell.classList.add('selected');
+                } else if (
+                    r === selectedCell.row || 
+                    c === selectedCell.col || 
+                    (Math.floor(r / 3) === Math.floor(selectedCell.row / 3) && Math.floor(c / 3) === Math.floor(selectedCell.col / 3))
+                ) {
+                    cell.classList.add('related');
+                }
+
+                if (activeVal !== 0 && boardState[r][c] === activeVal) {
+                    cell.classList.add('match-number');
+                }
+            });
+        }
+
+        /* ---------------------------------------------------- */
+        /* 6. INPUT DISPATCHER & NUMBER PLACEMENT               */
+        /* ---------------------------------------------------- */
+        function enterDigit(digit, forceNote = false) {
+            const { row, col } = selectedCell;
+            if (gameData.puzzle[row][col] !== 0) return;
+
+            // Pencil Mode: Toggle candidate
+            if (isPencilMode || forceNote) {
+                const notes = notesState[row][col];
+                if (notes.has(digit)) {
+                    notes.delete(digit);
+                } else {
+                    notes.add(digit);
+                }
+                boardState[row][col] = 0;
+                sound.playPencil();
+                renderBoard();
+                return;
+            }
+
+            // Pen Mode: Place Digit
+            totalPlacements++;
+            const correctVal = gameData.solution[row][col];
+
+            if (digit === correctVal) {
+                // Valid Placement
+                const wasEmpty = (boardState[row][col] === 0);
+                boardState[row][col] = digit;
+                notesState[row][col].clear();
+                if (wasEmpty) p1Solved++;
+
+                sound.playPencil();
+                renderBoard();
+                updateStatsAndProgress();
+                checkVictory();
+            } else {
+                // Error Placement
+                errorCount++;
+                penaltySeconds += 3; // +3s penalty
+                sound.playError();
+
+                const cell = document.querySelector(`.sudoku-cell[data-row="${row}"][data-col="${col}"]`);
+                if (cell) {
+                    cell.classList.add('error');
+                    setTimeout(() => cell.classList.remove('error'), 450);
+                }
+                updateStatsAndProgress();
+            }
+        }
+
+        function eraseCurrentCell() {
+            const { row, col } = selectedCell;
+            if (gameData.puzzle[row][col] !== 0) return;
+
+            if (boardState[row][col] !== 0) {
+                boardState[row][col] = 0;
+                p1Solved = Math.max(0, p1Solved - 1);
+            }
+            notesState[row][col].clear();
+            sound.playPencil();
+            renderBoard();
+            updateStatsAndProgress();
+        }
+
+        function useMentalBlockHint() {
+            sound.init();
+            const { row, col } = selectedCell;
+            if (gameData.puzzle[row][col] !== 0) return;
+
+            // Instantly reveal cell with +10s penalty
+            penaltySeconds += 10;
+            boardState[row][col] = gameData.solution[row][col];
+            notesState[row][col].clear();
+            p1Solved++;
+            sound.playPowerup();
+            renderBoard();
+            updateStatsAndProgress();
+            checkVictory();
+        }
+
+        /* ---------------------------------------------------- */
+        /* 7. NUMPAD DIGIT COUNTS & COMPLETION BADGES           */
+        /* ---------------------------------------------------- */
+        function updateNumpadBadges() {
+            const counts = Array(10).fill(0);
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const v = boardState[r][c];
+                    if (v >= 1 && v <= 9) counts[v]++;
+                }
+            }
+
+            for (let d = 1; d <= 9; d++) {
+                const btn = document.querySelector(`.numpad-btn[data-digit="${d}"]`);
+                if (btn) {
+                    if (counts[d] >= 9) btn.classList.add('completed');
+                    else btn.classList.remove('completed');
+                }
+            }
+        }
+
+        /* ---------------------------------------------------- */
+        /* 8. LIVE RACERS & STATS UPDATE                        */
+        /* ---------------------------------------------------- */
+        function updateStatsAndProgress() {
+            // Solved ratio
+            let currentFilled = 0;
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (boardState[r][c] !== 0) currentFilled++;
+                }
+            }
+            solvedRatio.textContent = `${currentFilled}/81`;
+            penaltyDisplay.textContent = `+${penaltySeconds}s`;
+
+            // Telemetry updates
+            mistakeCountVal.textContent = errorCount;
+            const accuracy = totalPlacements > 0 
+                ? Math.round(((totalPlacements - errorCount) / totalPlacements) * 100)
+                : 100;
+            accuracyVal.textContent = `${Math.max(0, accuracy)}%`;
+
+            const elapsedSec = (Date.now() - startTime) / 1000;
+            const pace = p1Solved > 0 ? (elapsedSec / p1Solved).toFixed(1) : '--';
+            solvingPaceVal.textContent = pace === '--' ? pace : `${pace}s/cell`;
+
+            // Update local player in matchRacers
+            const p1Pct = totalEmptyCells > 0 ? Math.min(100, Math.round((p1Solved / totalEmptyCells) * 100)) : 0;
+            const youRacer = matchRacers.find(r => r.isYou);
+            if (youRacer) {
+                youRacer.solved = p1Solved;
+                youRacer.pct = p1Pct;
+                youRacer.errors = errorCount;
+            }
+
+            updateRacersDOM();
+
+            // Broadcast real-time progress to room peers
+            if (isMultiplayer) {
+                broadcastMatchPacket({
+                    type: 'PROGRESS_UPDATE',
+                    roomId: currentMatchConfig.room,
+                    playerId: currentMatchConfig.playerId,
+                    playerName: currentMatchConfig.playerName,
+                    playerColor: currentMatchConfig.playerColor,
+                    solvedCount: p1Solved,
+                    totalEmpty: totalEmptyCells,
+                    pct: p1Pct,
+                    errorCount: errorCount,
+                    penaltySeconds: penaltySeconds,
+                    isFinished: isGameFinished
+                });
+            }
+        }
+
+        // Live Bot Solving Pace simulation (Only in Solo / Practice Alone mode)
+        if (!isMultiplayer) {
+            setInterval(() => {
+                if (isGameFinished) return;
+                const alex = matchRacers.find(r => r.id === 'bot_alex');
+                const zen = matchRacers.find(r => r.id === 'bot_zen');
+
+                if (alex && Math.random() < 0.35 && alex.solved < totalEmptyCells) {
+                    alex.solved++;
+                    alex.pct = Math.round((alex.solved / totalEmptyCells) * 100);
+                }
+                if (zen && Math.random() < 0.28 && zen.solved < totalEmptyCells) {
+                    zen.solved++;
+                    zen.pct = Math.round((zen.solved / totalEmptyCells) * 100);
+                }
+                updateRacersDOM();
+            }, 1600);
+        }
+
+        /* ---------------------------------------------------- */
+        /* 9. TIMER & VICTORY CHECK                             */
+        /* ---------------------------------------------------- */
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (isGameFinished) return;
+
+                if (isCountdownMode) {
+                    // Countdown mode: count down to 0
+                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    const remainingMs = Math.max(0, countdownDuration - elapsedMs);
+                    const totalSec = Math.floor(remainingMs / 1000);
+                    const mins = Math.floor(totalSec / 60);
+                    const secs = totalSec % 60;
+                    const ms = Math.floor((remainingMs % 1000) / 10);
+
+                    timeMinutes.textContent = String(mins).padStart(2, '0');
+                    timeSeconds.textContent = String(secs).padStart(2, '0');
+                    timeMillis.textContent = `.${String(ms).padStart(2, '0')}`;
+
+                    if (remainingMs <= 0) {
+                        handleTimeExpired();
+                    }
+                } else {
+                    // Sprint mode: count up
+                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    const totalSec = Math.floor(elapsedMs / 1000);
+                    const mins = Math.floor(totalSec / 60);
+                    const secs = totalSec % 60;
+                    const ms = Math.floor((elapsedMs % 1000) / 10);
+
+                    timeMinutes.textContent = String(mins).padStart(2, '0');
+                    timeSeconds.textContent = String(secs).padStart(2, '0');
+                    timeMillis.textContent = `.${String(ms).padStart(2, '0')}`;
+                }
+            }, 50);
+        }
+
+        function handleTimeExpired() {
+            isGameFinished = true;
+            clearInterval(timerInterval);
+            sound.playError();
+
+            document.getElementById('modalIcon').textContent = '⌛';
+            document.getElementById('modalTitle').textContent = 'TIME EXPIRED!';
+            document.getElementById('modalSubtitle').textContent = 'The countdown clock reached zero before grid completion.';
+            document.getElementById('vRawTime').textContent = '00:00.00';
+            document.getElementById('vPenalties').textContent = `+${penaltySeconds}s`;
+            document.getElementById('vRank').textContent = 'DNF';
+            victoryModal.classList.add('show');
+        }
+
+        function checkVictory() {
+            let isComplete = true;
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (boardState[r][c] !== gameData.solution[r][c]) {
+                        isComplete = false;
+                        break;
+                    }
+                }
+                if (!isComplete) break;
+            }
+
+            if (isComplete) {
+                isGameFinished = true;
+                clearInterval(timerInterval);
+                sound.playVictory();
+
+                const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                const totalSec = Math.floor(elapsedMs / 1000);
+                const mins = Math.floor(totalSec / 60);
+                const secs = totalSec % 60;
+                const ms = Math.floor((elapsedMs % 1000) / 10);
+                const finalFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+
+                if (!finishOrder.includes(currentMatchConfig.playerId)) {
+                    finishOrder.push(currentMatchConfig.playerId);
+                }
+                const myRank = finishOrder.indexOf(currentMatchConfig.playerId) + 1;
+                const rankText = myRank === 1 ? '1st Place 🏆' : myRank === 2 ? '2nd Place 🥈' : myRank === 3 ? '3rd Place 🥉' : `${myRank}th Place`;
+
+                // Broadcast finish to multiplayer room
+                if (isMultiplayer) {
+                    broadcastMatchPacket({
+                        type: 'PLAYER_FINISH',
+                        roomId: currentMatchConfig.room,
+                        playerId: currentMatchConfig.playerId,
+                        playerName: currentMatchConfig.playerName,
+                        finalTime: finalFormatted,
+                        rank: myRank
+                    });
+                }
+
+                document.getElementById('modalIcon').textContent = myRank === 1 ? '🏆' : '🏁';
+                document.getElementById('modalTitle').textContent = myRank === 1 ? 'VICTORY // 1ST PLACE!' : `MATCH FINISHED // ${rankText}!`;
+                document.getElementById('modalSubtitle').textContent = 'Sensational speed and logical deduction across the symmetrical grid.';
+                document.getElementById('vRawTime').textContent = finalFormatted;
+                document.getElementById('vPenalties').textContent = `+${penaltySeconds}s`;
+                document.getElementById('vRank').textContent = rankText;
+                victoryModal.classList.add('show');
+            }
+        }
+
+        // Initialize Multiplayer Engine on Page Load
+        initMultiplayerNetworking();
+
+        /* ---------------------------------------------------- */
+        /* 10. CONTROLS, KEYBOARD & BUTTON EVENT LISTENERS     */
+        /* ---------------------------------------------------- */
+        // Pen / Pencil Mode Toggle
+        penModeBtn.addEventListener('click', () => {
+            sound.init();
+            isPencilMode = false;
+            penModeBtn.classList.add('active');
+            pencilModeBtn.classList.remove('active');
+        });
+
+        pencilModeBtn.addEventListener('click', () => {
+            sound.init();
+            isPencilMode = true;
+            pencilModeBtn.classList.add('active');
+            penModeBtn.classList.remove('active');
+        });
+
+        // Numpad button clicks
+        document.querySelectorAll('.numpad-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                sound.init();
+                const d = parseInt(btn.dataset.digit);
+                enterDigit(d);
+            });
+        });
+
+        eraseBtn.addEventListener('click', () => {
+            sound.init();
+            eraseCurrentCell();
+        });
+
+        mentalHintBtn.addEventListener('click', useMentalBlockHint);
+
+        // Sound Toggle
+        soundToggleBtn.addEventListener('click', () => {
+            sound.init();
+            sound.enabled = !sound.enabled;
+            soundIcon.textContent = sound.enabled ? '🔊' : '🔇';
+        });
+
+        // Restart Match
+        restartMatchBtn.addEventListener('click', () => {
+            sound.init();
+            if (isMultiplayer && currentMatchConfig.isHost) {
+                const newSeed = Math.floor(Math.random() * 1000000);
+                currentMatchConfig.seed = newSeed;
+                broadcastMatchPacket({
+                    type: 'REMATCH',
+                    roomId: currentMatchConfig.room,
+                    newSeed: newSeed
+                });
+            }
+            initMatch();
+        });
+
+        modalPlayAgainBtn.addEventListener('click', () => {
+            victoryModal.classList.remove('show');
+            if (isMultiplayer && currentMatchConfig.isHost) {
+                const newSeed = Math.floor(Math.random() * 1000000);
+                currentMatchConfig.seed = newSeed;
+                broadcastMatchPacket({
+                    type: 'REMATCH',
+                    roomId: currentMatchConfig.room,
+                    newSeed: newSeed
+                });
+            }
+            initMatch();
+        });
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            sound.init();
+            if (isGameFinished) return;
+
+            // Extract digit from code (Digit1-9, Numpad1-9) or key (1-9)
+            let digit = null;
+            if (e.code && e.code.startsWith('Digit')) {
+                const parsed = parseInt(e.code.replace('Digit', ''));
+                if (parsed >= 1 && parsed <= 9) digit = parsed;
+            } else if (e.code && e.code.startsWith('Numpad')) {
+                const parsed = parseInt(e.code.replace('Numpad', ''));
+                if (parsed >= 1 && parsed <= 9) digit = parsed;
+            } else if (e.key >= '1' && e.key <= '9') {
+                digit = parseInt(e.key);
+            }
+
+            if (digit !== null) {
+                // If shift key is held, force pencil note insertion regardless of UI mode
+                if (e.shiftKey) {
+                    enterDigit(digit, true);
+                } else {
+                    enterDigit(digit, false);
+                }
+                e.preventDefault();
+            }
+            // Space: Toggle Pen/Pencil Mode
+            else if (e.key === ' ' || e.code === 'Space') {
+                isPencilMode = !isPencilMode;
+                if (isPencilMode) {
+                    pencilModeBtn.classList.add('active');
+                    penModeBtn.classList.remove('active');
+                } else {
+                    penModeBtn.classList.add('active');
+                    pencilModeBtn.classList.remove('active');
+                }
+                e.preventDefault();
+            }
+            // Erase / Backspace / Delete
+            else if (e.key === 'Backspace' || e.key === 'Delete') {
+                eraseCurrentCell();
+                e.preventDefault();
+            }
+            // Arrow Keys Navigation
+            else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                selectCell(Math.max(0, selectedCell.row - 1), selectedCell.col);
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                selectCell(Math.min(8, selectedCell.row + 1), selectedCell.col);
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                selectCell(selectedCell.row, Math.max(0, selectedCell.col - 1));
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                selectCell(selectedCell.row, Math.min(8, selectedCell.col + 1));
+                e.preventDefault();
+            } else if (e.key === 'h' || e.key === 'H') {
+                useMentalBlockHint();
+            }
+        });
+
+        /* ---------------------------------------------------- */
+        /* 11. THEME SWITCHER & PERSISTENCE                     */
+        /* ---------------------------------------------------- */
+        const paletteBurgerBtn = document.getElementById('paletteBurgerBtn');
+        const paletteDropdown = document.getElementById('paletteDropdown');
+        const themeItemBtns = document.querySelectorAll('.theme-item-btn');
+        const validThemes = [
+            'theme-nighttime',
+            'theme-stormy-sea',
+            'theme-matcha-cafe',
+            'theme-garden-walk',
+            'theme-daylight'
+        ];
+
+        paletteBurgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            paletteDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!paletteDropdown.contains(e.target) && !paletteBurgerBtn.contains(e.target)) {
+                paletteDropdown.classList.remove('show');
+            }
+        });
+
+        function switchTheme(themeName) {
+            validThemes.forEach(t => document.body.classList.remove(t));
+            document.body.classList.add(themeName);
+
+            themeItemBtns.forEach(btn => {
+                const checkEl = btn.querySelector('.check-mark');
+                if (btn.dataset.theme === themeName) {
+                    btn.classList.add('active');
+                    if (checkEl) checkEl.textContent = '✓';
+                } else {
+                    btn.classList.remove('active');
+                    if (checkEl) checkEl.textContent = '';
+                }
+            });
+
+            localStorage.setItem('speedoku_palette', themeName);
+        }
+
+        themeItemBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTheme(btn.dataset.theme);
+                paletteDropdown.classList.remove('show');
+            });
+        });
+
+        // Initialize Theme from localStorage or Default
+        const savedTheme = localStorage.getItem('speedoku_palette');
+        if (savedTheme && validThemes.includes(savedTheme)) {
+            switchTheme(savedTheme);
+        } else {
+            switchTheme('theme-daylight');
+        }
+
+        // Initialize Game
+        initMatch();
+    </script>
+</body>
+</html>

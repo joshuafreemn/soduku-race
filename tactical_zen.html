@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tactical // Zen Template</title>
+    <style>
+        :root {
+            --transition-speed: 0.3s;
+            --font-mono: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+            --font-hand: 'Caveat', 'Architects Daughter', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 1. NIGHTTIME (Dark Tactical) */
+        body.theme-nighttime {
+            --bg-color: #0e1114;
+            --surface-color: #15191e;
+            --border-color: #2b333c;
+            --text-primary: #e2e6eb;
+            --text-muted: #7b8896;
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.15);
+            --sketch-line: #3d4752;
+            --ink-note: #fbbf24;
+            --highlight-bg: rgba(245, 158, 11, 0.06);
+            --grid-major: rgba(255, 255, 255, 0.025);
+        }
+
+        /* 2. STORMY SEA */
+        /* Van Dyke: #493A35 | Cool Gray: #8185A4 | Desert Sand: #EAC8AF | Slate Gray: #758E90 | Charcoal: #203C49 */
+        body.theme-stormy-sea {
+            --bg-color: #1a2f3a;
+            --surface-color: #203C49;
+            --border-color: #758E90;
+            --text-primary: #f2ece6;
+            --text-muted: #9fa4c0;
+            --accent: #EAC8AF;
+            --accent-glow: rgba(234, 200, 175, 0.22);
+            --sketch-line: #493A35;
+            --ink-note: #EAC8AF;
+            --highlight-bg: rgba(234, 200, 175, 0.08);
+            --grid-major: rgba(129, 133, 164, 0.08);
+        }
+
+        /* 3. MATCHA CAFE */
+        /* Matcha Forest: #136733 | Whisked Matcha: #1A9646 | Strawberry Foam: #FFCAEB | Vanilla Cloud: #FFF2DE | Sweet Cream Base: #FFFFFF */
+        body.theme-matcha-cafe {
+            --bg-color: #FFF2DE;
+            --surface-color: #FFFFFF;
+            --border-color: #9cbda2;
+            --text-primary: #136733;
+            --text-muted: #3d6a4c;
+            --accent: #1A9646;
+            --accent-glow: rgba(26, 150, 70, 0.2);
+            --sketch-line: #d6ccbe;
+            --ink-note: #c4327a;
+            --highlight-bg: #FFCAEB;
+            --grid-major: rgba(19, 103, 51, 0.06);
+        }
+
+        /* 4. GARDEN WALK */
+        /* Cherry Blossom Pink: #EEDADA | Deep Bamboo Green: #36452B | Mossy Rock Green: #8A9646 | Weathered Wood Grey: #7F7D74 | Zen Sand Beige: #D7D0C5 */
+        body.theme-garden-walk {
+            --bg-color: #D7D0C5;
+            --surface-color: #e3dcd1;
+            --border-color: #7F7D74;
+            --text-primary: #36452B;
+            --text-muted: #5e6657;
+            --accent: #8A9646;
+            --accent-glow: rgba(138, 150, 70, 0.22);
+            --sketch-line: #b0a89b;
+            --ink-note: #36452B;
+            --highlight-bg: #EEDADA;
+            --grid-major: rgba(54, 69, 43, 0.06);
+        }
+
+        /* 5. DAYLIGHT (Light Tactical) */
+        body.theme-daylight {
+            --bg-color: #f7f6f0;
+            --surface-color: #eeebe1;
+            --border-color: #d2cabb;
+            --text-primary: #181d22;
+            --text-muted: #57626d;
+            --accent: #d97706;
+            --accent-glow: rgba(217, 119, 6, 0.2);
+            --sketch-line: #c8bfb0;
+            --ink-note: #b45309;
+            --highlight-bg: rgba(217, 119, 6, 0.08);
+            --grid-major: rgba(140, 130, 115, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed) ease, 
+                        border-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        stroke var(--transition-speed) ease,
+                        box-shadow var(--transition-speed) ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(var(--sketch-line) 0.85px, transparent 0.85px),
+                linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+            background-size: 20px 20px, 60px 60px, 60px 60px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.5rem;
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Tactical Header Grid */
+        header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            border-bottom: 2px dashed var(--sketch-line);
+            padding-bottom: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+        }
+
+        header .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .status-dot-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+        }
+
+        .status-dot-wrap svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        header .center-mark {
+            text-align: center;
+            color: var(--text-primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        header .header-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1.5rem;
+        }
+
+        header .coordinates {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Palette Switcher Bar */
+        .palette-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.65rem 1rem;
+            background: var(--surface-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 12px 225px 10px / 12px 225px 10px 255px;
+            width: fit-content;
+            box-shadow: 1px 2px 0px var(--border-color);
+        }
+
+        .palette-title {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-right: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .theme-btn {
+            background: transparent;
+            border: 1.5px solid transparent;
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.35rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .theme-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-color);
+            transform: translateY(-1px) rotate(-0.5deg);
+        }
+
+        .theme-btn.active {
+            color: var(--text-primary);
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            font-weight: 600;
+            box-shadow: 1px 2px 0px var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .swatch-group {
+            display: inline-flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .swatch-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 0.5px solid rgba(0,0,0,0.15);
+        }
+
+        /* Main Zen Layout */
+        main {
+            max-width: 780px;
+            margin: auto 0;
+            padding: 3.5rem 0;
+            position: relative;
+        }
+
+        /* Sketched Tactical Badge */
+        .hero-tag-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 0.35rem 0.85rem;
+            border: 1.8px solid var(--accent);
+            border-radius: 255px 12px 225px 10px / 12px 225px 10px 255px;
+            background: var(--highlight-bg);
+            display: inline-block;
+        }
+
+        .hand-annotation {
+            font-family: var(--font-hand);
+            color: var(--ink-note);
+            font-size: 1.15rem;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transform: rotate(-2deg);
+        }
+
+        h1 {
+            font-size: 2.85rem;
+            font-weight: 350;
+            line-height: 1.22;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            position: relative;
+        }
+
+        .highlight-wobble {
+            position: relative;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .highlight-wobble svg {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2.8;
+            stroke-linecap: round;
+            stroke-dasharray: 400;
+            stroke-dashoffset: 0;
+            pointer-events: none;
+        }
+
+        p {
+            font-size: 1.12rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 2.8rem;
+            max-width: 580px;
+        }
+
+        /* Minimal Interactive Elements */
+        .actions-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .btn-tactical {
+            background: var(--surface-color);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 0.95rem 2.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            outline: none;
+            box-shadow: 2px 3px 0px var(--border-color);
+        }
+
+        .btn-tactical:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--highlight-bg);
+            transform: scale(1.02) rotate(-0.7deg) translateY(-2px);
+            box-shadow: 4px 6px 0px var(--accent);
+        }
+
+        .btn-tactical:active {
+            transform: scale(0.98) translateY(1px);
+            box-shadow: 1px 1px 0px var(--accent);
+        }
+
+        .link-subtle {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .link-subtle:hover {
+            color: var(--text-primary);
+        }
+
+        .link-subtle:hover svg {
+            transform: translateX(5px);
+        }
+
+        .link-subtle svg {
+            transition: transform 0.2s ease;
+            stroke: currentColor;
+        }
+
+        /* Handwritten pointer note */
+        .action-note {
+            position: absolute;
+            left: 245px;
+            top: -26px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-hand);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--ink-note);
+            pointer-events: none;
+            user-select: none;
+            transform: rotate(3deg);
+        }
+
+        .action-note svg {
+            width: 36px;
+            height: 26px;
+            stroke: var(--ink-note);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+        }
+
+        /* Background Tactical Sketch Marks */
+        .sketch-doodle-bg {
+            position: absolute;
+            right: 2rem;
+            top: 22%;
+            width: 200px;
+            height: 200px;
+            opacity: 0.22;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .corner-crosshair {
+            position: absolute;
+            stroke: var(--sketch-line);
+            fill: none;
+            stroke-width: 1.4;
+            pointer-events: none;
+        }
+
+        .crosshair-tl { top: 1.5rem; left: 1.5rem; }
+        .crosshair-tr { top: 1.5rem; right: 1.5rem; }
+        .crosshair-bl { bottom: 1.5rem; left: 1.5rem; }
+        .crosshair-br { bottom: 1.5rem; right: 1.5rem; }
+
+        /* Footer Telemetry */
+        footer {
+            border-top: 2px dashed var(--sketch-line);
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-note {
+            font-family: var(--font-hand);
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            text-transform: none;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            body {
+                padding: 1.5rem;
+            }
+            header {
+                grid-template-columns: 1fr;
+                gap: 0.85rem;
+                text-align: left;
+            }
+            header .header-right {
+                justify-content: space-between;
+            }
+            .palette-bar {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .action-note {
+                display: none;
+            }
+            .sketch-doodle-bg {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="theme-nighttime">
+
+    <!-- Corner registration marks -->
+    <svg class="corner-crosshair crosshair-tl" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-tr" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-bl" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-br" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+
+    <!-- Tactical Header -->
+    <header>
+        <div class="status-indicator">
+            <div class="status-dot-wrap">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" stroke-dasharray="3 2" />
+                    <path d="M12,2 C17.5,2.5 21.5,6.5 22,12 C21.8,17.2 17.5,21.8 12,22 C6.2,21.5 2.2,17.2 2,12 C2.3,6.8 6.5,2.3 12,2" />
+                </svg>
+                <span class="status-dot"></span>
+            </div>
+            <span>System Active</span>
+        </div>
+
+        <div class="center-mark">
+            <span>Sec. 01 // Void</span>
+            <span style="font-family: var(--font-hand); color: var(--ink-note); font-size: 0.95rem; font-weight: bold; text-transform: lowercase;">(rev. 7)</span>
+        </div>
+
+        <div class="header-right">
+            <div class="coordinates">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="4 2"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12,2 L12,6 M12,18 L12,22 M2,12 L6,12 M18,12 L22,12"/>
+                </svg>
+                <span>LAT 51.5074° N // LON 0.1278° W</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tactical Theme Palette Switcher -->
+    <div class="palette-bar">
+        <span class="palette-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"/>
+            </svg>
+            Palette:
+        </span>
+
+        <!-- 1. Nighttime -->
+        <button class="theme-btn active" data-theme="theme-nighttime">
+            <span class="swatch-group">
+                <span class="swatch-dot" style="background: #0e1114;"></span>
+                <span class="swatch-dot" style="background: #f59e0b;"></span>
+                <span class="swatch-dot" style="background: #7b8896;"></span>
+            </span>
+            Nighttime
+        </button>
+
+        <!-- 2. Stormy Sea -->
+        <button class="theme-btn" data-theme="theme-stormy-sea">
+            <span class="swatch-group">
+                <span class="swatch-dot" style="background: #203C49;"></span>
+                <span class="swatch-dot" style="background: #758E90;"></span>
+                <span class="swatch-dot" style="background: #EAC8AF;"></span>
+                <span class="swatch-dot" style="background: #8185A4;"></span>
+            </span>
+            Stormy Sea
+        </button>
+
+        <!-- 3. Matcha Cafe -->
+        <button class="theme-btn" data-theme="theme-matcha-cafe">
+            <span class="swatch-group">
+                <span class="swatch-dot" style="background: #FFF2DE;"></span>
+                <span class="swatch-dot" style="background: #136733;"></span>
+                <span class="swatch-dot" style="background: #1A9646;"></span>
+                <span class="swatch-dot" style="background: #FFCAEB;"></span>
+            </span>
+            Matcha Cafe
+        </button>
+
+        <!-- 4. Garden Walk -->
+        <button class="theme-btn" data-theme="theme-garden-walk">
+            <span class="swatch-group">
+                <span class="swatch-dot" style="background: #D7D0C5;"></span>
+                <span class="swatch-dot" style="background: #36452B;"></span>
+                <span class="swatch-dot" style="background: #8A9646;"></span>
+                <span class="swatch-dot" style="background: #EEDADA;"></span>
+            </span>
+            Garden Walk
+        </button>
+
+        <!-- 5. Daylight -->
+        <button class="theme-btn" data-theme="theme-daylight">
+            <span class="swatch-group">
+                <span class="swatch-dot" style="background: #f7f6f0;"></span>
+                <span class="swatch-dot" style="background: #d97706;"></span>
+                <span class="swatch-dot" style="background: #181d22;"></span>
+            </span>
+            Daylight
+        </button>
+    </div>
+
+    <!-- Sketched Blueprint Graphic in Background -->
+    <svg class="sketch-doodle-bg" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+        <circle cx="50" cy="50" r="45" stroke-dasharray="4 3" stroke-width="1.2" />
+        <circle cx="50" cy="50" r="30" stroke-width="0.8" />
+        <circle cx="50" cy="50" r="15" stroke-dasharray="2 2" stroke-width="0.8" />
+        <path d="M5,50 L95,50 M50,5 L50,95" stroke-width="0.8" stroke-dasharray="6 3" />
+        <path d="M22,22 L78,78 M22,78 L78,22" stroke-width="0.5" stroke-dasharray="3 3" />
+        <!-- Hand scribble quadrant mark -->
+        <path d="M52,48 Q58,36 64,48 T76,46" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+
+    <!-- Main Content Area -->
+    <main>
+        <div class="hero-tag-container">
+            <span class="hero-tag">[ Direct Observation ]</span>
+            <span class="hand-annotation">✎ verified field-ready</span>
+        </div>
+        
+        <h1>
+            Utilitarian precision meets 
+            <span class="highlight-wobble">
+                meditative stillness.
+                <!-- Hand-drawn squiggly underline -->
+                <svg viewBox="0 0 260 12" preserveAspectRatio="none">
+                    <path d="M3,8 C45,2 85,11 130,5 C175,0 215,9 257,4" />
+                </svg>
+            </span>
+        </h1>
+        
+        <p>Strip away the noise. What remains is pure structure, absolute clarity, and absolute focus. Designed for high-stakes environments that require absolute calm.</p>
+        
+        <div class="actions-wrap">
+            <button class="btn-tactical">Initialize Sequence</button>
+            
+            <div class="action-note">
+                <svg viewBox="0 0 36 24">
+                    <path d="M32,3 C20,2 10,10 4,20 M4,20 L10,17 M4,20 L6,13"/>
+                </svg>
+                <span>ready when you are</span>
+            </div>
+
+            <a href="#" class="link-subtle">
+                <span>Parameters</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div>Telemetry: Stable <span class="footer-note">— zero drift detected</span></div>
+        <div>Build 2026.03 // Zen-Tac <span style="color: var(--accent);">★</span></div>
+    </footer>
+
+    <script>
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const validThemes = [
+            'theme-nighttime',
+            'theme-stormy-sea',
+            'theme-matcha-cafe',
+            'theme-garden-walk',
+            'theme-daylight'
+        ];
+
+        function switchTheme(themeName) {
+            // Remove previous theme classes
+            validThemes.forEach(t => document.body.classList.remove(t));
+            
+            // Add new theme class
+            document.body.classList.add(themeName);
+
+            // Update button active state
+            themeButtons.forEach(btn => {
+                if (btn.dataset.theme === themeName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            localStorage.setItem('zen_tactical_palette', themeName);
+        }
+
+        // Attach click events
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTheme(btn.dataset.theme);
+            });
+        });
+
+        // Initialize from saved preference or default to Nighttime
+        const saved = localStorage.getItem('zen_tactical_palette');
+        if (saved && validThemes.includes(saved)) {
+            switchTheme(saved);
+        } else {
+            switchTheme('theme-nighttime');
+        }
+    </script>
+</body>
+</html>

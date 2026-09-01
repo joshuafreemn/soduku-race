@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPEEDOKU // Match Setup</title>
+    <!-- Google Fonts & PeerJS WebRTC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --transition-speed: 0.3s;
+            --font-mono: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+            --font-hand: 'Caveat', 'Architects Daughter', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 1. NIGHTTIME (Dark Tactical) */
+        body.theme-nighttime {
+            --bg-color: #0e1114;
+            --surface-color: #15191e;
+            --surface-card: #181d22;
+            --border-color: #2b333c;
+            --text-primary: #e2e6eb;
+            --text-muted: #7b8896;
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.18);
+            --sketch-line: #3d4752;
+            --ink-note: #fbbf24;
+            --highlight-bg: rgba(245, 158, 11, 0.08);
+            --grid-major: rgba(255, 255, 255, 0.025);
+            --track-bg: #242b33;
+        }
+
+        /* 2. STORMY SEA */
+        body.theme-stormy-sea {
+            --bg-color: #1a2f3a;
+            --surface-color: #203C49;
+            --surface-card: #254452;
+            --border-color: #758E90;
+            --text-primary: #f2ece6;
+            --text-muted: #9fa4c0;
+            --accent: #EAC8AF;
+            --accent-glow: rgba(234, 200, 175, 0.22);
+            --sketch-line: #493A35;
+            --ink-note: #EAC8AF;
+            --highlight-bg: rgba(234, 200, 175, 0.1);
+            --grid-major: rgba(129, 133, 164, 0.08);
+            --track-bg: #304e5d;
+        }
+
+        /* 3. MATCHA CAFE */
+        body.theme-matcha-cafe {
+            --bg-color: #FFF2DE;
+            --surface-color: #FFFFFF;
+            --surface-card: #FAF6EE;
+            --border-color: #9cbda2;
+            --text-primary: #136733;
+            --text-muted: #3d6a4c;
+            --accent: #1A9646;
+            --accent-glow: rgba(26, 150, 70, 0.2);
+            --sketch-line: #d6ccbe;
+            --ink-note: #c4327a;
+            --highlight-bg: #FFCAEB;
+            --grid-major: rgba(19, 103, 51, 0.06);
+            --track-bg: #e2e8dc;
+        }
+
+        /* 4. GARDEN WALK */
+        body.theme-garden-walk {
+            --bg-color: #D7D0C5;
+            --surface-color: #e3dcd1;
+            --surface-card: #eae4da;
+            --border-color: #7F7D74;
+            --text-primary: #36452B;
+            --text-muted: #5e6657;
+            --accent: #8A9646;
+            --accent-glow: rgba(138, 150, 70, 0.22);
+            --sketch-line: #b0a89b;
+            --ink-note: #36452B;
+            --highlight-bg: #EEDADA;
+            --grid-major: rgba(54, 69, 43, 0.06);
+            --track-bg: #c5bcb0;
+        }
+
+        /* 5. DAYLIGHT (Default Light) */
+        body.theme-daylight {
+            --bg-color: #f7f6f0;
+            --surface-color: #eeebe1;
+            --surface-card: #f4f1e8;
+            --border-color: #d2cabb;
+            --text-primary: #181d22;
+            --text-muted: #57626d;
+            --accent: #d97706;
+            --accent-glow: rgba(217, 119, 6, 0.2);
+            --sketch-line: #c8bfb0;
+            --ink-note: #b45309;
+            --highlight-bg: rgba(217, 119, 6, 0.08);
+            --grid-major: rgba(140, 130, 115, 0.08);
+            --track-bg: #ded7cb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed) ease, 
+                        border-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        stroke var(--transition-speed) ease,
+                        box-shadow var(--transition-speed) ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(var(--sketch-line) 0.85px, transparent 0.85px),
+                linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+            background-size: 20px 20px, 60px 60px, 60px 60px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.2rem 3.5rem;
+            letter-spacing: -0.01em;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Header: Brand & Palette Burger Menu */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed var(--sketch-line);
+            padding-bottom: 1.25rem;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .logo-box {
+            border: 2px solid var(--accent);
+            padding: 0.25rem 0.85rem;
+            border-radius: 255px 12px 225px 10px / 10px 225px 10px 255px;
+            color: var(--accent);
+            background: var(--highlight-bg);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: 0.15em;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .brand-subtitle {
+            font-family: var(--font-hand);
+            font-size: 1.15rem;
+            color: var(--ink-note);
+            font-weight: bold;
+            transform: rotate(-2deg);
+            user-select: none;
+        }
+
+        /* Palette Burger Menu Dropdown */
+        .palette-menu-wrap {
+            position: relative;
+        }
+
+        .palette-burger-btn {
+            background: var(--surface-color);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.5rem 0.9rem;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            outline: none;
+            box-shadow: 2px 2px 0px var(--border-color);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .palette-burger-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 3px 4px 0px var(--accent);
+        }
+
+        .palette-burger-btn.active {
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            box-shadow: 1px 2px 0px var(--accent);
+        }
+
+        .burger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 3.5px;
+            width: 16px;
+        }
+
+        .burger-icon span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: var(--accent);
+            border-radius: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .active-swatch-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 1px solid var(--text-primary);
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        /* Dropdown Popover */
+        .palette-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 0.85rem;
+            min-width: 220px;
+            box-shadow: 4px 6px 0px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            gap: 0.4rem;
+            z-index: 1000;
+            animation: dropdownFadeIn 0.2s ease;
+        }
+
+        .palette-dropdown.show {
+            display: flex;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-title {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 0.2rem 0.5rem 0.4rem 0.5rem;
+            border-bottom: 1px dashed var(--sketch-line);
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-item-btn {
+            background: var(--surface-card);
+            border: 1.5px solid transparent;
+            border-radius: 255px 8px 225px 7px / 7px 225px 7px 255px;
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .theme-item-btn:hover {
+            border-color: var(--accent);
+            transform: translateX(2px);
+            background: var(--highlight-bg);
+        }
+
+        .theme-item-btn.active {
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .theme-info {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .swatch-group {
+            display: inline-flex;
+            gap: 2.5px;
+            align-items: center;
+        }
+
+        .swatch-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 0.5px solid rgba(0,0,0,0.15);
+        }
+
+        /* Setup Container */
+        main {
+            max-width: 820px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2.2rem 0 2.5rem 0;
+            position: relative;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .page-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 350;
+            line-height: 1.2;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-wobble {
+            position: relative;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .highlight-wobble svg {
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+
+        /* Step Section Blocks */
+        .setup-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 18px 225px 15px / 15px 225px 15px 255px;
+            padding: 2.2rem;
+            box-shadow: 4px 6px 0px var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .step-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .step-label {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+        }
+
+        .step-annotation {
+            font-family: var(--font-hand);
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--ink-note);
+            user-select: none;
+            transform: rotate(-1.5deg);
+        }
+
+        /* Interactive Choice Buttons Row */
+        .options-row {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .option-btn {
+            background: var(--surface-card);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 12px 225px 10px / 10px 225px 10px 255px;
+            padding: 0.85rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 0.3rem;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--accent);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 2px 3px 0px var(--border-color);
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            color: var(--accent);
+            font-weight: 700;
+            box-shadow: 2px 4px 0px var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-family: var(--font-sans);
+        }
+
+        .option-desc {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .option-btn.selected .option-desc {
+            color: var(--text-primary);
+        }
+
+        /* ---------------------------------------------------- */
+        /* DISABLED / COMING SOON BADGE STYLES                  */
+        /* ---------------------------------------------------- */
+        .option-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--surface-color);
+            border-style: dashed;
+            box-shadow: none;
+            filter: grayscale(0.3);
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: var(--surface-card);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            font-size: 0.56rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            padding: 0.15rem 0.45rem;
+            border-radius: 255px 5px 225px 4px / 4px 225px 4px 255px;
+            box-shadow: 1px 1px 0px var(--border-color);
+            text-transform: uppercase;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .option-btn.disabled .option-desc {
+            font-style: italic;
+        }
+
+        /* ---------------------------------------------------- */
+        /* MULTIPLAYER ROOM HUB STYLES                          */
+        /* ---------------------------------------------------- */
+        .multiplayer-room-hub {
+            margin-top: 1rem;
+            background: var(--surface-card);
+            border: 2px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 2px 3px 0px var(--border-color);
+            animation: dropdownFadeIn 0.2s ease;
+        }
+
+        .room-action-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--surface-color);
+            padding: 0.35rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+        }
+
+        .room-tab-btn {
+            flex: 1;
+            background: transparent;
+            border: 1.5px solid transparent;
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            padding: 0.55rem 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: all 0.18s ease;
+        }
+
+        .room-tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .room-tab-btn.active {
+            background: var(--highlight-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 1px 2px 0px var(--accent);
+        }
+
+        .room-card-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .room-card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .room-code-card, .room-join-input-card, .player-identity-card {
+            background: var(--surface-color);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.85rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .room-code-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .room-code-display-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .room-code-val {
+            font-family: var(--font-mono);
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            background: var(--highlight-bg);
+            border: 1.5px dashed var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+        }
+
+        .room-btn-icon, .btn-room-action {
+            background: var(--surface-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            padding: 0.45rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.18s ease;
+        }
+
+        .room-btn-icon:hover, .btn-room-action:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 2px 2px 0px var(--accent);
+        }
+
+        .btn-room-action {
+            background: var(--accent);
+            color: #0e1114;
+            border-color: var(--accent);
+            font-weight: 800;
+            padding: 0.55rem 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .room-share-hint {
+            font-family: var(--font-hand);
+            font-size: 1rem;
+            color: var(--ink-note);
+            line-height: 1.2;
+        }
+
+        .id-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .id-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .tactical-input {
+            background: var(--surface-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            padding: 0.45rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .tactical-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .room-code-input {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 1.05rem;
+            flex: 1;
+        }
+
+        .room-join-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .room-join-status {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-muted);
+        }
+
+        .color-swatches {
+            display: flex;
+            gap: 0.45rem;
+            align-items: center;
+        }
+
+        .color-swatch-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.15s ease;
+        }
+
+        .color-swatch-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .color-swatch-btn.active {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--accent);
+            transform: scale(1.15);
+        }
+
+        /* Roster Box */
+        .roster-box {
+            background: var(--surface-color);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 10px 225px 8px / 8px 225px 8px 255px;
+            padding: 0.85rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .roster-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .roster-title {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .roster-count {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .roster-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .roster-player-chip {
+            background: var(--surface-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            padding: 0.4rem 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        .roster-player-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .roster-player-tag {
+            font-size: 0.6rem;
+            padding: 0.05rem 0.3rem;
+            border-radius: 3px;
+            background: var(--highlight-bg);
+            color: var(--accent);
+            font-weight: 800;
+            margin-left: auto;
+        }
+
+        .guest-waiting-banner {
+            font-family: var(--font-hand);
+            font-size: 1.1rem;
+            color: var(--ink-note);
+            text-align: center;
+            padding-top: 0.25rem;
+        }
+
+        /* ---------------------------------------------------- */
+        /* PERFECTLY ALIGNED TACTICAL DISCRETE SLIDER           */
+        /* ---------------------------------------------------- */
+        .slider-wrapper {
+            background: var(--surface-card);
+            border: 1.8px solid var(--border-color);
+            border-radius: 255px 14px 225px 12px / 12px 225px 12px 255px;
+            padding: 1.75rem 3.5rem 1.4rem 3.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        /* Slider Track Container */
+        .slider-track-area {
+            position: relative;
+            width: 100%;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Physical Base Track */
+        .slider-track-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--track-bg);
+            border: 1.5px solid var(--border-color);
+            border-radius: 255px 6px 225px 5px / 5px 225px 5px 255px;
+            position: relative;
+        }
+
+        /* Active Fill Accent Bar */
+        .slider-track-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0.35;
+            border-radius: 255px 4px 225px 3px / 3px 225px 3px 255px;
+            transition: width 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Sliding Thumb Knob - Anchored at 5%, 27.5%, 50%, 72.5%, 95% */
+        .slider-thumb-knob {
+            position: absolute;
+            top: 50%;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border: 2px solid var(--text-primary);
+            border-radius: 255px 8px 225px 7px / 7px 225px 7px 255px;
+            box-shadow: 2px 3px 0px rgba(0,0,0,0.3);
+            transform: translate(-50%, -50%);
+            transition: left 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.15s ease;
+            z-index: 10;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-thumb-knob:hover {
+            transform: translate(-50%, -50%) scale(1.15) rotate(-2deg);
+        }
+
+        .slider-thumb-knob:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .thumb-grip-line {
+            width: 8px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 1px;
+            opacity: 0.7;
+        }
+
+        /* Labels & Ticks Container */
+        .slider-points-container {
+            position: relative;
+            width: 100%;
+            height: 48px;
+        }
+
+        /* Individual Calibration Point */
+        .slider-point {
+            position: absolute;
+            top: 0;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .point-tick {
+            width: 2px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .point-label {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.25rem 0.55rem;
+            border-radius: 255px 8px 225px 6px / 6px 225px 6px 255px;
+            border: 1.5px solid transparent;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .slider-point:hover .point-label {
+            color: var(--text-primary);
+        }
+
+        .slider-point.active .point-tick {
+            height: 12px;
+            background: var(--accent);
+            width: 3px;
+        }
+
+        .slider-point.active .point-label {
+            color: var(--accent);
+            font-weight: 700;
+            border-color: var(--accent);
+            background: var(--highlight-bg);
+            transform: translateY(-2px);
+            box-shadow: 1px 2px 0px var(--accent);
+        }
+
+        /* Active Difficulty Description */
+        .difficulty-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            border-top: 1px dashed var(--sketch-line);
+            padding-top: 0.85rem;
+        }
+
+        .difficulty-badge {
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        /* Divider */
+        .step-divider {
+            border: 0;
+            border-top: 1px dashed var(--sketch-line);
+        }
+
+        /* Launch Bar */
+        .launch-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.5rem;
+        }
+
+        .summary-pill {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-val {
+            color: var(--text-primary);
+            font-weight: 700;
+            border-bottom: 1.5px solid var(--accent);
+            padding-bottom: 1px;
+        }
+
+        .btn-launch {
+            background: var(--accent);
+            color: #0e1114;
+            border: 2px solid var(--accent);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            padding: 1rem 2.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            outline: none;
+            box-shadow: 3px 4px 0px rgba(0,0,0,0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-launch:hover {
+            transform: scale(1.03) rotate(-0.8deg) translateY(-2px);
+            box-shadow: 5px 7px 0px rgba(0,0,0,0.35);
+        }
+
+        .btn-launch:active {
+            transform: scale(0.98) translateY(2px);
+            box-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+        }
+
+        /* Handwritten pointer note */
+        .launch-note {
+            position: absolute;
+            right: 250px;
+            bottom: 24px;
+            font-family: var(--font-hand);
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--ink-note);
+            pointer-events: none;
+            user-select: none;
+            transform: rotate(4deg);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .launch-note svg {
+            width: 34px;
+            height: 24px;
+            stroke: var(--ink-note);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+        }
+
+        /* Corner registration marks */
+        .corner-crosshair {
+            position: absolute;
+            stroke: var(--sketch-line);
+            fill: none;
+            stroke-width: 1.4;
+            pointer-events: none;
+        }
+
+        .crosshair-tl { top: 1.5rem; left: 1.5rem; }
+        .crosshair-tr { top: 1.5rem; right: 1.5rem; }
+        .crosshair-bl { bottom: 1.5rem; left: 1.5rem; }
+        .crosshair-br { bottom: 1.5rem; right: 1.5rem; }
+
+        /* Footer Telemetry */
+        footer {
+            border-top: 2px dashed var(--sketch-line);
+            padding-top: 1.25rem;
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-note {
+            font-family: var(--font-hand);
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            text-transform: none;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 860px) {
+            body {
+                padding: 1.5rem;
+            }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .slider-wrapper {
+                padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+            }
+            .point-label {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.35rem;
+            }
+            .launch-bar {
+                flex-direction: column;
+                gap: 1.25rem;
+                align-items: stretch;
+            }
+            .btn-launch {
+                justify-content: center;
+            }
+            .launch-note {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="theme-daylight">
+
+    <!-- Corner registration marks -->
+    <svg class="corner-crosshair crosshair-tl" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-tr" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-bl" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+    <svg class="corner-crosshair crosshair-br" width="20" height="20" viewBox="0 0 20 20">
+        <path d="M2,10 L18,10 M10,2 L10,18" stroke-dasharray="2,2"/>
+    </svg>
+
+    <!-- Simple Header: Name & Palette Burger Menu -->
+    <header>
+        <div class="header-brand">
+            <span class="logo-box">SPEEDOKU</span>
+            <span class="brand-subtitle">✍ tactical zen</span>
+        </div>
+
+        <div class="palette-menu-wrap">
+            <button class="palette-burger-btn" id="paletteBurgerBtn" aria-label="Toggle Palette Menu" aria-expanded="false">
+                <div class="burger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>Palette</span>
+                <span class="active-swatch-dot" id="activeSwatchDot"></span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="palette-dropdown" id="paletteDropdown">
+                <div class="dropdown-title">
+                    <span>Theme Palettes</span>
+                    <span>(5)</span>
+                </div>
+
+                <!-- 1. Nighttime -->
+                <button class="theme-item-btn" data-theme="theme-nighttime">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #0e1114;"></span>
+                            <span class="swatch-dot" style="background: #f59e0b;"></span>
+                            <span class="swatch-dot" style="background: #7b8896;"></span>
+                        </span>
+                        <span>Nighttime</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 2. Stormy Sea -->
+                <button class="theme-item-btn" data-theme="theme-stormy-sea">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #203C49;"></span>
+                            <span class="swatch-dot" style="background: #758E90;"></span>
+                            <span class="swatch-dot" style="background: #EAC8AF;"></span>
+                        </span>
+                        <span>Stormy Sea</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 3. Matcha Cafe -->
+                <button class="theme-item-btn" data-theme="theme-matcha-cafe">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #FFF2DE;"></span>
+                            <span class="swatch-dot" style="background: #136733;"></span>
+                            <span class="swatch-dot" style="background: #1A9646;"></span>
+                        </span>
+                        <span>Matcha Cafe</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 4. Garden Walk -->
+                <button class="theme-item-btn" data-theme="theme-garden-walk">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #D7D0C5;"></span>
+                            <span class="swatch-dot" style="background: #36452B;"></span>
+                            <span class="swatch-dot" style="background: #8A9646;"></span>
+                        </span>
+                        <span>Garden Walk</span>
+                    </span>
+                    <span class="check-mark"></span>
+                </button>
+
+                <!-- 5. Daylight -->
+                <button class="theme-item-btn active" data-theme="theme-daylight">
+                    <span class="theme-info">
+                        <span class="swatch-group">
+                            <span class="swatch-dot" style="background: #f7f6f0;"></span>
+                            <span class="swatch-dot" style="background: #d97706;"></span>
+                            <span class="swatch-dot" style="background: #181d22;"></span>
+                        </span>
+                        <span>Daylight</span>
+                    </span>
+                    <span class="check-mark">✓</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Setup Section -->
+    <main>
+        <div class="page-header">
+            <div class="page-tag">
+                <span>[ PRE-RACE CALIBRATION ]</span>
+                <span class="step-annotation">✎ configure & deploy</span>
+            </div>
+            <h1>
+                Configure your 
+                <span class="highlight-wobble">
+                    Speedoku Match.
+                    <svg viewBox="0 0 240 12" preserveAspectRatio="none">
+                        <path d="M3,8 C45,2 90,11 135,5 C180,0 210,9 237,4" />
+                    </svg>
+                </span>
+            </h1>
+        </div>
+
+        <div class="setup-card">
+            <!-- Step 1: Play Type -->
+            <div class="step-group">
+                <div class="step-header">
+                    <div class="step-label">
+                        <span class="step-number">1</span>
+                        <span>Select Opponent Matchup</span>
+                    </div>
+                    <span class="step-annotation">live or solo</span>
+                </div>
+                <div class="options-row grid-2" id="playTypeOptions">
+                    <button class="option-btn selected" data-group="playType" data-value="Play with friends">
+                        <span>Play with friends</span>
+                        <span class="option-desc">Multiplayer live lobby // invite code</span>
+                    </button>
+                    <button class="option-btn" data-group="playType" data-value="Practice alone">
+                        <span>Practice alone</span>
+                        <span class="option-desc">Solo training // speed benchmark</span>
+                    </button>
+                </div>
+
+                <!-- Multiplayer Room Hub -->
+                <div class="multiplayer-room-hub" id="multiplayerRoomHub">
+                    <!-- Room Action Tabs -->
+                    <div class="room-action-tabs">
+                        <button class="room-tab-btn active" id="tabHostRoom">
+                            <span>★</span>
+                            <span>Create Room (Host)</span>
+                        </button>
+                        <button class="room-tab-btn" id="tabJoinRoom">
+                            <span>→</span>
+                            <span>Join Room (Guest)</span>
+                        </button>
+                    </div>
+
+                    <!-- Host Panel Content -->
+                    <div class="room-panel-body" id="hostRoomPanel">
+                        <div class="room-card-grid">
+                            <div class="room-code-card">
+                                <div class="room-code-label">Your Private Room Code</div>
+                                <div class="room-code-display-wrap">
+                                    <span class="room-code-val" id="hostRoomCodeVal">SPD-7492</span>
+                                    <button class="room-btn-icon" id="copyRoomCodeBtn" title="Copy Room Code">
+                                        <span id="copyCodeIcon">📋</span>
+                                        <span>Copy Code</span>
+                                    </button>
+                                    <button class="room-btn-icon" id="copyInviteLinkBtn" title="Copy Shareable Link">
+                                        <span id="copyLinkIcon">🔗</span>
+                                        <span>Copy Link</span>
+                                    </button>
+                                </div>
+                                <div class="room-share-hint">Share this code or link with friends to race live on the same grid!</div>
+                            </div>
+
+                            <div class="player-identity-card">
+                                <div class="id-row">
+                                    <label class="id-label" for="hostPlayerName">Your Name:</label>
+                                    <input type="text" id="hostPlayerName" class="tactical-input" value="Racer 1" maxlength="15" />
+                                </div>
+                                <div class="id-row">
+                                    <label class="id-label">Pencil Color:</label>
+                                    <div class="color-swatches" id="hostColorSwatches">
+                                        <button class="color-swatch-btn active" data-color="#3b82f6" style="background:#3b82f6;" title="Blue"></button>
+                                        <button class="color-swatch-btn" data-color="#ec4899" style="background:#ec4899;" title="Pink"></button>
+                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Green"></button>
+                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></button>
+                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Connected Racers Roster -->
+                        <div class="roster-box">
+                            <div class="roster-header">
+                                <span class="roster-title">
+                                    <span class="pulse-dot"></span>
+                                    <span>Racers in Lobby</span>
+                                </span>
+                                <span class="roster-count" id="rosterCount">1/4 Connected</span>
+                            </div>
+                            <div class="roster-list" id="rosterList">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Join Panel Content -->
+                    <div class="room-panel-body" id="joinRoomPanel" style="display: none;">
+                        <div class="room-card-grid">
+                            <div class="room-join-input-card">
+                                <label class="room-code-label" for="joinRoomCodeInput">Enter Room Code to Join:</label>
+                                <div class="room-join-row">
+                                    <input type="text" id="joinRoomCodeInput" class="tactical-input room-code-input" placeholder="e.g. SPD-7492" maxlength="10" />
+                                    <button class="btn-room-action" id="joinRoomSubmitBtn">
+                                        <span>⚡</span>
+                                        <span>Connect</span>
+                                    </button>
+                                </div>
+                                <div class="room-join-status" id="joinRoomStatusText">Enter 6-character room code from your host.</div>
+                            </div>
+
+                            <div class="player-identity-card">
+                                <div class="id-row">
+                                    <label class="id-label" for="guestPlayerName">Your Name:</label>
+                                    <input type="text" id="guestPlayerName" class="tactical-input" value="Guest Racer" maxlength="15" />
+                                </div>
+                                <div class="id-row">
+                                    <label class="id-label">Pencil Color:</label>
+                                    <div class="color-swatches" id="guestColorSwatches">
+                                        <button class="color-swatch-btn" data-color="#3b82f6" style="background:#3b82f6;" title="Blue"></button>
+                                        <button class="color-swatch-btn active" data-color="#ec4899" style="background:#ec4899;" title="Pink"></button>
+                                        <button class="color-swatch-btn" data-color="#10b981" style="background:#10b981;" title="Green"></button>
+                                        <button class="color-swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Purple"></button>
+                                        <button class="color-swatch-btn" data-color="#f59e0b" style="background:#f59e0b;" title="Amber"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest Lobby View -->
+                        <div class="roster-box" id="guestRosterBox" style="display: none;">
+                            <div class="roster-header">
+                                <span class="roster-title">
+                                    <span class="pulse-dot"></span>
+                                    <span>Connected to Lobby</span>
+                                </span>
+                                <span class="roster-count" id="guestRosterCount">1/4 Connected</span>
+                            </div>
+                            <div class="roster-list" id="guestRosterList"></div>
+                            <div class="guest-waiting-banner" id="guestWaitingBanner">
+                                <span>⏳ Host is calibrating match rules... waiting for launch!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="step-divider">
+
+            <!-- Step 2: Game Mode -->
+            <div class="step-group">
+                <div class="step-header">
+                    <div class="step-label">
+                        <span class="step-number">2</span>
+                        <span>Select Game Mode</span>
+                    </div>
+                    <span class="step-annotation">victory condition</span>
+                </div>
+                <div class="options-row grid-4" id="gameModeOptions">
+                    <button class="option-btn selected" data-group="gameMode" data-value="Sprint">
+                        <span>Sprint</span>
+                        <span class="option-desc">First to complete</span>
+                    </button>
+                    <button class="option-btn" data-group="gameMode" data-value="Countdown">
+                        <span>Countdown</span>
+                        <span class="option-desc">Race vs ticking clock</span>
+                    </button>
+                    <!-- Domination (Greyed out / Coming Soon) -->
+                    <button class="option-btn disabled" data-group="gameMode" data-value="Domination" disabled title="Coming Soon">
+                        <span class="coming-soon-badge">Coming Soon</span>
+                        <span>Domination</span>
+                        <span class="option-desc">Territory conquest mode</span>
+                    </button>
+                    <!-- Sabotage (Greyed out / Coming Soon) -->
+                    <button class="option-btn disabled" data-group="gameMode" data-value="Sabotage" disabled title="Coming Soon">
+                        <span class="coming-soon-badge">Coming Soon</span>
+                        <span>Sabotage</span>
+                        <span class="option-desc">Disruption battle mode</span>
+                    </button>
+                </div>
+            </div>
+
+            <hr class="step-divider">
+
+            <!-- Step 3: Perfectly Aligned Difficulty Slider (5% to 95%) -->
+            <div class="step-group">
+                <div class="step-header">
+                    <div class="step-label">
+                        <span class="step-number">3</span>
+                        <span id="step3Title">Calibrate Difficulty Tier</span>
+                    </div>
+                    <span class="step-annotation" id="step3Annotation">calibrated span [ 5% — 95% ]</span>
+                </div>
+
+                <div class="slider-wrapper">
+                    <!-- Physical Slider Track & Moving Thumb -->
+                    <div class="slider-track-area" id="sliderTrackArea" role="slider" aria-valuemin="0" aria-valuemax="4" aria-valuenow="2" aria-label="Difficulty Slider" tabindex="0">
+                        <div class="slider-track-bar">
+                            <div class="slider-track-fill" id="sliderTrackFill" style="width: 50%;"></div>
+                        </div>
+                        
+                        <div class="slider-thumb-knob" id="sliderThumb" style="left: 50%;">
+                            <div class="thumb-grip-line"></div>
+                        </div>
+                    </div>
+
+                    <!-- Discrete Calibration Points (Dynamically populated by JS) -->
+                    <div class="slider-points-container" id="sliderPointsContainer">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- Difficulty Metadata Feedback -->
+                    <div class="difficulty-indicator">
+                        <div><span id="step3MetaLabel1">Grid Clues:</span> <span id="clueCount" class="difficulty-badge">34 Prefilled Cells</span></div>
+                        <div><span id="step3MetaLabel2">Target Pace:</span> <span id="targetPace" class="difficulty-badge">~02:30.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="step-divider">
+
+            <!-- Launch Controls -->
+            <div class="launch-bar">
+                <div class="summary-pill">
+                    <span>Config:</span>
+                    <span class="summary-val" id="summaryText">Play with friends // Sprint // Medium</span>
+                </div>
+
+                <div class="launch-note">
+                    <svg viewBox="0 0 36 24">
+                        <path d="M4,12 C16,4 26,4 32,18 M32,18 L26,16 M32,18 L30,12"/>
+                    </svg>
+                    <span>instant launch</span>
+                </div>
+
+                <button class="btn-launch" id="launchBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Start Game
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Telemetry -->
+    <footer>
+        <div>Telemetry: Ready <span class="footer-note">— synced with server</span></div>
+        <div>Build 2026.03 // Speedoku Tactical Zen <span style="color: var(--accent);">★</span></div>
+    </footer>
+
+    <script>
+        // Sprint Difficulty Tiers (5 discrete points)
+        const sprintTiers = [
+            { name: 'Super Easy', percent: 5, clues: '48 Prefilled Cells (Warmup)', pace: '~01:00.00', clueCount: 48 },
+            { name: 'Easy', percent: 27.5, clues: '40 Prefilled Cells (Relaxed)', pace: '~01:45.00', clueCount: 40 },
+            { name: 'Medium', percent: 50, clues: '34 Prefilled Cells (Standard)', pace: '~02:30.00', clueCount: 34 },
+            { name: 'Hard', percent: 72.5, clues: '28 Prefilled Cells (Challenging)', pace: '~03:45.00', clueCount: 28 },
+            { name: 'Super Hard', percent: 95, clues: '22 Prefilled Cells (Grandmaster)', pace: '~05:00.00', clueCount: 22 }
+        ];
+
+        // Countdown Minute Slider Tiers (2.5m increments up to 20m, scaled difficulty behind the scenes)
+        const countdownTiers = [
+            { name: '2.5m', minutes: 2.5, percent: 5, difficulty: 'Super Easy', clues: '48 Prefilled Cells (Blitz)', pace: '02:30.00 Clock', clueCount: 48 },
+            { name: '5.0m', minutes: 5.0, percent: 17.85, difficulty: 'Easy', clues: '42 Prefilled Cells (Sprint)', pace: '05:00.00 Clock', clueCount: 42 },
+            { name: '7.5m', minutes: 7.5, percent: 30.71, difficulty: 'Medium-Easy', clues: '38 Prefilled Cells (Paced)', pace: '07:30.00 Clock', clueCount: 38 },
+            { name: '10.0m', minutes: 10.0, percent: 43.57, difficulty: 'Medium', clues: '34 Prefilled Cells (Standard)', pace: '10:00.00 Clock', clueCount: 34 },
+            { name: '12.5m', minutes: 12.5, percent: 56.43, difficulty: 'Medium-Hard', clues: '30 Prefilled Cells (Demanding)', pace: '12:30.00 Clock', clueCount: 30 },
+            { name: '15.0m', minutes: 15.0, percent: 69.28, difficulty: 'Hard', clues: '26 Prefilled Cells (Challenging)', pace: '15:00.00 Clock', clueCount: 26 },
+            { name: '17.5m', minutes: 17.5, percent: 82.14, difficulty: 'Expert', clues: '24 Prefilled Cells (Master)', pace: '17:30.00 Clock', clueCount: 24 },
+            { name: '20.0m', minutes: 20.0, percent: 95, difficulty: 'Super Hard', clues: '22 Prefilled Cells (Endurance)', pace: '20:00.00 Clock', clueCount: 22 }
+        ];
+
+        // State Management
+        let currentTierIndex = 2; // Default Medium or 7.5m/10.0m
+        const matchConfig = {
+            playType: 'Play with friends',
+            gameMode: 'Sprint',
+            difficulty: 'Medium',
+            countdownMinutes: 10.0,
+            clueCount: 34
+        };
+
+        const summaryText = document.getElementById('summaryText');
+        const sliderTrackArea = document.getElementById('sliderTrackArea');
+        const sliderThumb = document.getElementById('sliderThumb');
+        const sliderTrackFill = document.getElementById('sliderTrackFill');
+        const sliderPointsContainer = document.getElementById('sliderPointsContainer');
+        const clueCountEl = document.getElementById('clueCount');
+        const targetPaceEl = document.getElementById('targetPace');
+        const step3Title = document.getElementById('step3Title');
+        const step3Annotation = document.getElementById('step3Annotation');
+        const step3MetaLabel1 = document.getElementById('step3MetaLabel1');
+        const step3MetaLabel2 = document.getElementById('step3MetaLabel2');
+
+        // Multiplayer DOM Elements
+        const multiplayerRoomHub = document.getElementById('multiplayerRoomHub');
+        const tabHostRoom = document.getElementById('tabHostRoom');
+        const tabJoinRoom = document.getElementById('tabJoinRoom');
+        const hostRoomPanel = document.getElementById('hostRoomPanel');
+        const joinRoomPanel = document.getElementById('joinRoomPanel');
+        const hostRoomCodeVal = document.getElementById('hostRoomCodeVal');
+        const copyRoomCodeBtn = document.getElementById('copyRoomCodeBtn');
+        const copyInviteLinkBtn = document.getElementById('copyInviteLinkBtn');
+        const hostPlayerName = document.getElementById('hostPlayerName');
+        const guestPlayerName = document.getElementById('guestPlayerName');
+        const joinRoomCodeInput = document.getElementById('joinRoomCodeInput');
+        const joinRoomSubmitBtn = document.getElementById('joinRoomSubmitBtn');
+        const joinRoomStatusText = document.getElementById('joinRoomStatusText');
+        const rosterCount = document.getElementById('rosterCount');
+        const rosterList = document.getElementById('rosterList');
+        const guestRosterBox = document.getElementById('guestRosterBox');
+        const guestRosterCount = document.getElementById('guestRosterCount');
+        const guestRosterList = document.getElementById('guestRosterList');
+        const launchBtn = document.getElementById('launchBtn');
+
+        // Multiplayer Room State
+        function generateRoomCode() {
+            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+            let code = 'SPD-';
+            for (let i = 0; i < 4; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return code;
+        }
+
+        const roomState = {
+            isHost: true,
+            roomCode: generateRoomCode(),
+            myId: 'p_' + Math.random().toString(36).substring(2, 9),
+            myName: 'Racer 1',
+            myColor: '#3b82f6',
+            connectedPlayers: [],
+            peer: null,
+            peerConns: new Map(),
+            broadcastChannel: null,
+            isConnected: false
+        };
+
+        hostRoomCodeVal.textContent = roomState.roomCode;
+
+        function getActiveTiers() {
+            return matchConfig.gameMode === 'Countdown' ? countdownTiers : sprintTiers;
+        }
+
+        function renderSliderPoints() {
+            const tiers = getActiveTiers();
+            sliderPointsContainer.innerHTML = '';
+            sliderTrackArea.setAttribute('aria-valuemax', tiers.length - 1);
+
+            tiers.forEach((tier, idx) => {
+                const pt = document.createElement('div');
+                pt.className = `slider-point ${idx === currentTierIndex ? 'active' : ''}`;
+                pt.dataset.index = idx;
+                pt.style.left = `${tier.percent}%`;
+                pt.innerHTML = `
+                    <div class="point-tick"></div>
+                    <span class="point-label">${tier.name}</span>
+                `;
+                pt.addEventListener('click', () => {
+                    if (!roomState.isHost && matchConfig.playType === 'Play with friends') return; // Guests mirror host
+                    setDifficulty(idx);
+                });
+                sliderPointsContainer.appendChild(pt);
+            });
+        }
+
+        function updateSummary() {
+            if (matchConfig.gameMode === 'Countdown') {
+                summaryText.textContent = `${matchConfig.playType} // Countdown // ${matchConfig.countdownMinutes} Min (${matchConfig.difficulty})`;
+            } else {
+                summaryText.textContent = `${matchConfig.playType} // ${matchConfig.gameMode} // ${matchConfig.difficulty}`;
+            }
+
+            if (matchConfig.playType === 'Play with friends') {
+                if (roomState.isHost) {
+                    launchBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Start Race for All (${roomState.connectedPlayers.length})
+                    `;
+                    launchBtn.disabled = false;
+                } else {
+                    launchBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="status-dot">
+                            <circle cx="12" cy="12" r="10" stroke-dasharray="8 4"/>
+                        </svg>
+                        Waiting for Host to Start...
+                    `;
+                    launchBtn.disabled = true;
+                }
+            } else {
+                launchBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Start Game (Solo)
+                `;
+                launchBtn.disabled = false;
+            }
+        }
+
+        function setDifficulty(index, broadcast = true) {
+            const tiers = getActiveTiers();
+            currentTierIndex = Math.max(0, Math.min(tiers.length - 1, index));
+            const tier = tiers[currentTierIndex];
+
+            if (matchConfig.gameMode === 'Countdown') {
+                matchConfig.countdownMinutes = tier.minutes;
+                matchConfig.difficulty = tier.difficulty;
+                matchConfig.clueCount = tier.clueCount;
+            } else {
+                matchConfig.difficulty = tier.name;
+                matchConfig.clueCount = tier.clueCount;
+            }
+
+            // Animate thumb knob and fill
+            sliderThumb.style.left = `${tier.percent}%`;
+            sliderTrackFill.style.width = `${tier.percent}%`;
+            sliderTrackArea.setAttribute('aria-valuenow', currentTierIndex);
+
+            // Update point active styles
+            const points = sliderPointsContainer.querySelectorAll('.slider-point');
+            points.forEach(pt => {
+                if (parseInt(pt.dataset.index) === currentTierIndex) {
+                    pt.classList.add('active');
+                } else {
+                    pt.classList.remove('active');
+                }
+            });
+
+            // Update info labels
+            clueCountEl.textContent = tier.clues;
+            targetPaceEl.textContent = tier.pace;
+
+            updateSummary();
+
+            if (broadcast && roomState.isHost && matchConfig.playType === 'Play with friends') {
+                broadcastLobbyState();
+            }
+        }
+
+        function updateStep3Mode(broadcast = true) {
+            if (matchConfig.gameMode === 'Countdown') {
+                step3Title.textContent = 'Calibrate Countdown Clock';
+                step3Annotation.textContent = 'time span [ 2.5m — 20.0m ]';
+                step3MetaLabel1.textContent = 'Scaled Clues:';
+                step3MetaLabel2.textContent = 'Clock Limit:';
+                currentTierIndex = Math.min(countdownTiers.length - 1, currentTierIndex);
+            } else {
+                step3Title.textContent = 'Calibrate Difficulty Tier';
+                step3Annotation.textContent = 'calibrated span [ 5% — 95% ]';
+                step3MetaLabel1.textContent = 'Grid Clues:';
+                step3MetaLabel2.textContent = 'Target Pace:';
+                currentTierIndex = Math.min(sprintTiers.length - 1, currentTierIndex);
+            }
+            renderSliderPoints();
+            setDifficulty(currentTierIndex, broadcast);
+        }
+
+        /* ---------------------------------------------------- */
+        /* MULTIPLAYER LOBBY NETWORKING & ROSTER                */
+        /* ---------------------------------------------------- */
+        function initRoster() {
+            roomState.connectedPlayers = [{
+                id: roomState.myId,
+                name: roomState.isHost ? roomState.myName : (guestPlayerName.value.trim() || 'Guest Racer'),
+                color: roomState.myColor,
+                isHost: roomState.isHost,
+                ready: true
+            }];
+            renderRoster();
+        }
+
+        function renderRoster() {
+            const listEl = roomState.isHost ? rosterList : guestRosterList;
+            const countEl = roomState.isHost ? rosterCount : guestRosterCount;
+            if (!listEl) return;
+
+            countEl.textContent = `${roomState.connectedPlayers.length}/4 Connected`;
+            listEl.innerHTML = '';
+
+            roomState.connectedPlayers.forEach(p => {
+                const chip = document.createElement('div');
+                chip.className = 'roster-player-chip';
+                chip.innerHTML = `
+                    <span class="roster-player-dot" style="background: ${p.color}; box-shadow: 0 0 6px ${p.color};"></span>
+                    <span>${p.name} ${p.id === roomState.myId ? '(You)' : ''}</span>
+                    <span class="roster-player-tag">${p.isHost ? 'HOST' : 'READY'}</span>
+                `;
+                listEl.appendChild(chip);
+            });
+
+            updateSummary();
+        }
+
+        function broadcastLobbyState() {
+            const packet = {
+                type: 'LOBBY_STATE',
+                roomCode: roomState.roomCode,
+                gameMode: matchConfig.gameMode,
+                difficulty: matchConfig.difficulty,
+                countdownMinutes: matchConfig.countdownMinutes,
+                clueCount: matchConfig.clueCount,
+                currentTierIndex: currentTierIndex,
+                players: roomState.connectedPlayers
+            };
+
+            // 1. Broadcast via local BroadcastChannel
+            if (roomState.broadcastChannel) {
+                try {
+                    roomState.broadcastChannel.postMessage(packet);
+                } catch(e){}
+            }
+
+            // 2. Broadcast via WebRTC Peer Connections
+            roomState.peerConns.forEach(conn => {
+                if (conn && conn.open) {
+                    try {
+                        conn.send(packet);
+                    } catch(e){}
+                }
+            });
+        }
+
+        function setupHostNetworking() {
+            // Setup local BroadcastChannel
+            if (roomState.broadcastChannel) roomState.broadcastChannel.close();
+            roomState.broadcastChannel = new BroadcastChannel('spd_lobby_' + roomState.roomCode);
+            roomState.broadcastChannel.onmessage = (e) => {
+                handleNetworkMessage(e.data);
+            };
+
+            // Setup PeerJS WebRTC
+            if (window.Peer) {
+                try {
+                    if (roomState.peer) roomState.peer.destroy();
+                    const cleanCode = roomState.roomCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    roomState.peer = new Peer(`spd26-${cleanCode}-host`, {
+                        debug: 0
+                    });
+
+                    roomState.peer.on('open', () => {
+                        console.log('Host Peer opened:', roomState.peer.id);
+                    });
+
+                    roomState.peer.on('connection', (conn) => {
+                        conn.on('open', () => {
+                            roomState.peerConns.set(conn.peer, conn);
+                            // Send initial lobby state
+                            broadcastLobbyState();
+                        });
+
+                        conn.on('data', (data) => {
+                            handleNetworkMessage(data, conn);
+                        });
+
+                        conn.on('close', () => {
+                            roomState.peerConns.delete(conn.peer);
+                            // Remove disconnected player
+                            roomState.connectedPlayers = roomState.connectedPlayers.filter(p => p.peerId !== conn.peer);
+                            renderRoster();
+                            broadcastLobbyState();
+                        });
+                    });
+
+                    roomState.peer.on('error', (err) => {
+                        console.log('Host peer notice (fallback to local channel):', err.type);
+                    });
+                } catch(err) {
+                    console.log('Peer init exception:', err);
+                }
+            }
+
+            initRoster();
+            broadcastLobbyState();
+        }
+
+        function setupGuestNetworking(targetCode) {
+            targetCode = targetCode.trim().toUpperCase();
+            roomState.roomCode = targetCode;
+            roomState.isHost = false;
+
+            joinRoomStatusText.textContent = `Connecting to ${targetCode}...`;
+            joinRoomStatusText.style.color = 'var(--accent)';
+
+            // 1. Setup local BroadcastChannel
+            if (roomState.broadcastChannel) roomState.broadcastChannel.close();
+            roomState.broadcastChannel = new BroadcastChannel('spd_lobby_' + targetCode);
+            roomState.broadcastChannel.onmessage = (e) => {
+                handleNetworkMessage(e.data);
+            };
+
+            // Send Join Request via BroadcastChannel
+            roomState.broadcastChannel.postMessage({
+                type: 'PLAYER_JOIN',
+                roomCode: targetCode,
+                player: {
+                    id: roomState.myId,
+                    name: guestPlayerName.value.trim() || 'Guest Racer',
+                    color: roomState.myColor,
+                    isHost: false,
+                    ready: true
+                }
+            });
+
+            // 2. Setup WebRTC PeerJS
+            if (window.Peer) {
+                try {
+                    if (roomState.peer) roomState.peer.destroy();
+                    const cleanCode = targetCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const guestId = `spd26-${cleanCode}-p${Math.random().toString(36).substring(2, 7)}`;
+                    roomState.peer = new Peer(guestId, { debug: 0 });
+
+                    roomState.peer.on('open', () => {
+                        const hostPeerId = `spd26-${cleanCode}-host`;
+                        const conn = roomState.peer.connect(hostPeerId, { reliable: true });
+
+                        conn.on('open', () => {
+                            roomState.peerConns.set(hostPeerId, conn);
+                            conn.send({
+                                type: 'PLAYER_JOIN',
+                                roomCode: targetCode,
+                                player: {
+                                    id: roomState.myId,
+                                    name: guestPlayerName.value.trim() || 'Guest Racer',
+                                    color: roomState.myColor,
+                                    isHost: false,
+                                    ready: true
+                                }
+                            });
+                        });
+
+                        conn.on('data', (data) => {
+                            handleNetworkMessage(data);
+                        });
+
+                        conn.on('error', (err) => {
+                            console.log('Guest conn notice:', err);
+                        });
+                    });
+                } catch(e){}
+            }
+
+            guestRosterBox.style.display = 'flex';
+            joinRoomStatusText.textContent = `🟢 Connected to ${targetCode}! Synchronizing match rules...`;
+            joinRoomStatusText.style.color = '#10b981';
+        }
+
+        function handleNetworkMessage(data, conn) {
+            if (!data || !data.type) return;
+
+            if (data.type === 'PLAYER_JOIN' && roomState.isHost) {
+                const incoming = data.player;
+                if (conn) incoming.peerId = conn.peer;
+
+                // Check if already in roster
+                const existingIdx = roomState.connectedPlayers.findIndex(p => p.id === incoming.id);
+                if (existingIdx >= 0) {
+                    roomState.connectedPlayers[existingIdx] = incoming;
+                } else if (roomState.connectedPlayers.length < 4) {
+                    roomState.connectedPlayers.push(incoming);
+                }
+                renderRoster();
+                broadcastLobbyState();
+            }
+
+            if (data.type === 'LOBBY_STATE' && !roomState.isHost) {
+                // Sync options from Host
+                if (data.players) {
+                    roomState.connectedPlayers = data.players;
+                    renderRoster();
+                }
+
+                if (data.gameMode && data.gameMode !== matchConfig.gameMode) {
+                    matchConfig.gameMode = data.gameMode;
+                    document.querySelectorAll('.option-btn[data-group="gameMode"]').forEach(btn => {
+                        btn.classList.toggle('selected', btn.dataset.value === data.gameMode);
+                    });
+                    updateStep3Mode(false);
+                }
+
+                if (typeof data.currentTierIndex === 'number') {
+                    setDifficulty(data.currentTierIndex, false);
+                }
+
+                guestRosterBox.style.display = 'flex';
+                joinRoomStatusText.textContent = `🟢 Connected to ${data.roomCode} (${roomState.connectedPlayers.length}/4 Racers)!`;
+                joinRoomStatusText.style.color = '#10b981';
+                updateSummary();
+            }
+
+            if (data.type === 'MATCH_LAUNCH') {
+                // Synchronized Launch Trigger for all connected racers!
+                sessionStorage.setItem('speedoku_lobby_players', JSON.stringify(data.players || roomState.connectedPlayers));
+                launchBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Grid Launching!
+                `;
+
+                const myPlayer = roomState.isHost
+                    ? { name: hostPlayerName.value.trim() || 'Racer 1', color: roomState.myColor }
+                    : { name: guestPlayerName.value.trim() || 'Guest Racer', color: roomState.myColor };
+
+                const params = new URLSearchParams({
+                    playType: 'Play with friends',
+                    room: data.roomCode || roomState.roomCode,
+                    isHost: roomState.isHost ? 'true' : 'false',
+                    playerId: roomState.myId,
+                    playerName: myPlayer.name,
+                    playerColor: myPlayer.color,
+                    seed: data.seed,
+                    gameMode: data.gameMode || matchConfig.gameMode,
+                    difficulty: data.difficulty || matchConfig.difficulty,
+                    countdownMinutes: data.countdownMinutes || matchConfig.countdownMinutes,
+                    clues: data.clues || matchConfig.clueCount
+                });
+
+                setTimeout(() => {
+                    window.location.href = `speedoku_game.html?${params.toString()}`;
+                }, 500);
+            }
+        }
+
+        // Host / Join Tab Switching
+        tabHostRoom.addEventListener('click', () => {
+            roomState.isHost = true;
+            tabHostRoom.classList.add('active');
+            tabJoinRoom.classList.remove('active');
+            hostRoomPanel.style.display = 'block';
+            joinRoomPanel.style.display = 'none';
+            setupHostNetworking();
+        });
+
+        tabJoinRoom.addEventListener('click', () => {
+            roomState.isHost = false;
+            tabJoinRoom.classList.add('active');
+            tabHostRoom.classList.remove('active');
+            joinRoomPanel.style.display = 'block';
+            hostRoomPanel.style.display = 'none';
+            updateSummary();
+        });
+
+        // Copy Room Code & Invite Link
+        copyRoomCodeBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(roomState.roomCode).then(() => {
+                copyRoomCodeBtn.innerHTML = '<span>✓</span><span>Copied!</span>';
+                setTimeout(() => {
+                    copyRoomCodeBtn.innerHTML = '<span id="copyCodeIcon">📋</span><span>Copy Code</span>';
+                }, 1800);
+            });
+        });
+
+        copyInviteLinkBtn.addEventListener('click', () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('room', roomState.roomCode);
+            navigator.clipboard.writeText(url.toString()).then(() => {
+                copyInviteLinkBtn.innerHTML = '<span>✓</span><span>Link Copied!</span>';
+                setTimeout(() => {
+                    copyInviteLinkBtn.innerHTML = '<span id="copyLinkIcon">🔗</span><span>Copy Link</span>';
+                }, 1800);
+            });
+        });
+
+        // Color Swatches Selection
+        document.querySelectorAll('#hostColorSwatches .color-swatch-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#hostColorSwatches .color-swatch-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                roomState.myColor = btn.dataset.color;
+                if (roomState.connectedPlayers[0]) {
+                    roomState.connectedPlayers[0].color = roomState.myColor;
+                    renderRoster();
+                    broadcastLobbyState();
+                }
+            });
+        });
+
+        document.querySelectorAll('#guestColorSwatches .color-swatch-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#guestColorSwatches .color-swatch-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                roomState.myColor = btn.dataset.color;
+            });
+        });
+
+        hostPlayerName.addEventListener('input', () => {
+            roomState.myName = hostPlayerName.value.trim() || 'Racer 1';
+            if (roomState.connectedPlayers[0]) {
+                roomState.connectedPlayers[0].name = roomState.myName;
+                renderRoster();
+                broadcastLobbyState();
+            }
+        });
+
+        joinRoomSubmitBtn.addEventListener('click', () => {
+            const targetCode = joinRoomCodeInput.value.trim().toUpperCase();
+            if (!targetCode) {
+                joinRoomStatusText.textContent = 'Please enter a valid room code (e.g. SPD-7492).';
+                joinRoomStatusText.style.color = '#ef4444';
+                return;
+            }
+            setupGuestNetworking(targetCode);
+        });
+
+        joinRoomCodeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                joinRoomSubmitBtn.click();
+            }
+        });
+
+        // Click / Drag on Track Area
+        function handleTrackInteraction(clientX) {
+            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
+            const rect = sliderTrackArea.getBoundingClientRect();
+            const clickPos = Math.max(0, Math.min(rect.width, clientX - rect.left));
+            const ratioPercent = (clickPos / rect.width) * 100;
+            
+            const tiers = getActiveTiers();
+            let nearestIndex = 0;
+            let minDiff = Infinity;
+            tiers.forEach((tier, idx) => {
+                const diff = Math.abs(tier.percent - ratioPercent);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    nearestIndex = idx;
+                }
+            });
+
+            setDifficulty(nearestIndex);
+        }
+
+        sliderTrackArea.addEventListener('click', (e) => {
+            handleTrackInteraction(e.clientX);
+        });
+
+        // Dragging Support
+        let isDragging = false;
+        sliderThumb.addEventListener('mousedown', (e) => {
+            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                handleTrackInteraction(e.clientX);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch support for tablet/mobile
+        sliderTrackArea.addEventListener('touchstart', (e) => {
+            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
+            isDragging = true;
+            handleTrackInteraction(e.touches[0].clientX);
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                handleTrackInteraction(e.touches[0].clientX);
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Keyboard navigation (Arrow keys, Home, End)
+        sliderTrackArea.addEventListener('keydown', (e) => {
+            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
+            const tiers = getActiveTiers();
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                setDifficulty(currentTierIndex + 1);
+                e.preventDefault();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                setDifficulty(currentTierIndex - 1);
+                e.preventDefault();
+            } else if (e.key === 'Home') {
+                setDifficulty(0);
+                e.preventDefault();
+            } else if (e.key === 'End') {
+                setDifficulty(tiers.length - 1);
+                e.preventDefault();
+            }
+        });
+
+        // Option Buttons (Play Type & Game Mode)
+        const optionBtns = document.querySelectorAll('.option-btn');
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.classList.contains('disabled') || btn.disabled) return;
+
+                const group = btn.dataset.group;
+                const value = btn.dataset.value;
+
+                if (!roomState.isHost && matchConfig.playType === 'Play with friends' && group === 'gameMode') {
+                    return; // Guests cannot change gameMode
+                }
+
+                document.querySelectorAll(`.option-btn[data-group="${group}"]`).forEach(sibling => {
+                    sibling.classList.remove('selected');
+                });
+
+                btn.classList.add('selected');
+                matchConfig[group] = value;
+
+                if (group === 'playType') {
+                    if (value === 'Play with friends') {
+                        multiplayerRoomHub.style.display = 'flex';
+                        if (roomState.isHost) setupHostNetworking();
+                    } else {
+                        multiplayerRoomHub.style.display = 'none';
+                    }
+                    updateSummary();
+                } else if (group === 'gameMode') {
+                    updateStep3Mode();
+                } else {
+                    updateSummary();
+                }
+            });
+        });
+
+        // Launch Button Animation & Synchronized Launch
+        launchBtn.addEventListener('click', () => {
+            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
+
+            const matchSeed = Math.floor(Math.random() * 1000000);
+            const myPlayer = {
+                name: hostPlayerName.value.trim() || 'Racer 1',
+                color: roomState.myColor
+            };
+
+            // Broadcast Match Launch to all connected friends
+            if (matchConfig.playType === 'Play with friends') {
+                const launchPacket = {
+                    type: 'MATCH_LAUNCH',
+                    roomCode: roomState.roomCode,
+                    seed: matchSeed,
+                    gameMode: matchConfig.gameMode,
+                    difficulty: matchConfig.difficulty,
+                    countdownMinutes: matchConfig.countdownMinutes,
+                    clues: matchConfig.clueCount,
+                    players: roomState.connectedPlayers
+                };
+
+                sessionStorage.setItem('speedoku_lobby_players', JSON.stringify(roomState.connectedPlayers));
+
+                if (roomState.broadcastChannel) {
+                    try { roomState.broadcastChannel.postMessage(launchPacket); } catch(e){}
+                }
+                roomState.peerConns.forEach(conn => {
+                    if (conn && conn.open) {
+                        try { conn.send(launchPacket); } catch(e){}
+                    }
+                });
+            }
+
+            launchBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="status-dot">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="8 4"/>
+                </svg>
+                Launching Grid for All...
+            `;
+
+            setTimeout(() => {
+                launchBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Match Ready!
+                `;
+                const params = new URLSearchParams({
+                    playType: matchConfig.playType,
+                    room: roomState.roomCode,
+                    isHost: 'true',
+                    playerId: roomState.myId,
+                    playerName: myPlayer.name,
+                    playerColor: myPlayer.color,
+                    seed: matchSeed,
+                    gameMode: matchConfig.gameMode,
+                    difficulty: matchConfig.difficulty,
+                    countdownMinutes: matchConfig.countdownMinutes,
+                    clues: matchConfig.clueCount
+                });
+                window.location.href = `speedoku_game.html?${params.toString()}`;
+            }, 500);
+        });
+
+        // Check if URL has ?room=SPD-XXXX invite link
+        const urlParams = new URLSearchParams(window.location.search);
+        const inviteRoom = urlParams.get('room');
+        if (inviteRoom) {
+            tabJoinRoom.click();
+            joinRoomCodeInput.value = inviteRoom;
+            setTimeout(() => {
+                joinRoomSubmitBtn.click();
+            }, 300);
+        } else {
+            setupHostNetworking();
+        }
+
+        // Initial setup
+        updateStep3Mode(false);
+
+        // ----------------------------------------------------
+        // PALETTE BURGER MENU & THEME SWITCHER LOGIC
+        // ----------------------------------------------------
+        const paletteBurgerBtn = document.getElementById('paletteBurgerBtn');
+        const paletteDropdown = document.getElementById('paletteDropdown');
+        const themeItemBtns = document.querySelectorAll('.theme-item-btn');
+        const validThemes = [
+            'theme-nighttime',
+            'theme-stormy-sea',
+            'theme-matcha-cafe',
+            'theme-garden-walk',
+            'theme-daylight'
+        ];
+
+        // Toggle Burger Menu Dropdown
+        paletteBurgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = paletteDropdown.classList.toggle('show');
+            paletteBurgerBtn.classList.toggle('active', isOpen);
+            paletteBurgerBtn.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!paletteDropdown.contains(e.target) && !paletteBurgerBtn.contains(e.target)) {
+                paletteDropdown.classList.remove('show');
+                paletteBurgerBtn.classList.remove('active');
+                paletteBurgerBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        function switchTheme(themeName) {
+            validThemes.forEach(t => document.body.classList.remove(t));
+            document.body.classList.add(themeName);
+
+            themeItemBtns.forEach(btn => {
+                const checkEl = btn.querySelector('.check-mark');
+                if (btn.dataset.theme === themeName) {
+                    btn.classList.add('active');
+                    if (checkEl) checkEl.textContent = '✓';
+                } else {
+                    btn.classList.remove('active');
+                    if (checkEl) checkEl.textContent = '';
+                }
+            });
+
+            localStorage.setItem('speedoku_palette', themeName);
+        }
+
+        themeItemBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTheme(btn.dataset.theme);
+                paletteDropdown.classList.remove('show');
+                paletteBurgerBtn.classList.remove('active');
+                paletteBurgerBtn.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Initialize Palette
+        const saved = localStorage.getItem('speedoku_palette');
+        if (saved && validThemes.includes(saved)) {
+            switchTheme(saved);
+        } else {
+            switchTheme('theme-daylight');
+        }
+    </script>
+</body>
+</html>
