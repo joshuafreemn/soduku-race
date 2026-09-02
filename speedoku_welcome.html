@@ -1607,8 +1607,8 @@
                     <span class="step-annotation">victory condition</span>
                 </div>
                 <div class="options-row grid-4" id="gameModeOptions">
-                    <button class="option-btn selected" data-group="gameMode" data-value="Sprint">
-                        <span>Sprint</span>
+                    <button class="option-btn selected" data-group="gameMode" data-value="Standardoku">
+                        <span>Standardoku</span>
                         <span class="option-desc">First to complete</span>
                     </button>
                     <button class="option-btn" data-group="gameMode" data-value="Countdown">
@@ -1671,7 +1671,7 @@
             <div class="launch-bar">
                 <div class="summary-pill">
                     <span>Config:</span>
-                    <span class="summary-val" id="summaryText">Play with friends // Sprint // Medium</span>
+                    <span class="summary-val" id="summaryText">Play with friends // Standardoku // Medium</span>
                 </div>
 
                 <div class="launch-note">
@@ -1698,32 +1698,29 @@
     </footer>
 
     <script>
-        // Sprint Difficulty Tiers (5 discrete points)
-        const sprintTiers = [
-            { name: 'Super Easy', percent: 5, clues: '48 Prefilled Cells (Warmup)', pace: '~01:00.00', clueCount: 48 },
-            { name: 'Easy', percent: 27.5, clues: '40 Prefilled Cells (Relaxed)', pace: '~01:45.00', clueCount: 40 },
-            { name: 'Medium', percent: 50, clues: '34 Prefilled Cells (Standard)', pace: '~02:30.00', clueCount: 34 },
-            { name: 'Hard', percent: 72.5, clues: '28 Prefilled Cells (Challenging)', pace: '~03:45.00', clueCount: 28 },
-            { name: 'Super Hard', percent: 95, clues: '22 Prefilled Cells (Grandmaster)', pace: '~05:00.00', clueCount: 22 }
+        // Standardoku Difficulty Tiers (5 discrete points)
+        const standardokuTiers = [
+            { name: '1.0m', minutes: 1.0, percent: 17.85, difficulty: 'Easy', clues: '42 Prefilled Cells (Standardoku)', pace: '01:00.00 Clock', clueCount: 42 },
+            { name: '2.0m', minutes: 2.0, percent: 35.7, difficulty: 'Normal', clues: '34 Prefilled Cells (Standardoku)', pace: '02:00.00 Clock', clueCount: 34 },
+            { name: '3.0m', minutes: 3.0, percent: 53.55, difficulty: 'Hard', clues: '28 Prefilled Cells (Standardoku)', pace: '03:00.00 Clock', clueCount: 28 },
+            { name: '4.0m', minutes: 4.0, percent: 71.4, difficulty: 'Expert', clues: '24 Prefilled Cells (Standardoku)', pace: '04:00.00 Clock', clueCount: 24 },
+            { name: '5.0m', minutes: 5.0, percent: 89.25, difficulty: 'Master', clues: '21 Prefilled Cells (Standardoku)', pace: '05:00.00 Clock', clueCount: 21 }
         ];
 
-        // Countdown Minute Slider Tiers (2.5m increments up to 20m, scaled difficulty behind the scenes)
+        // Countdown Difficulty Tiers (5 discrete points)
         const countdownTiers = [
-            { name: '2.5m', minutes: 2.5, percent: 5, difficulty: 'Super Easy', clues: '48 Prefilled Cells (Blitz)', pace: '02:30.00 Clock', clueCount: 48 },
-            { name: '5.0m', minutes: 5.0, percent: 17.85, difficulty: 'Easy', clues: '42 Prefilled Cells (Sprint)', pace: '05:00.00 Clock', clueCount: 42 },
-            { name: '7.5m', minutes: 7.5, percent: 30.71, difficulty: 'Medium-Easy', clues: '38 Prefilled Cells (Paced)', pace: '07:30.00 Clock', clueCount: 38 },
-            { name: '10.0m', minutes: 10.0, percent: 43.57, difficulty: 'Medium', clues: '34 Prefilled Cells (Standard)', pace: '10:00.00 Clock', clueCount: 34 },
-            { name: '12.5m', minutes: 12.5, percent: 56.43, difficulty: 'Medium-Hard', clues: '30 Prefilled Cells (Demanding)', pace: '12:30.00 Clock', clueCount: 30 },
-            { name: '15.0m', minutes: 15.0, percent: 69.28, difficulty: 'Hard', clues: '26 Prefilled Cells (Challenging)', pace: '15:00.00 Clock', clueCount: 26 },
-            { name: '17.5m', minutes: 17.5, percent: 82.14, difficulty: 'Expert', clues: '24 Prefilled Cells (Master)', pace: '17:30.00 Clock', clueCount: 24 },
-            { name: '20.0m', minutes: 20.0, percent: 95, difficulty: 'Super Hard', clues: '22 Prefilled Cells (Endurance)', pace: '20:00.00 Clock', clueCount: 22 }
+            { name: '1.0m', minutes: 1.0, percent: 17.85, difficulty: 'Easy', clues: '42 Prefilled Cells (Standardoku)', pace: '01:00.00 Clock', clueCount: 42 },
+            { name: '2.0m', minutes: 2.0, percent: 35.7, difficulty: 'Normal', clues: '34 Prefilled Cells (Standardoku)', pace: '02:00.00 Clock', clueCount: 34 },
+            { name: '3.0m', minutes: 3.0, percent: 53.55, difficulty: 'Hard', clues: '28 Prefilled Cells (Standardoku)', pace: '03:00.00 Clock', clueCount: 28 },
+            { name: '4.0m', minutes: 4.0, percent: 71.4, difficulty: 'Expert', clues: '24 Prefilled Cells (Standardoku)', pace: '04:00.00 Clock', clueCount: 24 },
+            { name: '5.0m', minutes: 5.0, percent: 89.25, difficulty: 'Master', clues: '21 Prefilled Cells (Standardoku)', pace: '05:00.00 Clock', clueCount: 21 }
         ];
 
         // State Management
         let currentTierIndex = 2; // Default Medium or 7.5m/10.0m
         const matchConfig = {
             playType: 'Play with friends',
-            gameMode: 'Sprint',
+            gameMode: 'Standardoku',
             difficulty: 'Medium',
             countdownMinutes: 10.0,
             clueCount: 34
@@ -1787,7 +1784,7 @@
         hostRoomCodeVal.textContent = roomState.roomCode;
 
         function getActiveTiers() {
-            return matchConfig.gameMode === 'Countdown' ? countdownTiers : sprintTiers;
+            return matchConfig.gameMode === 'Countdown' ? countdownTiers : standardokuTiers;
         }
 
         function renderSliderPoints() {
@@ -1900,13 +1897,13 @@
                 step3Annotation.textContent = 'shared board territory [ 5% — 95% ]';
                 step3MetaLabel1.textContent = 'Grid Clues:';
                 step3MetaLabel2.textContent = 'Target Pace:';
-                currentTierIndex = Math.min(sprintTiers.length - 1, currentTierIndex);
+                currentTierIndex = Math.min(standardokuTiers.length - 1, currentTierIndex);
             } else {
                 step3Title.textContent = 'Calibrate Difficulty Tier';
                 step3Annotation.textContent = 'calibrated span [ 5% — 95% ]';
                 step3MetaLabel1.textContent = 'Grid Clues:';
                 step3MetaLabel2.textContent = 'Target Pace:';
-                currentTierIndex = Math.min(sprintTiers.length - 1, currentTierIndex);
+                currentTierIndex = Math.min(standardokuTiers.length - 1, currentTierIndex);
             }
             renderSliderPoints();
             setDifficulty(currentTierIndex, broadcast);

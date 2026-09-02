@@ -1493,7 +1493,7 @@
             </a>
             <div class="match-badge">
                 <span class="live-dot"></span>
-                <span id="matchHeaderMode">SPRINT // MEDIUM</span>
+                <span id="matchHeaderMode">STANDARDOKU // MEDIUM</span>
             </div>
         </div>
 
@@ -1793,7 +1793,7 @@
             </div>
 
             <!-- Race Benchmark & Telemetry Card -->
-            <div class="telemetry-card">
+            <div class="telemetry-card" id="telemetryCard">
                 <div class="card-header-bar">
                     <span class="card-title">
                         <span>⏱</span>
@@ -1821,6 +1821,40 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Standardoku Match Aids Card -->
+            <div class="telemetry-card" id="matchAidsCard" style="display: none; border-color: var(--accent);">
+                <div class="card-header-bar">
+                    <span class="card-title" style="color: var(--accent);">
+                        <span>🧰</span>
+                        <span>Match Aids</span>
+                    </span>
+                    <span style="font-family: var(--font-hand); color: var(--ink-note); font-weight: bold;">cost points to use</span>
+                </div>
+
+                <div class="telemetry-grid" style="grid-template-columns: 1fr 1fr;">
+                    <button class="util-btn" id="aidComputeNotesBtn" style="flex-direction: column; height: auto; padding: 12px; gap: 4px;">
+                        <span style="font-size: 1.2rem;">📝</span>
+                        <span>Compute Notes</span>
+                        <span style="font-family: var(--font-hand); font-size: 0.9rem; color: #ef4444; font-weight: bold;">-2 pts</span>
+                    </button>
+                    <button class="util-btn" id="aidStrategicSolveBtn" style="flex-direction: column; height: auto; padding: 12px; gap: 4px;">
+                        <span style="font-size: 1.2rem;">🎯</span>
+                        <span>Strategic Solve</span>
+                        <span style="font-family: var(--font-hand); font-size: 0.9rem; color: #ef4444; font-weight: bold;">-3 pts</span>
+                    </button>
+                    <button class="util-btn" id="aidErrorScanBtn" style="flex-direction: column; height: auto; padding: 12px; gap: 4px;">
+                        <span style="font-size: 1.2rem;">🔍</span>
+                        <span>Error Scan</span>
+                        <span style="font-family: var(--font-hand); font-size: 0.9rem; color: #ef4444; font-weight: bold;">-2 pts</span>
+                    </button>
+                    <button class="util-btn" id="aidAutoCorrectBtn" style="flex-direction: column; height: auto; padding: 12px; gap: 4px;">
+                        <span style="font-size: 1.2rem;">✨</span>
+                        <span>Auto-Correct</span>
+                        <span style="font-family: var(--font-hand); font-size: 0.9rem; color: #ef4444; font-weight: bold;">-5 pts</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1835,11 +1869,11 @@
 
             <div class="victory-stats-table">
                 <div class="vstat-item">
-                    <span class="vstat-label">Final Time</span>
+                    <span class="vstat-label" id="vRawTimeLabel">Final Time</span>
                     <span class="vstat-val" id="vRawTime">02:14.30</span>
                 </div>
                 <div class="vstat-item">
-                    <span class="vstat-label">Penalties</span>
+                    <span class="vstat-label" id="vPenaltiesLabel">Penalties</span>
                     <span class="vstat-val" id="vPenalties">+0s</span>
                 </div>
                 <div class="vstat-item">
@@ -2006,7 +2040,7 @@
             playerName: urlParams.get('playerName') || 'YOU',
             playerColor: urlParams.get('playerColor') || '#3b82f6',
             seed: parseInt(urlParams.get('seed') || Math.floor(Math.random() * 1000000)),
-            gameMode: urlParams.get('gameMode') || 'Sprint',
+            gameMode: urlParams.get('gameMode') || 'Standardoku',
             difficulty: urlParams.get('difficulty') || 'Medium',
             countdownMinutes: parseFloat(urlParams.get('countdownMinutes') || '0'),
             clues: parseInt(urlParams.get('clues') || '0')
@@ -2051,7 +2085,7 @@
             ? `COUNTDOWN // ${currentMatchConfig.countdownMinutes > 0 ? currentMatchConfig.countdownMinutes + 'M' : ''} (${currentMatchConfig.difficulty.toUpperCase()})`
             : (isDominationMode 
                 ? `DOMINATION // SHARED BOARD TERRITORY (${currentMatchConfig.difficulty.toUpperCase()})`
-                : `SPRINT // ${currentMatchConfig.difficulty.toUpperCase()}`);
+                : `STANDARDOKU // ${currentMatchConfig.difficulty.toUpperCase()}`);
 
         document.getElementById('matchHeaderMode').textContent = headerTitle;
         document.getElementById('cluesVal').textContent = activeClueCount;
@@ -2061,7 +2095,7 @@
                 ? `🏁 Room [${currentMatchConfig.room}] // Live Symmetrical Match`
                 : (isCountdownMode 
                     ? `⏱ Countdown Race Against Clock (${(countdownDuration / 60000).toFixed(1)}m) // Live Field` 
-                    : '🏁 Sprint Race To The Finish // Live Field'));
+                    : '🏁 Standardoku Race To The Finish // Live Field'));
 
         if (isDominationMode) {
             document.getElementById('racersLanesContainer').style.display = 'none';
@@ -2158,6 +2192,8 @@
         let penaltySeconds = 0;
         let errorCount = 0;
         let totalPlacements = 0;
+        let standardokuScore = 0;
+        let standardokuMaxScore = 0;
 
         // Racers State
         let p1Solved = 0;
@@ -2666,6 +2702,16 @@
                 }
             }
 
+            standardokuMaxScore = totalEmptyCells;
+            standardokuScore = totalEmptyCells;
+
+            if (currentMatchConfig.gameMode === 'Standardoku') {
+                const telemetryCard = document.getElementById('telemetryCard');
+                const matchAidsCard = document.getElementById('matchAidsCard');
+                if (telemetryCard) telemetryCard.style.display = 'none';
+                if (matchAidsCard) matchAidsCard.style.display = 'block';
+            }
+
             initRacers();
             if (isDominationMode) {
                 calculateHardestBonusCell();
@@ -3030,7 +3076,7 @@
             } else if (isCountdownMode) {
                 penaltyDisplay.textContent = penaltySeconds > 0 ? `-${penaltySeconds}s` : '0s';
             } else {
-                penaltyDisplay.textContent = '+0s';
+                penaltyDisplay.textContent = `${standardokuScore} pts`;
             }
 
             // Telemetry updates
@@ -3202,7 +3248,7 @@
             }
 
             if (!isCountdownMode) {
-                // SPRINT MODE: Finish when all 81 cells are filled
+                // STANDARDOKU MODE: Finish when all 81 cells are filled
                 let allFilled = true;
                 for (let r = 0; r < 9; r++) {
                     for (let c = 0; c < 9; c++) {
@@ -3216,45 +3262,30 @@
 
                 if (!allFilled) return;
 
-                // Board filled! Reveal sprint errors and calculate final penalties
+                // Board filled! Calculate final standardoku score based on remaining mistakes
                 isGameFinished = true;
                 clearInterval(timerInterval);
 
-                let sprintErrors = 0;
+                let standardokuErrors = 0;
                 const errorCells = [];
                 for (let r = 0; r < 9; r++) {
                     for (let c = 0; c < 9; c++) {
                         if (boardState[r][c] !== gameData.solution[r][c]) {
-                            sprintErrors++;
+                            standardokuErrors++;
                             errorCells.push({ r, c });
                         }
                     }
                 }
 
-                errorCount = sprintErrors;
-                penaltySeconds = sprintErrors * 5; // +5s penalty per error in sprint
+                errorCount = standardokuErrors;
+                standardokuScore -= standardokuErrors; // -1 pt penalty per mistake
 
                 errorCells.forEach(({ r, c }) => {
                     const cell = document.querySelector(`.sudoku-cell[data-row="${r}"][data-col="${c}"]`);
                     if (cell) {
-                        cell.classList.add('error');
+                        cell.classList.add('error-highlight');
                     }
                 });
-
-                const rawElapsedMs = Date.now() - startTime;
-                const finalElapsedMs = rawElapsedMs + (penaltySeconds * 1000);
-
-                const rawTotalSec = Math.floor(rawElapsedMs / 1000);
-                const rawMins = Math.floor(rawTotalSec / 60);
-                const rawSecs = rawTotalSec % 60;
-                const rawMs = Math.floor((rawElapsedMs % 1000) / 10);
-                const rawFormatted = `${String(rawMins).padStart(2, '0')}:${String(rawSecs).padStart(2, '0')}.${String(rawMs).padStart(2, '0')}`;
-
-                const finTotalSec = Math.floor(finalElapsedMs / 1000);
-                const finMins = Math.floor(finTotalSec / 60);
-                const finSecs = finTotalSec % 60;
-                const finMs = Math.floor((finalElapsedMs % 1000) / 10);
-                const finalFormatted = `${String(finMins).padStart(2, '0')}:${String(finSecs).padStart(2, '0')}.${String(finMs).padStart(2, '0')}`;
 
                 sound.playVictory();
 
@@ -3270,22 +3301,28 @@
                         roomId: currentMatchConfig.room,
                         playerId: currentMatchConfig.playerId,
                         playerName: currentMatchConfig.playerName,
-                        finalTime: finalFormatted,
-                        rawTime: rawFormatted,
-                        penalties: penaltySeconds,
-                        errors: sprintErrors,
+                        finalScore: standardokuScore,
+                        maxScore: standardokuMaxScore,
+                        errors: standardokuErrors,
                         rank: myRank
                     });
                 }
 
-                document.getElementById('modalIcon').textContent = (myRank === 1 && sprintErrors === 0) ? '🏆' : (sprintErrors === 0 ? '✨' : '🏁');
-                document.getElementById('modalTitle').textContent = sprintErrors === 0 ? 'FLAWLESS SPRINT // 1ST PLACE!' : `SPRINT FINISHED // ${rankText}!`;
-                document.getElementById('modalSubtitle').textContent = sprintErrors === 0 
-                    ? 'Sensational flawless run! 0 errors committed across the sprint board.'
-                    : `Sprint finished! ${sprintErrors} ${sprintErrors === 1 ? 'error' : 'errors'} committed (+${penaltySeconds}s penalty applied to raw time).`;
-                document.getElementById('vRawTime').textContent = sprintErrors > 0 ? `${finalFormatted} (Raw: ${rawFormatted})` : finalFormatted;
-                document.getElementById('vPenalties').textContent = sprintErrors > 0 ? `+${penaltySeconds}s (${sprintErrors} err)` : '+0s (Flawless)';
+                document.getElementById('modalIcon').textContent = (standardokuScore === standardokuMaxScore) ? '🏆' : '🏁';
+                document.getElementById('modalTitle').textContent = standardokuScore === standardokuMaxScore ? 'FLAWLESS STANDARDOKU // PERFECT SCORE!' : `STANDARDOKU FINISHED // ${rankText}!`;
+                document.getElementById('modalSubtitle').textContent = standardokuScore === standardokuMaxScore 
+                    ? `Sensational flawless run! You scored the maximum possible ${standardokuMaxScore} points with no match aids or errors.`
+                    : `Standardoku finished! You scored ${standardokuScore} / ${standardokuMaxScore} points.`;
+                
+                document.getElementById('vRawTimeLabel').textContent = 'Final Score';
+                document.getElementById('vRawTime').textContent = `${standardokuScore} pts`;
+                
+                document.getElementById('vPenaltiesLabel').textContent = 'Penalties Applied';
+                document.getElementById('vPenalties').textContent = standardokuErrors > 0 ? `-${standardokuErrors} pts (${standardokuErrors} end errors)` : '-0 pts (Flawless end)';
+                
                 document.getElementById('vRank').textContent = rankText;
+                
+                updateStatsAndProgress();
                 victoryModal.classList.add('show');
             } else {
                 // COUNTDOWN MODE
@@ -3474,6 +3511,133 @@
                 useMentalBlockHint();
             }
         });
+
+        /* ---------------------------------------------------- */
+        /* STANDARDOKU MATCH AIDS LOGIC                         */
+        /* ---------------------------------------------------- */
+        function useMatchAid(aidType) {
+            if (isGameFinished || currentMatchConfig.gameMode !== 'Standardoku') return;
+            sound.init();
+
+            if (aidType === 'COMPUTE_NOTES') {
+                standardokuScore -= 2;
+                sound.playPencil();
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] === 0) {
+                            notesState[r][c].clear();
+                            for (let v = 1; v <= 9; v++) {
+                                if (isGridValidForCell(r, c, v)) {
+                                    notesState[r][c].add(v);
+                                }
+                            }
+                        }
+                    }
+                }
+                renderBoard();
+            }
+
+            if (aidType === 'STRATEGIC_SOLVE') {
+                standardokuScore -= 3;
+                sound.playStamp();
+                let bestCell = null;
+                let maxRestrictions = -1;
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] === 0) {
+                            let restrictions = 0;
+                            for(let i=0; i<9; i++) {
+                                if (i !== c && boardState[r][i] === 0) restrictions++;
+                                if (i !== r && boardState[i][c] === 0) restrictions++;
+                            }
+                            const sr = Math.floor(r/3)*3;
+                            const sc = Math.floor(c/3)*3;
+                            for(let i=0; i<3; i++) {
+                                for(let j=0; j<3; j++) {
+                                    if ((sr+i) !== r && (sc+j) !== c && boardState[sr+i][sc+j] === 0) {
+                                        restrictions++;
+                                    }
+                                }
+                            }
+                            if (restrictions > maxRestrictions) {
+                                maxRestrictions = restrictions;
+                                bestCell = {r, c};
+                            }
+                        }
+                    }
+                }
+
+                if (bestCell) {
+                    const {r, c} = bestCell;
+                    boardState[r][c] = gameData.solution[r][c];
+                    notesState[r][c].clear();
+                    clearConflictingNotes(r, c, boardState[r][c]);
+                    p1Solved++;
+                    totalPlacements++;
+                    
+                    const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+                    if (cellEl) {
+                        cellEl.classList.add('pulse-anim');
+                        setTimeout(() => cellEl.classList.remove('pulse-anim'), 500);
+                    }
+                    renderBoard();
+                    checkWinCondition();
+                }
+            }
+
+            if (aidType === 'ERROR_SCAN') {
+                standardokuScore -= 2;
+                sound.playError();
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] !== 0 && boardState[r][c] !== gameData.solution[r][c]) {
+                            const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+                            if (cellEl) {
+                                cellEl.classList.add('error-highlight');
+                                setTimeout(() => cellEl.classList.remove('error-highlight'), 3000);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (aidType === 'AUTO_CORRECT') {
+                standardokuScore -= 5;
+                sound.playStamp();
+                let corrected = false;
+                for (let r = 0; r < 9; r++) {
+                    for (let c = 0; c < 9; c++) {
+                        if (boardState[r][c] !== 0 && boardState[r][c] !== gameData.solution[r][c]) {
+                            boardState[r][c] = gameData.solution[r][c];
+                            notesState[r][c].clear();
+                            clearConflictingNotes(r, c, boardState[r][c]);
+                            corrected = true;
+                            const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+                            if (cellEl) {
+                                cellEl.classList.add('pulse-anim');
+                                setTimeout(() => cellEl.classList.remove('pulse-anim'), 500);
+                            }
+                        }
+                    }
+                }
+                if (corrected) {
+                    renderBoard();
+                    checkWinCondition();
+                }
+            }
+            
+            updateStatsAndProgress();
+        }
+
+        const aidComputeNotesBtn = document.getElementById('aidComputeNotesBtn');
+        const aidStrategicSolveBtn = document.getElementById('aidStrategicSolveBtn');
+        const aidErrorScanBtn = document.getElementById('aidErrorScanBtn');
+        const aidAutoCorrectBtn = document.getElementById('aidAutoCorrectBtn');
+
+        if (aidComputeNotesBtn) aidComputeNotesBtn.addEventListener('click', () => useMatchAid('COMPUTE_NOTES'));
+        if (aidStrategicSolveBtn) aidStrategicSolveBtn.addEventListener('click', () => useMatchAid('STRATEGIC_SOLVE'));
+        if (aidErrorScanBtn) aidErrorScanBtn.addEventListener('click', () => useMatchAid('ERROR_SCAN'));
+        if (aidAutoCorrectBtn) aidAutoCorrectBtn.addEventListener('click', () => useMatchAid('AUTO_CORRECT'));
 
         /* ---------------------------------------------------- */
         /* 11. THEME SWITCHER & PERSISTENCE                     */
