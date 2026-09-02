@@ -1483,7 +1483,7 @@
                             <div class="room-code-card">
                                 <div class="room-code-label">Your Private Room Code</div>
                                 <div class="room-code-display-wrap">
-                                    <span class="room-code-val" id="hostRoomCodeVal">SPD-7492</span>
+                                    <span class="room-code-val" id="hostRoomCodeVal">FAST-INK</span>
                                     <button class="room-btn-icon" id="copyRoomCodeBtn" title="Copy Room Code">
                                         <span id="copyCodeIcon">📋</span>
                                         <span>Copy Code</span>
@@ -1540,7 +1540,7 @@
                             <div class="room-join-input-card">
                                 <label class="room-code-label" for="joinRoomCodeInput">Enter Room Code to Join:</label>
                                 <div class="room-join-row">
-                                    <input type="text" id="joinRoomCodeInput" class="tactical-input room-code-input" placeholder="e.g. SPD-7492" maxlength="10" />
+                                    <input type="text" id="joinRoomCodeInput" class="tactical-input room-code-input" placeholder="e.g. FAST-INK" maxlength="20" />
                                     <button class="btn-room-action" id="joinRoomSubmitBtn">
                                         <span>⚡</span>
                                         <span>Connect</span>
@@ -1759,12 +1759,11 @@
 
         // Multiplayer Room State
         function generateRoomCode() {
-            const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-            let code = 'SPD-';
-            for (let i = 0; i < 4; i++) {
-                code += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return code;
+            const adjectives = ['BLUE', 'FAST', 'QUICK', 'RED', 'NEON', 'SHARP', 'SWIFT', 'BRAVE', 'SMART', 'BOLD', 'CLEAN', 'RAPID', 'SLICK', 'DARK', 'LIGHT', 'WILD', 'CALM', 'GRAND', 'EPIC'];
+            const nouns = ['PENCIL', 'ERASER', 'INK', 'GRID', 'PEN', 'NOTE', 'PAPER', 'LINE', 'BOOK', 'RULER', 'MARKER', 'PAD', 'DASH', 'CRAFT', 'SKETCH', 'DRAFT'];
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            return `${adj}-${noun}`;
         }
 
         const roomState = {
@@ -2277,9 +2276,9 @@
         }
 
         joinRoomSubmitBtn.addEventListener('click', () => {
-            const targetCode = joinRoomCodeInput.value.trim().toUpperCase();
+            let targetCode = joinRoomCodeInput.value.trim().toUpperCase();
             if (!targetCode) {
-                joinRoomStatusText.textContent = 'Please enter a valid room code (e.g. SPD-7492).';
+                joinRoomStatusText.textContent = 'Please enter a valid room code (e.g. FAST-INK).';
                 joinRoomStatusText.style.color = '#ef4444';
                 return;
             }
