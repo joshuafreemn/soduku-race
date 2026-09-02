@@ -2280,6 +2280,12 @@
         function handleMatchNetworkMessage(data) {
             if (!data || !data.type) return;
 
+            // Host acts as the relay server: broadcast the packet to all other connected peers
+            // (Sender will receive it back but idempotency checks prevent duplication)
+            if (currentMatchConfig.isHost && data.playerId && data.playerId !== currentMatchConfig.playerId) {
+                broadcastMatchPacket(data);
+            }
+
             if (data.type === 'PROGRESS_UPDATE' && data.playerId !== currentMatchConfig.playerId) {
                 const racer = matchRacers.find(r => r.id === data.playerId);
                 if (racer) {
