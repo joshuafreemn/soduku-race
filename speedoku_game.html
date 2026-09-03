@@ -1055,13 +1055,17 @@
 
         /* 3x3 Candidate Notes Inside Cell (Handwritten Font) */
         .pencil-notes-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            width: 100%;
-            height: 100%;
             padding: 2px;
             pointer-events: none;
+            box-sizing: border-box;
         }
 
         .pencil-note-num {
@@ -1466,19 +1470,66 @@
             .game-main-area {
                 grid-template-columns: 1fr;
                 justify-items: center;
+                gap: 1rem;
+            }
+            .board-container {
+                padding: 0.75rem;
+                width: 100%;
+                max-width: 520px;
+                box-sizing: border-box;
             }
             .sudoku-grid {
-                width: 90vw;
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1 / 1;
                 max-width: 480px;
-                height: 90vw;
                 max-height: 480px;
             }
             .sudoku-cell {
-                font-size: 1.3rem;
+                font-size: clamp(1rem, 5vw, 1.3rem);
             }
             .game-sidebar {
                 width: 100%;
                 max-width: 480px;
+                box-sizing: border-box;
+                gap: 0.5rem;
+            }
+            .pencil-case-card {
+                padding: 0.85rem;
+                gap: 0.6rem;
+            }
+            .numpad-grid {
+                gap: 0.35rem;
+            }
+            .numpad-btn {
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            .race-track-card {
+                padding: 0.85rem;
+            }
+            .race-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .race-lead-tag {
+                font-size: 0.9rem;
+            }
+            .header-brand {
+                font-size: 0.8rem;
+            }
+            .hud-center {
+                gap: 0.5rem;
+            }
+            .stat-pill {
+                padding: 0.2rem 0.4rem;
+            }
+            .stat-label {
+                font-size: 0.5rem;
+            }
+            .stat-val {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -1748,22 +1799,11 @@
         <div class="game-sidebar">
             <!-- Pencil Case Controls -->
             <div class="pencil-case-card">
-                <div class="card-header-bar">
+                <div class="card-header-bar" style="margin-bottom: 0;">
                     <span class="card-title">
                         <span>✏</span>
                         <span>Pencil Case & Tools</span>
                     </span>
-                    <!-- Input Mode Toggle -->
-                    <div class="mode-toggle-group">
-                        <button class="mode-btn active" id="penModeBtn">
-                            <span>✍</span>
-                            <span>Pen</span>
-                        </button>
-                        <button class="mode-btn" id="pencilModeBtn">
-                            <span>✎</span>
-                            <span>Notes</span>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- 1-9 Smart Numpad -->
@@ -1779,13 +1819,23 @@
                     <button class="numpad-btn" data-digit="9">9<span class="numpad-count" id="count-9">0/9</span></button>
                 </div>
 
-                <!-- Utilities: Erase & Mental Block Hint -->
-                <div class="utility-row">
-                    <button class="util-btn" id="eraseBtn">
+                <!-- Utilities: Pen, Notes, Erase & Mental Block Hint -->
+                <div class="utility-row" style="display: flex; gap: 0.65rem;">
+                    <div class="mode-toggle-group" style="flex: 2; display: flex;">
+                        <button class="mode-btn active" id="penModeBtn" style="flex: 1;">
+                            <span>✍</span>
+                            <span>Pen</span>
+                        </button>
+                        <button class="mode-btn" id="pencilModeBtn" style="flex: 1;">
+                            <span>✎</span>
+                            <span>Notes</span>
+                        </button>
+                    </div>
+                    <button class="util-btn" id="eraseBtn" style="flex: 1; padding: 0.4rem;">
                         <span>⌫</span>
                         <span>Erase</span>
                     </button>
-                    <button class="util-btn hint-btn" id="mentalHintBtn">
+                    <button class="util-btn hint-btn" id="mentalHintBtn" style="display: none !important;">
                         <span>💡</span>
                         <span>Mental Block (+15s)</span>
                     </button>
