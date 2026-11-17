@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPEEDOKU // Live Match Arena</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9C%8F%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <!-- Google Fonts & PeerJS WebRTC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -905,6 +906,44 @@
         }
 
         /* Domination Freeze Lockout Overlay */
+        .sudoku-cell.error-highlight {
+            background: rgba(239, 68, 68, 0.22) !important;
+            color: #ef4444 !important;
+            box-shadow: inset 0 0 0 2px #ef4444;
+        }
+        .sudoku-cell.pulse-anim {
+            animation: aidPulse 0.5s ease;
+        }
+        @keyframes aidPulse {
+            0% { transform: scale(1); background: rgba(245, 158, 11, 0.45); }
+            50% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+        .speedoku-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            background: var(--surface-color, #15191e);
+            color: var(--text-primary, #e2e6eb);
+            border: 2px solid var(--border-color, #2b333c);
+            box-shadow: 3px 3px 0 var(--accent, #f59e0b);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            z-index: 2000;
+            max-width: calc(100vw - 32px);
+            text-align: center;
+            animation: fadeIn 0.15s ease;
+        }
+        .start-count {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: var(--font-mono, monospace);
+        }
+
         .freeze-overlay {
             position: absolute;
             inset: 0;
@@ -1532,6 +1571,119 @@
                 font-size: 0.7rem;
             }
         }
+
+        /* Phones: one-row header, full-width board with bigger cells, numpad pinned to the bottom */
+        @media (max-width: 600px) {
+            body {
+                padding: 0.6rem 12px 0;
+            }
+            header {
+                flex-wrap: wrap;
+                gap: 0.4rem;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.6rem;
+            }
+            .match-badge,
+            .kb-hints,
+            .spiral-rings,
+            .icon-btn span:not(:first-child),
+            .palette-burger-btn > span:not(.active-swatch-dot) {
+                display: none;
+            }
+            .logo-box {
+                font-size: 0.8rem;
+                padding: 0.15rem 0.45rem;
+                letter-spacing: 0.08em;
+            }
+            .hud-center {
+                gap: 0.3rem;
+                order: 3;
+                flex: 1 1 100%;
+                justify-content: space-between;
+            }
+            .timer-display {
+                font-size: 1rem;
+            }
+            .header-actions {
+                gap: 0.3rem;
+            }
+            .icon-btn,
+            .palette-burger-btn {
+                padding: 0.3rem 0.45rem;
+                min-width: 0;
+            }
+            .race-track-card {
+                padding: 0.5rem 0.65rem;
+                margin-bottom: 0.6rem;
+                gap: 0.35rem;
+            }
+            .race-header {
+                gap: 0.2rem !important;
+            }
+            .racer-row {
+                grid-template-columns: 84px 1fr 34px;
+                gap: 0.4rem;
+                font-size: 0.65rem;
+            }
+            .board-container {
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                background: transparent;
+                max-width: none;
+            }
+            .sudoku-grid {
+                width: min(calc(100vw - 24px), 480px);
+                max-width: none;
+                max-height: none;
+            }
+            .sudoku-cell {
+                font-size: clamp(1.1rem, 6vw, 1.4rem);
+            }
+            .game-sidebar {
+                max-width: none;
+            }
+            body {
+                padding-bottom: 128px;
+            }
+            .pencil-case-card {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 500;
+                padding: 0.45rem 12px calc(0.45rem + env(safe-area-inset-bottom));
+                gap: 0.4rem;
+                border-radius: 12px 12px 0 0;
+                box-shadow: 0 -4px 14px var(--shadow-color);
+            }
+            .pencil-case-card .card-header-bar {
+                display: none;
+            }
+            .numpad-grid {
+                grid-template-columns: repeat(9, 1fr);
+                gap: 3px;
+            }
+            .numpad-btn {
+                height: 46px;
+                min-width: 0;
+                padding: 0;
+                font-size: 1.15rem;
+            }
+            .numpad-count {
+                right: 0;
+                left: 0;
+                text-align: center;
+                font-size: 0.5rem;
+            }
+            .utility-row button {
+                min-height: 34px;
+                padding: 0.2rem 0.4rem !important;
+            }
+            footer {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="theme-daylight">
@@ -1539,7 +1691,7 @@
     <!-- Header HUD -->
     <header>
         <div class="header-brand">
-            <a href="speedoku_welcome.html" class="logo-box" title="Return to Setup">
+            <a href="./" class="logo-box" title="Return to Setup">
                 <span>SPEEDOKU</span>
             </a>
             <div class="match-badge">
@@ -1554,7 +1706,7 @@
                 <span id="timeMinutes">00</span>:<span id="timeSeconds">00</span><span class="timer-ms" id="timeMillis">.00</span>
             </div>
             <div class="stat-pill">
-                <span class="stat-label">Penalties</span>
+                <span class="stat-label" id="penaltyLabel">Penalties</span>
                 <span class="stat-val penalty" id="penaltyDisplay">+0s</span>
             </div>
             <div class="stat-pill">
@@ -1578,7 +1730,7 @@
             </button>
 
             <!-- Back to Setup -->
-            <a href="speedoku_welcome.html" class="icon-btn" title="Back to Setup">
+            <a href="./" class="icon-btn" title="Back to Setup">
                 <span>⚙</span>
                 <span>Setup</span>
             </a>
@@ -1696,7 +1848,7 @@
     <!-- Global Race Progress Dashboard -->
     <div class="race-track-card">
         <div class="race-header">
-            <span id="raceTrackTitle">🏁 Live Speed Race Track // Symmetrical Seed</span>
+            <span id="raceTrackTitle">🏁 Live Speed Race Track // Shared Seed</span>
             <span class="race-lead-tag" id="raceLeadStatus">✍ You are holding 1st place!</span>
         </div>
 
@@ -1782,6 +1934,15 @@
             <!-- 9x9 Sudoku Grid -->
             <div class="sudoku-grid" id="sudokuGrid">
                 <!-- 81 Cells dynamically generated in JS -->
+            </div>
+
+            <!-- Synchronised Start Countdown Overlay -->
+            <div class="freeze-overlay" id="startOverlay" style="display: none;">
+                <div class="freeze-box">
+                    <div class="freeze-title">GET READY</div>
+                    <div class="start-count" id="startCountVal">3</div>
+                    <div class="freeze-sub">Everyone starts together</div>
+                </div>
             </div>
 
             <!-- Domination Freeze Lockout Overlay -->
@@ -1914,7 +2075,7 @@
             <div class="trophy-stamp" id="modalIcon">🏆</div>
             <div class="victory-title" id="modalTitle">VICTORY // MATCH FINISHED!</div>
             <p style="color: var(--text-muted); font-size: 0.95rem;" id="modalSubtitle">
-                Sensational speed and logical deduction across the symmetrical grid.
+                Sensational speed and logical deduction across the grid.
             </p>
 
             <div class="victory-stats-table">
@@ -1937,7 +2098,7 @@
                     <span>↻</span>
                     <span>Play Again</span>
                 </button>
-                <a href="speedoku_welcome.html" class="btn-action secondary">
+                <a href="./" class="btn-action secondary">
                     <span>⚙</span>
                     <span>Lobby Setup</span>
                 </a>
@@ -1954,7 +2115,6 @@
             <span><span class="kb-key">Space</span> Pen/Pencil</span>
             <span><span class="kb-key">Del</span> Erase</span>
             <span><span class="kb-key">Arrows</span> Move</span>
-            <span><span class="kb-key">H</span> Hint</span>
         </div>
         <div>Speedoku Clean Race Engine v2026.03 <span style="color: var(--accent);">★</span></div>
     </footer>
@@ -2081,15 +2241,33 @@
         /* ---------------------------------------------------- */
         /* 2. URL PARAMS & GAME MODE CONFIGURATION              */
         /* ---------------------------------------------------- */
+        // Shared helpers: HTML escaping (player names are user input), colour validation, ordinals
+        function escapeHTML(str) {
+            return String(str == null ? '' : str).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+        function safeColor(col, fallback = '#3b82f6') {
+            return (typeof col === 'string' && /^#[0-9a-f]{6}$/i.test(col)) ? col : fallback;
+        }
+        function safeName(name, fallback = 'Racer') {
+            const n = String(name == null ? '' : name).trim().slice(0, 15);
+            return n || fallback;
+        }
+        const ordinal = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 > 10 && n % 100 < 14) ? 0 : n % 10] || 'th');
+        const rankLabel = n => n === 1 ? '1st Place 🏆' : n === 2 ? '2nd Place 🥈' : n === 3 ? '3rd Place 🥉' : `${ordinal(n)} Place`;
+
         const urlParams = new URLSearchParams(window.location.search);
         const currentMatchConfig = {
             playType: urlParams.get('playType') || 'Play with friends',
             room: urlParams.get('room') || '',
             isHost: urlParams.get('isHost') === 'true',
             playerId: urlParams.get('playerId') || ('p_' + Math.random().toString(36).substring(2, 7)),
-            playerName: urlParams.get('playerName') || 'YOU',
-            playerColor: urlParams.get('playerColor') || '#3b82f6',
-            seed: parseInt(urlParams.get('seed') || Math.floor(Math.random() * 1000000)),
+            playerName: (urlParams.get('playerName') || 'YOU').slice(0, 15),
+            playerColor: safeColor(urlParams.get('playerColor')),
+            seed: (() => {
+                const s = parseInt(urlParams.get('seed'), 10);
+                return Number.isFinite(s) ? s : Math.floor(Math.random() * 1000000);
+            })(),
+            startAt: parseInt(urlParams.get('startAt') || '0', 10) || 0,
             gameMode: urlParams.get('gameMode') || 'Standardoku',
             difficulty: urlParams.get('difficulty') || 'Medium',
             countdownMinutes: parseFloat(urlParams.get('countdownMinutes') || '0'),
@@ -2103,13 +2281,15 @@
             'Medium': 34,
             'Medium-Hard': 30,
             'Hard': 28,
-            'Expert': 24,
-            'Super Hard': 22
+            'Expert': 25,
+            'Super Hard': 24
         };
 
         const isCountdownMode = (currentMatchConfig.gameMode === 'Countdown');
         const isDominationMode = (currentMatchConfig.gameMode === 'Domination');
-        const activeClueCount = currentMatchConfig.clues || clueCountsMap[currentMatchConfig.difficulty] || 34;
+        const targetClueCount = currentMatchConfig.clues || clueCountsMap[currentMatchConfig.difficulty] || 34;
+        // Actual clue count of the generated puzzle (uniqueness can stop the dig above the target)
+        let activeClueCount = targetClueCount;
 
         // Determine countdown duration
         let countdownDuration = 3.5 * 60 * 1000;
@@ -2142,7 +2322,7 @@
         document.getElementById('raceTrackTitle').textContent = isDominationMode
             ? `⚔️ Domination Territory Race // Live Shared Grid`
             : (currentMatchConfig.room 
-                ? `🏁 Room [${currentMatchConfig.room}] // Live Symmetrical Match`
+                ? `🏁 Room [${currentMatchConfig.room}] // Live Shared-Seed Match`
                 : (isCountdownMode 
                     ? `⏱ Countdown Race Against Clock (${(countdownDuration / 60000).toFixed(1)}m) // Live Field` 
                     : '🏁 Standardoku Race To The Finish // Live Field'));
@@ -2152,6 +2332,13 @@
             document.getElementById('dominationDashboard').style.display = 'block';
             document.getElementById('mentalHintBtn').style.display = 'none';
             // Disable Notes in Domination Mode
+            const eBtn = document.getElementById('eraseBtn');
+            if (eBtn) {
+                eBtn.disabled = true;
+                eBtn.style.opacity = '0.35';
+                eBtn.style.cursor = 'not-allowed';
+                eBtn.title = 'Erasing is disabled in Domination mode';
+            }
             const pBtn = document.getElementById('pencilModeBtn');
             if (pBtn) {
                 pBtn.disabled = true;
@@ -2172,6 +2359,31 @@
             };
         }
 
+        // Counts solutions of a grid (0 = empty), stopping once `limit` is reached.
+        function countSolutions(g, limit = 2) {
+            let n = 0;
+            const cands = (r, c) => {
+                const used = new Set();
+                for (let i = 0; i < 9; i++) { used.add(g[r][i]); used.add(g[i][c]); }
+                const br = r - r % 3, bc = c - c % 3;
+                for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) used.add(g[br + i][bc + j]);
+                return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(v => !used.has(v));
+            };
+            (function rec() {
+                if (n >= limit) return;
+                let best = null, bestC = null;
+                for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) if (g[r][c] === 0) {
+                    const cs = cands(r, c);
+                    if (cs.length === 0) return;
+                    if (!best || cs.length < bestC.length) { best = [r, c]; bestC = cs; }
+                }
+                if (!best) { n++; return; }
+                for (const v of bestC) { g[best[0]][best[1]] = v; rec(); if (n >= limit) break; }
+                g[best[0]][best[1]] = 0;
+            })();
+            return n;
+        }
+
         function generateValidSudoku(clueTotal, rng = Math.random) {
             // Seed a valid base 9x9 sudoku solution
             const baseSolution = [
@@ -2186,14 +2398,34 @@
                 [3, 4, 5, 2, 8, 6, 1, 7, 9]
             ];
 
-            // Permute numbers randomly (1-9 map) with seeded rng
-            const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-            for (let i = nums.length - 1; i > 0; i--) {
-                const j = Math.floor(rng() * (i + 1));
-                [nums[i], nums[j]] = [nums[j], nums[i]];
-            }
+            const shuffle = (arr) => {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(rng() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            };
 
-            const solution = baseSolution.map(row => row.map(val => nums[val - 1]));
+            // Permute digits (1-9 map) with seeded rng
+            const nums = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+            // Validity-preserving shuffles so every puzzle is a different grid:
+            // rows within bands, band order, columns within stacks, stack order, optional transpose.
+            const rowOrder = [];
+            shuffle([0, 1, 2]).forEach(band => shuffle([0, 1, 2]).forEach(i => rowOrder.push(band * 3 + i)));
+            const colOrder = [];
+            shuffle([0, 1, 2]).forEach(stack => shuffle([0, 1, 2]).forEach(i => colOrder.push(stack * 3 + i)));
+            const transpose = rng() < 0.5;
+
+            const solution = [];
+            for (let r = 0; r < 9; r++) {
+                solution.push([]);
+                for (let c = 0; c < 9; c++) {
+                    const sr = rowOrder[transpose ? c : r];
+                    const sc = colOrder[transpose ? r : c];
+                    solution[r].push(nums[baseSolution[sr][sc] - 1]);
+                }
+            }
             const puzzle = solution.map(row => [...row]);
 
             const positions = [];
@@ -2202,17 +2434,18 @@
                     positions.push([r, c]);
                 }
             }
+            shuffle(positions);
 
-            // Shuffle positions to remove cells with seeded rng
-            for (let i = positions.length - 1; i > 0; i--) {
-                const j = Math.floor(rng() * (i + 1));
-                [positions[i], positions[j]] = [positions[j], positions[i]];
-            }
-
+            // Dig one cell at a time, keeping a removal only if the puzzle still has exactly one
+            // solution. Every client runs this with the same seeded rng, so all players get the same grid.
             const toRemove = 81 - clueTotal;
-            for (let i = 0; i < toRemove; i++) {
-                const [r, c] = positions[i];
+            let removed = 0;
+            for (const [r, c] of positions) {
+                if (removed >= toRemove) break;
+                const keep = puzzle[r][c];
                 puzzle[r][c] = 0;
+                if (countSolutions(puzzle.map(row => [...row])) === 1) removed++;
+                else puzzle[r][c] = keep;
             }
 
             return { solution, puzzle };
@@ -2222,7 +2455,7 @@
         /* 4. GAME STATE & MULTIPLAYER ROSTER                   */
         /* ---------------------------------------------------- */
         let matchPRNG = createSeededRandom(currentMatchConfig.seed);
-        let gameData = generateValidSudoku(activeClueCount, matchPRNG);
+        let gameData = generateValidSudoku(targetClueCount, matchPRNG);
         let boardState = Array.from({ length: 9 }, () => Array(9).fill(0));
         let notesState = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
         let cellOwners = Array.from({ length: 9 }, () => Array(9).fill(null));
@@ -2285,69 +2518,160 @@
         let matchBroadcast = null;
         let matchPeer = null;
         let matchPeerConns = new Map();
+        let finishBannerLocked = false;
+        const pendingClaims = new Map(); // guest Domination claims awaiting the host: "r,c" -> timestamp
+
+        /* Small UI helpers */
+        function formatElapsed(elapsedMs) {
+            elapsedMs = Math.max(0, elapsedMs);
+            const totalSec = Math.floor(elapsedMs / 1000);
+            const mins = Math.floor(totalSec / 60);
+            const secs = totalSec % 60;
+            const ms = Math.floor((elapsedMs % 1000) / 10);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+        }
+
+        // Solo racers are bots: rank against the bots that actually finished first.
+        function soloRankText(rank) {
+            return rankLabel(rank);
+        }
+
+        let toastTimer = null;
+        function showToast(text) {
+            let el = document.getElementById('speedokuToast');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'speedokuToast';
+                el.className = 'speedoku-toast';
+                el.setAttribute('role', 'status');
+                document.body.appendChild(el);
+            }
+            el.textContent = text;
+            el.style.display = 'block';
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2800);
+        }
+
+        function isStartLocked() {
+            return Date.now() < startTime;
+        }
+
+        function showResultModal() {
+            // In multiplayer only the host can start the next match, so everyone stays in sync.
+            if (isMultiplayer && !currentMatchConfig.isHost) {
+                modalPlayAgainBtn.disabled = true;
+                modalPlayAgainBtn.innerHTML = '<span>⏳</span><span>Waiting for host…</span>';
+            }
+            victoryModal.classList.add('show');
+        }
+
+        function ensureRacer(id, name, color) {
+            if (!id) return null;
+            let racer = matchRacers.find(r => r.id === id);
+            if (!racer) {
+                racer = {
+                    id,
+                    name: safeName(name, 'Racer'),
+                    color: safeColor(color),
+                    isYou: id === currentMatchConfig.playerId,
+                    solved: 0, pct: 0, errors: 0, score: 0, isFinished: false
+                };
+                matchRacers.push(racer);
+                if (!isDominationMode) renderRacersLanes();
+            }
+            return racer;
+        }
 
         function initMultiplayerNetworking() {
             if (!isMultiplayer) return;
 
             const roomCode = currentMatchConfig.room;
             const cleanCode = roomCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const hostPeerId = `spd26-${cleanCode}-mhost`;
 
             // 1. BroadcastChannel (Instant multi-window local sync)
             try {
                 matchBroadcast = new BroadcastChannel('spd_match_' + roomCode);
                 matchBroadcast.onmessage = (e) => {
-                    handleMatchNetworkMessage(e.data);
+                    handleMatchNetworkMessage(e.data, null);
                 };
+                if (!currentMatchConfig.isHost) {
+                    matchBroadcast.postMessage({ type: 'HELLO', playerId: currentMatchConfig.playerId, playerName: currentMatchConfig.playerName, playerColor: currentMatchConfig.playerColor });
+                }
             } catch(e){}
 
             // 2. PeerJS WebRTC Channel (Cross-device sync)
-            if (window.Peer) {
+            if (!window.Peer) return;
+
+            if (currentMatchConfig.isHost) {
+                let hostRetries = 10;
+                const startHostPeer = () => {
+                    try {
+                        matchPeer = new Peer(hostPeerId, { debug: 0 });
+                    } catch(e) { return; }
+
+                    matchPeer.on('connection', (conn) => {
+                        conn.on('open', () => matchPeerConns.set(conn.peer, conn));
+                        conn.on('data', (data) => handleMatchNetworkMessage(data, conn));
+                        conn.on('close', () => matchPeerConns.delete(conn.peer));
+                    });
+
+                    matchPeer.on('error', (err) => {
+                        // After a refresh the old host ID can stay reserved for a few seconds: retry.
+                        if (err.type === 'unavailable-id' && hostRetries-- > 0) {
+                            try { matchPeer.destroy(); } catch(e){}
+                            setTimeout(startHostPeer, 2500);
+                        } else if (err.type === 'unavailable-id') {
+                            showToast('⚠ Could not reopen the room connection. Friends on other devices may not see you.');
+                        }
+                    });
+
+                    matchPeer.on('disconnected', () => {
+                        try { matchPeer.reconnect(); } catch(e){}
+                    });
+                };
+                startHostPeer();
+            } else {
+                const guestPeerId = `spd26-${cleanCode}-mp${Math.random().toString(36).substring(2, 7)}`;
                 try {
-                    const peerId = currentMatchConfig.isHost 
-                        ? `spd26-${cleanCode}-mhost` 
-                        : `spd26-${cleanCode}-mp${Math.random().toString(36).substring(2, 7)}`;
-                    
-                    matchPeer = new Peer(peerId, { debug: 0 });
+                    matchPeer = new Peer(guestPeerId, { debug: 0 });
+                } catch(e) { return; }
 
-                    if (currentMatchConfig.isHost) {
-                        matchPeer.on('connection', (conn) => {
-                            matchPeerConns.set(conn.peer, conn);
-                            conn.on('data', (data) => handleMatchNetworkMessage(data));
-                        });
-                    } else {
-                        matchPeer.on('open', () => {
-                            const hostPeerId = `spd26-${cleanCode}-mhost`;
-                            
-                            function connectToHost(retriesLeft = 15) {
-                                const conn = matchPeer.connect(hostPeerId, { reliable: true });
-                                conn.on('open', () => {
-                                    matchPeerConns.set(hostPeerId, conn);
-                                });
-                                conn.on('data', (data) => handleMatchNetworkMessage(data));
-                                
-                                conn.on('error', () => {
-                                    if (retriesLeft > 0) {
-                                        setTimeout(() => connectToHost(retriesLeft - 1), 1500);
-                                    }
-                                });
-                            }
-                            connectToHost();
-                        });
+                let retriesLeft = 20;
+                let retryTimer = null;
+                const scheduleRetry = () => {
+                    if (retryTimer || retriesLeft <= 0) return;
+                    retriesLeft--;
+                    retryTimer = setTimeout(() => { retryTimer = null; connectToHost(); }, 1500);
+                };
 
-                        matchPeer.on('error', (err) => {
-                            if (err.type === 'peer-unavailable') {
-                                const hostPeerId = `spd26-${cleanCode}-mhost`;
-                                setTimeout(() => {
-                                    if (!matchPeerConns.has(hostPeerId)) {
-                                        const conn = matchPeer.connect(hostPeerId, { reliable: true });
-                                        conn.on('open', () => matchPeerConns.set(hostPeerId, conn));
-                                        conn.on('data', (data) => handleMatchNetworkMessage(data));
-                                    }
-                                }, 1500);
-                            }
-                        });
+                function connectToHost() {
+                    if (matchPeerConns.has(hostPeerId) && matchPeerConns.get(hostPeerId).open) return;
+                    const conn = matchPeer.connect(hostPeerId, { reliable: true });
+                    conn.on('open', () => {
+                        matchPeerConns.set(hostPeerId, conn);
+                        retriesLeft = 20;
+                        // Ask the host for the current match state (handles refreshes and late joins)
+                        conn.send({ type: 'HELLO', playerId: currentMatchConfig.playerId, playerName: currentMatchConfig.playerName, playerColor: currentMatchConfig.playerColor });
+                    });
+                    conn.on('data', (data) => handleMatchNetworkMessage(data, conn));
+                    conn.on('close', () => {
+                        matchPeerConns.delete(hostPeerId);
+                        scheduleRetry();
+                    });
+                    conn.on('error', scheduleRetry);
+                }
+
+                matchPeer.on('open', connectToHost);
+                // PeerJS reports "host not found" on the peer object, not the connection
+                matchPeer.on('error', (err) => {
+                    if (err.type === 'peer-unavailable' || err.type === 'network' || err.type === 'server-error') {
+                        scheduleRetry();
                     }
-                } catch(e){}
+                });
+                matchPeer.on('disconnected', () => {
+                    try { matchPeer.reconnect(); } catch(e){}
+                });
             }
         }
 
@@ -2363,43 +2687,182 @@
             });
         }
 
-        function handleMatchNetworkMessage(data) {
-            if (!data || !data.type) return;
+        function buildStateSnapshot() {
+            const owners = [];
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const o = cellOwners[r][c];
+                    if (o) owners.push({ r, c, val: boardState[r][c], ...o });
+                }
+            }
+            return {
+                type: 'STATE_SNAPSHOT',
+                roomId: currentMatchConfig.room,
+                seed: currentMatchConfig.seed,
+                startAt: startTime,
+                finishOrder: [...finishOrder],
+                racers: matchRacers.map(r => ({
+                    id: r.id, name: r.name, color: r.color, solved: r.solved, pct: r.pct,
+                    score: r.score, errors: r.errors, isFinished: r.isFinished, finalTime: r.finalTime, dnf: r.dnf
+                })),
+                owners,
+                bonus: dominationBonusCell
+            };
+        }
 
-            // Host acts as the relay server: broadcast the packet to all other connected peers
-            // (Sender will receive it back but idempotency checks prevent duplication)
-            if (currentMatchConfig.isHost && data.playerId && data.playerId !== currentMatchConfig.playerId) {
+        function applyStateSnapshot(data) {
+            if (data.seed !== currentMatchConfig.seed) {
+                currentMatchConfig.seed = data.seed;
+                currentMatchConfig.startAt = data.startAt || 0;
+                initMatch();
+            }
+
+            (data.racers || []).forEach(r => {
+                const racer = ensureRacer(r.id, r.name, r.color);
+                if (!racer || racer.isYou) return;
+                racer.solved = r.solved || 0;
+                racer.pct = r.pct || 0;
+                racer.score = r.score || 0;
+                racer.errors = r.errors || 0;
+                racer.isFinished = Boolean(r.isFinished);
+                racer.finalTime = r.finalTime;
+                racer.dnf = Boolean(r.dnf);
+            });
+            (data.finishOrder || []).forEach(id => { if (!finishOrder.includes(id)) finishOrder.push(id); });
+
+            if (isDominationMode) {
+                (data.owners || []).forEach(o => {
+                    if (!isValidCell(o.r, o.c) || boardState[o.r][o.c] !== 0) return;
+                    if (o.val !== gameData.solution[o.r][o.c]) return;
+                    boardState[o.r][o.c] = o.val;
+                    cellOwners[o.r][o.c] = {
+                        playerId: o.playerId, playerName: safeName(o.playerName),
+                        playerColor: safeColor(o.playerColor), points: Number(o.points) || 0, isBonus: Boolean(o.isBonus)
+                    };
+                });
+                // Host's tally is authoritative, including our own score
+                (data.racers || []).forEach(r => {
+                    const racer = matchRacers.find(x => x.id === r.id);
+                    if (racer) { racer.score = r.score || 0; racer.solved = r.solved || 0; }
+                });
+                p1Solved = 0;
+                cellOwners.forEach(row => row.forEach(o => { if (o && o.playerId === currentMatchConfig.playerId) p1Solved++; }));
+                if (data.bonus && (data.bonus.r === -1 || isValidCell(data.bonus.r, data.bonus.c))) dominationBonusCell = data.bonus;
+                renderBoard();
+                updateStatsAndProgress();
+                checkDominationVictory();
+            } else {
+                updateRacersDOM();
+            }
+        }
+
+        function isValidCell(r, c) {
+            return Number.isInteger(r) && Number.isInteger(c) && r >= 0 && r < 9 && c >= 0 && c < 9;
+        }
+
+        // Applies a captured Domination cell (solo, host, or a guest receiving the host's ruling)
+        function applyDominationSolve(r, c, val, owner, points, isBonus) {
+            if (boardState[r][c] !== 0) return false;
+            boardState[r][c] = val;
+            cellOwners[r][c] = { playerId: owner.playerId, playerName: owner.playerName, playerColor: owner.playerColor, points, isBonus };
+            pendingClaims.delete(`${r},${c}`);
+
+            const racer = ensureRacer(owner.playerId, owner.playerName, owner.playerColor);
+            if (racer) {
+                racer.score = (racer.score || 0) + points;
+                if (!racer.isYou) racer.solved = (racer.solved || 0) + 1;
+            }
+            if (owner.playerId === currentMatchConfig.playerId) p1Solved++;
+
+            spawnPointPopup(r, c, `+${points}${isBonus ? ' 🌟' : ''}`, owner.playerColor);
+            sound.playStamp();
+            calculateHardestBonusCell();
+            renderBoard();
+            updateStatsAndProgress();
+            updateDominationScoreboard();
+            return true;
+        }
+
+        function hostReferee(r, c, val, owner) {
+            if (!isValidCell(r, c) || boardState[r][c] !== 0 || val !== gameData.solution[r][c]) return;
+            const isBonus = (dominationBonusCell.r === r && dominationBonusCell.c === c);
+            const points = getSolvePoints(r, c, isBonus);
+            if (!applyDominationSolve(r, c, val, owner, points, isBonus)) return;
+            if (isMultiplayer) {
+                broadcastMatchPacket({
+                    type: 'DOMINATION_CELL_SOLVE',
+                    authoritative: true,
+                    roomId: currentMatchConfig.room,
+                    r, c, val,
+                    playerId: owner.playerId,
+                    playerName: owner.playerName,
+                    playerColor: owner.playerColor,
+                    points, isBonus,
+                    bonus: dominationBonusCell
+                });
+            }
+            checkDominationVictory();
+        }
+
+        function handleMatchNetworkMessage(data, fromConn) {
+            if (!data || !data.type) return;
+            if (data.playerId === currentMatchConfig.playerId && data.type !== 'DOMINATION_CELL_SOLVE') return; // our own echo
+
+            const isHost = currentMatchConfig.isHost;
+
+            // Host relays player packets to everyone else (claims and hellos are handled by the host only)
+            if (isHost && data.playerId && !['DOMINATION_CLAIM', 'HELLO', 'STATE_SNAPSHOT'].includes(data.type)) {
                 broadcastMatchPacket(data);
             }
 
-            if (data.type === 'PROGRESS_UPDATE' && data.playerId !== currentMatchConfig.playerId) {
-                const racer = matchRacers.find(r => r.id === data.playerId);
+            if (data.type === 'HELLO' && isHost) {
+                ensureRacer(data.playerId, data.playerName, data.playerColor);
+                const snap = buildStateSnapshot();
+                if (fromConn && fromConn.open) {
+                    try { fromConn.send(snap); } catch(e){}
+                } else if (matchBroadcast) {
+                    try { matchBroadcast.postMessage(snap); } catch(e){}
+                }
+                return;
+            }
+
+            if (data.type === 'STATE_SNAPSHOT' && !isHost) {
+                applyStateSnapshot(data);
+                return;
+            }
+
+            if (data.type === 'PROGRESS_UPDATE') {
+                const racer = ensureRacer(data.playerId, data.playerName, data.playerColor);
                 if (racer) {
                     racer.solved = data.solvedCount || 0;
                     racer.pct = data.pct || 0;
                     racer.errors = data.errorCount || 0;
-                    racer.isFinished = Boolean(data.isFinished);
+                    racer.isFinished = racer.isFinished || Boolean(data.isFinished);
                     updateRacersDOM();
                 }
             }
 
-            if (data.type === 'DOMINATION_CELL_SOLVE') {
-                const { r, c, val, playerId, playerName, playerColor, points, isBonus } = data;
-                if (boardState[r][c] === 0) {
-                    boardState[r][c] = val;
-                    cellOwners[r][c] = { playerId, playerName, playerColor, points, isBonus };
+            if (data.type === 'DOMINATION_CLAIM' && isHost && isDominationMode && !isGameFinished) {
+                hostReferee(data.r, data.c, data.val, {
+                    playerId: data.playerId,
+                    playerName: safeName(data.playerName),
+                    playerColor: safeColor(data.playerColor)
+                });
+            }
 
-                    const racer = matchRacers.find(p => p.id === playerId);
-                    if (racer) {
-                        racer.score = (racer.score || 0) + points;
-                        racer.solved = (racer.solved || 0) + 1;
+            if (data.type === 'DOMINATION_CELL_SOLVE' && !isHost && data.authoritative) {
+                const { r, c, val } = data;
+                if (!isValidCell(r, c) || val !== gameData.solution[r][c]) return;
+                const applied = applyDominationSolve(r, c, val, {
+                    playerId: data.playerId,
+                    playerName: safeName(data.playerName),
+                    playerColor: safeColor(data.playerColor)
+                }, Number(data.points) || 0, Boolean(data.isBonus));
+                if (applied) {
+                    if (data.bonus && (data.bonus.r === -1 || isValidCell(data.bonus.r, data.bonus.c))) {
+                        dominationBonusCell = data.bonus;
+                        renderBoard();
                     }
-
-                    spawnPointPopup(r, c, `+${points}${isBonus ? ' 🌟' : ''}`, playerColor);
-                    sound.playStamp();
-                    calculateHardestBonusCell();
-                    renderBoard();
-                    updateDominationScoreboard();
                     checkDominationVictory();
                 }
             }
@@ -2409,7 +2872,7 @@
                     finishOrder.push(data.playerId);
                 }
                 const rankNum = finishOrder.indexOf(data.playerId) + 1;
-                const racer = matchRacers.find(r => r.id === data.playerId);
+                const racer = ensureRacer(data.playerId, data.playerName, data.playerColor);
                 if (racer) {
                     racer.pct = 100;
                     racer.isFinished = true;
@@ -2419,14 +2882,26 @@
                 updateRacersDOM();
 
                 const leadStatusEl = document.getElementById('raceLeadStatus');
-                if (data.playerId !== currentMatchConfig.playerId) {
-                    leadStatusEl.textContent = `🏆 ${data.playerName} finished in ${rankNum === 1 ? '1st' : rankNum === 2 ? '2nd' : '3rd'} place (${data.finalTime})!`;
+                if (leadStatusEl && !isGameFinished) {
+                    finishBannerLocked = true;
+                    leadStatusEl.textContent = `🏆 ${safeName(data.playerName)} finished ${ordinal(rankNum)}${data.finalTime ? ` (${data.finalTime})` : ''}!`;
                     leadStatusEl.style.color = '#f59e0b';
                 }
             }
 
-            if (data.type === 'REMATCH') {
+            if (data.type === 'PLAYER_DNF') {
+                const racer = ensureRacer(data.playerId, data.playerName, data.playerColor);
+                if (racer) racer.dnf = true;
+                const leadStatusEl = document.getElementById('raceLeadStatus');
+                if (leadStatusEl && !isGameFinished && !finishBannerLocked) {
+                    leadStatusEl.textContent = `⌛ ${safeName(data.playerName)} ran out of time (DNF)`;
+                    leadStatusEl.style.color = '#ef4444';
+                }
+            }
+
+            if (data.type === 'REMATCH' && !isHost) {
                 currentMatchConfig.seed = data.newSeed;
+                currentMatchConfig.startAt = data.startAt || 0;
                 initMatch();
             }
         }
@@ -2503,20 +2978,21 @@
                 const row = document.createElement('div');
                 row.className = 'racer-row';
                 row.id = `racerRow_${r.id}`;
+                const color = safeColor(r.color);
                 row.innerHTML = `
                     <div class="racer-profile">
-                        <span class="racer-rank-badge ${idx === 0 ? 'rank-1' : ''}" id="badge_${r.id}">${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}</span>
-                        <span class="racer-name ${r.isYou ? 'is-you' : ''}">${r.name} ${r.isYou ? '(You)' : ''}</span>
+                        <span class="racer-rank-badge ${idx === 0 ? 'rank-1' : ''}" id="badge_${escapeHTML(r.id)}">${ordinal(idx + 1)}</span>
+                        <span class="racer-name ${r.isYou ? 'is-you' : ''}">${escapeHTML(r.name)} ${r.isYou ? '(You)' : ''}</span>
                     </div>
                     <div class="lane-track">
-                        <div class="lane-progress-bar" id="bar_${r.id}" style="width: ${r.pct}%; background: ${r.color};">
+                        <div class="lane-progress-bar" id="bar_${escapeHTML(r.id)}" style="width: ${Number(r.pct) || 0}%; background: ${color};">
                             <svg class="racer-marker-pencil" viewBox="0 0 24 32">
-                                <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="${r.color}" stroke="#000" stroke-width="1.5"/>
+                                <path d="M4 2 L20 2 L20 22 L12 30 L4 22 Z" fill="${color}" stroke="#000" stroke-width="1.5"/>
                                 <polygon points="12 30 8 24 16 24" fill="#1e293b"/>
                             </svg>
                         </div>
                     </div>
-                    <div class="racer-pct" id="pct_${r.id}">${r.pct}%</div>
+                    <div class="racer-pct" id="pct_${escapeHTML(r.id)}">${Number(r.pct) || 0}%</div>
                 `;
                 racersLanesContainer.appendChild(row);
             });
@@ -2545,14 +3021,14 @@
             sorted.forEach((r, idx) => {
                 const badge = document.getElementById(`badge_${r.id}`);
                 if (badge) {
-                    badge.textContent = `${idx + 1}${idx === 0 ? 'st' : idx === 1 ? 'nd' : idx === 2 ? 'rd' : 'th'}`;
+                    badge.textContent = ordinal(idx + 1);
                     badge.className = `racer-rank-badge ${idx === 0 ? 'rank-1' : ''}`;
                 }
             });
 
             const youRank = sorted.findIndex(r => r.isYou) + 1;
             const leadStatusEl = document.getElementById('raceLeadStatus');
-            if (leadStatusEl && !isGameFinished) {
+            if (leadStatusEl && !isGameFinished && !finishBannerLocked) {
                 if (youRank === 1) {
                     leadStatusEl.textContent = '✍ You are holding 1st place!';
                     leadStatusEl.style.color = 'var(--ink-note)';
@@ -2560,7 +3036,7 @@
                     leadStatusEl.textContent = '⚡ 2nd place — closing the gap!';
                     leadStatusEl.style.color = '#3b82f6';
                 } else {
-                    leadStatusEl.textContent = `⚠ ${youRank}th place — speed up deduction!`;
+                    leadStatusEl.textContent = `⚠ ${ordinal(youRank)} place — speed up deduction!`;
                     leadStatusEl.style.color = '#ef4444';
                 }
             }
@@ -2595,7 +3071,10 @@
             }
 
             if (candidateCells.length > 0) {
-                const chosen = candidateCells[Math.floor(Math.random() * candidateCells.length)];
+                // Deterministic tie-break from the board itself, so every client agrees on the bonus cell
+                let h = 7;
+                for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) h = (h * 31 + boardState[r][c]) % 1000003;
+                const chosen = candidateCells[h % candidateCells.length];
                 dominationBonusCell = chosen;
             } else {
                 dominationBonusCell = { r: -1, c: -1 };
@@ -2653,8 +3132,8 @@
                 chip.className = `domination-player-chip ${idx === 0 && (r.score > 0) ? 'is-leader' : ''}`;
                 const pctOfBoard = totalInitialEmpty > 0 ? Math.round(((r.solved || 0) / totalInitialEmpty) * 100) : 0;
                 chip.innerHTML = `
-                    <span class="dom-player-dot" style="background: ${r.color};"></span>
-                    <span class="dom-player-name">${r.name} ${r.isYou ? '(You)' : ''}</span>
+                    <span class="dom-player-dot" style="background: ${safeColor(r.color)};"></span>
+                    <span class="dom-player-name">${escapeHTML(r.name)} ${r.isYou ? '(You)' : ''}</span>
                     <span class="dom-player-score">${r.score || 0} pts</span>
                     <span class="dom-player-cells">(${r.solved || 0} cells · ${pctOfBoard}%)</span>
                 `;
@@ -2668,7 +3147,7 @@
                 seg.className = 'dom-territory-segment';
                 const widthPct = totalInitialEmpty > 0 ? ((r.solved || 0) / totalInitialEmpty) * 100 : 0;
                 seg.style.width = `${widthPct}%`;
-                seg.style.background = r.color;
+                seg.style.background = safeColor(r.color);
                 seg.title = `${r.name}: ${r.solved || 0} cells (${Math.round(widthPct)}%)`;
                 domTerritoryTrack.appendChild(seg);
             });
@@ -2680,7 +3159,7 @@
                     leadStatusEl.textContent = `👑 Leading Domination with ${leader.score || 0} pts!`;
                     leadStatusEl.style.color = '#f59e0b';
                 } else if (leader) {
-                    leadStatusEl.textContent = `⚔️ ${leader.name} leads with ${leader.score || 0} pts! Capture cells!`;
+                    leadStatusEl.textContent = `⚔️ ${safeName(leader.name)} leads with ${leader.score || 0} pts! Capture cells!`;
                     leadStatusEl.style.color = '#38bdf8';
                 }
             }
@@ -2723,8 +3202,11 @@
         /* ---------------------------------------------------- */
         function initMatch() {
             matchPRNG = createSeededRandom(currentMatchConfig.seed);
-            gameData = generateValidSudoku(activeClueCount, matchPRNG);
+            gameData = generateValidSudoku(targetClueCount, matchPRNG);
             boardState = gameData.puzzle.map(row => [...row]);
+            activeClueCount = gameData.puzzle.flat().filter(v => v !== 0).length;
+            const cluesValEl = document.getElementById('cluesVal');
+            if (cluesValEl) cluesValEl.textContent = activeClueCount;
             notesState = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
             cellOwners = Array.from({ length: 9 }, () => Array(9).fill(null));
             selectedCell = { row: 0, col: 0 };
@@ -2732,13 +3214,24 @@
             errorCount = 0;
             totalPlacements = 0;
             penaltySeconds = 0;
-            startTime = Date.now();
+            pendingClaims.clear();
+            // Synchronised start: multiplayer matches start at the host's chosen moment (3-2-1 countdown).
+            // A start time up to 2h in the past is kept so a refresh mid-match keeps the same clock.
+            const sa = currentMatchConfig.startAt;
+            startTime = (isMultiplayer && sa && sa > Date.now() - 2 * 3600 * 1000 && sa < Date.now() + 60000) ? sa : Date.now();
+            if (modalPlayAgainBtn) {
+                modalPlayAgainBtn.disabled = false;
+                modalPlayAgainBtn.innerHTML = '<span>↻</span><span>Play Again</span>';
+            }
 
             if (dominationFreezeInterval) {
                 clearInterval(dominationFreezeInterval);
                 dominationFreezeInterval = null;
             }
             if (freezeOverlay) freezeOverlay.style.display = 'none';
+            dominationFreezeUntil = 0;
+            victoryModal.classList.remove('show');
+            finishBannerLocked = false;
 
             if (currentMatchConfig.playerColor) {
                 document.documentElement.style.setProperty('--ink-p1', currentMatchConfig.playerColor);
@@ -2774,7 +3267,7 @@
             if (isDominationMode && !isMultiplayer) {
                 if (dominationBotInterval) clearInterval(dominationBotInterval);
                 dominationBotInterval = setInterval(() => {
-                    if (isGameFinished || Date.now() < dominationFreezeUntil) return;
+                    if (isGameFinished || isStartLocked()) return;
 
                     // Randomly pick Nova or Apex
                     const botId = Math.random() < 0.5 ? 'bot_nova' : 'bot_apex';
@@ -2920,7 +3413,7 @@
         /* 6. INPUT DISPATCHER & NUMBER PLACEMENT               */
         /* ---------------------------------------------------- */
         function enterDigit(digit, forceNote = false) {
-            if (isGameFinished) return;
+            if (isGameFinished || isStartLocked()) return;
 
             // Check if player is currently frozen in Domination mode
             if (isDominationMode && Date.now() < dominationFreezeUntil) {
@@ -2953,50 +3446,22 @@
                 // DOMINATION MODE: Shared board territory solve
                 const correctVal = gameData.solution[row][col];
                 if (digit === correctVal) {
-                    // Correct Placement -> Capture Cell & Award Points
-                    const isBonus = (dominationBonusCell.r === row && dominationBonusCell.c === col);
-                    const points = getSolvePoints(row, col, isBonus);
-
-                    boardState[row][col] = digit;
-                    cellOwners[row][col] = {
+                    // Correct Placement -> Capture Cell. The host referees multiplayer claims.
+                    const me = {
                         playerId: currentMatchConfig.playerId,
                         playerName: currentMatchConfig.playerName,
-                        playerColor: currentMatchConfig.playerColor,
-                        points,
-                        isBonus
+                        playerColor: currentMatchConfig.playerColor
                     };
-
-                    p1Solved++;
-                    const youRacer = matchRacers.find(r => r.isYou);
-                    if (youRacer) {
-                        youRacer.score = (youRacer.score || 0) + points;
-                        youRacer.solved = (youRacer.solved || 0) + 1;
+                    if (isMultiplayer && !currentMatchConfig.isHost) {
+                        const key = `${row},${col}`;
+                        const last = pendingClaims.get(key);
+                        if (last && Date.now() - last < 2000) return;
+                        pendingClaims.set(key, Date.now());
+                        sound.playPencil();
+                        broadcastMatchPacket({ type: 'DOMINATION_CLAIM', roomId: currentMatchConfig.room, r: row, c: col, val: digit, ...me });
+                    } else {
+                        hostReferee(row, col, digit, me);
                     }
-
-                    sound.playStamp();
-                    spawnPointPopup(row, col, `+${points}${isBonus ? ' 🌟' : ''}`, currentMatchConfig.playerColor);
-                    calculateHardestBonusCell();
-                    renderBoard();
-                    updateStatsAndProgress();
-                    updateDominationScoreboard();
-
-                    // Broadcast to peers
-                    if (isMultiplayer) {
-                        broadcastMatchPacket({
-                            type: 'DOMINATION_CELL_SOLVE',
-                            roomId: currentMatchConfig.room,
-                            r: row,
-                            c: col,
-                            val: digit,
-                            playerId: currentMatchConfig.playerId,
-                            playerName: currentMatchConfig.playerName,
-                            playerColor: currentMatchConfig.playerColor,
-                            points,
-                            isBonus
-                        });
-                    }
-
-                    checkDominationVictory();
                 } else {
                     // Error in Domination Mode -> Freeze Lockout Penalty (2s, 4s, 6s...)
                     errorCount++;
@@ -3015,6 +3480,7 @@
                 const wasEmpty = (boardState[row][col] === 0);
                 boardState[row][col] = digit;
                 notesState[row][col].clear();
+                clearConflictingNotes(row, col, digit);
                 if (wasEmpty) p1Solved++;
 
                 sound.playPencil();
@@ -3028,6 +3494,7 @@
                     const wasEmpty = (boardState[row][col] === 0);
                     boardState[row][col] = digit;
                     notesState[row][col].clear();
+                    clearConflictingNotes(row, col, digit);
                     if (wasEmpty) p1Solved++;
 
                     sound.playPencil();
@@ -3056,7 +3523,7 @@
         }
 
         function eraseCurrentCell() {
-            if (isGameFinished) return;
+            if (isGameFinished || isStartLocked()) return;
             if (isDominationMode) return; // No erasing in Domination mode
             const { row, col } = selectedCell;
             if (gameData.puzzle[row][col] !== 0) return;
@@ -3072,15 +3539,19 @@
         }
 
         function useMentalBlockHint() {
-            if (isGameFinished || isDominationMode) return;
+            if (isGameFinished || isDominationMode || isStartLocked()) return;
             sound.init();
             const { row, col } = selectedCell;
             if (gameData.puzzle[row][col] !== 0) return;
+            if (boardState[row][col] === gameData.solution[row][col]) return; // already solved
 
-            penaltySeconds += 10;
+            const wasEmpty = boardState[row][col] === 0;
+            penaltySeconds += 15;
+            if (!isCountdownMode) standardokuScore = Math.max(0, standardokuScore - 3);
             boardState[row][col] = gameData.solution[row][col];
             notesState[row][col].clear();
-            p1Solved++;
+            clearConflictingNotes(row, col, boardState[row][col]);
+            if (wasEmpty) p1Solved++;
             sound.playPowerup();
             renderBoard();
             updateStatsAndProgress();
@@ -3101,6 +3572,8 @@
 
             for (let d = 1; d <= 9; d++) {
                 const btn = document.querySelector(`.numpad-btn[data-digit="${d}"]`);
+                const countEl = document.getElementById(`count-${d}`);
+                if (countEl) countEl.textContent = `${Math.min(counts[d], 9)}/9`;
                 if (btn) {
                     if (counts[d] >= 9) btn.classList.add('completed');
                     else btn.classList.remove('completed');
@@ -3120,6 +3593,8 @@
             }
             solvedRatio.textContent = `${currentFilled}/81`;
             
+            const penaltyLabelEl = document.getElementById('penaltyLabel');
+            if (penaltyLabelEl) penaltyLabelEl.textContent = isCountdownMode ? 'Penalties' : 'Score';
             if (isDominationMode) {
                 const youRacer = matchRacers.find(r => r.isYou);
                 penaltyDisplay.textContent = `${youRacer ? youRacer.score || 0 : 0} pts`;
@@ -3180,14 +3655,16 @@
                 const alex = matchRacers.find(r => r.id === 'bot_alex');
                 const zen = matchRacers.find(r => r.id === 'bot_zen');
 
-                if (alex && Math.random() < 0.35 && alex.solved < totalEmptyCells) {
-                    alex.solved++;
-                    alex.pct = Math.round((alex.solved / totalEmptyCells) * 100);
-                }
-                if (zen && Math.random() < 0.28 && zen.solved < totalEmptyCells) {
-                    zen.solved++;
-                    zen.pct = Math.round((zen.solved / totalEmptyCells) * 100);
-                }
+                if (isStartLocked()) return;
+                [[alex, 0.35], [zen, 0.28]].forEach(([bot, chance]) => {
+                    if (!bot || bot.isFinished || Math.random() >= chance) return;
+                    bot.solved++;
+                    bot.pct = Math.round((bot.solved / totalEmptyCells) * 100);
+                    if (bot.solved >= totalEmptyCells) {
+                        bot.isFinished = true;
+                        if (!finishOrder.includes(bot.id)) finishOrder.push(bot.id);
+                    }
+                });
                 updateRacersDOM();
             }, 1600);
         }
@@ -3197,11 +3674,23 @@
         /* ---------------------------------------------------- */
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
+            const startOverlay = document.getElementById('startOverlay');
+            const startCountVal = document.getElementById('startCountVal');
             timerInterval = setInterval(() => {
                 if (isGameFinished) return;
 
+                const untilStart = startTime - Date.now();
+                if (startOverlay) {
+                    if (untilStart > 0) {
+                        startOverlay.style.display = 'flex';
+                        if (startCountVal) startCountVal.textContent = Math.ceil(untilStart / 1000);
+                    } else if (startOverlay.style.display !== 'none') {
+                        startOverlay.style.display = 'none';
+                    }
+                }
+
                 if (isCountdownMode) {
-                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
+                    const elapsedMs = Math.max(0, Date.now() - startTime) + (penaltySeconds * 1000);
                     const remainingMs = Math.max(0, countdownDuration - elapsedMs);
                     const totalSec = Math.floor(remainingMs / 1000);
                     const mins = Math.floor(totalSec / 60);
@@ -3216,7 +3705,7 @@
                         handleTimeExpired();
                     }
                 } else {
-                    const elapsedMs = Date.now() - startTime;
+                    const elapsedMs = Math.max(0, Date.now() - startTime);
                     const totalSec = Math.floor(elapsedMs / 1000);
                     const mins = Math.floor(totalSec / 60);
                     const secs = totalSec % 60;
@@ -3240,7 +3729,17 @@
             document.getElementById('vRawTime').textContent = '00:00.00';
             document.getElementById('vPenalties').textContent = `-${penaltySeconds}s (${errorCount} err)`;
             document.getElementById('vRank').textContent = 'DNF';
-            victoryModal.classList.add('show');
+            showResultModal();
+
+            if (isMultiplayer) {
+                broadcastMatchPacket({
+                    type: 'PLAYER_DNF',
+                    roomId: currentMatchConfig.room,
+                    playerId: currentMatchConfig.playerId,
+                    playerName: currentMatchConfig.playerName,
+                    playerColor: currentMatchConfig.playerColor
+                });
+            }
         }
 
         function checkDominationVictory() {
@@ -3279,15 +3778,15 @@
             const finalFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
 
             document.getElementById('modalIcon').textContent = isYouWinner ? '👑' : '⚔️';
-            document.getElementById('modalTitle').textContent = isYouWinner ? 'DOMINATION CHAMPION // 1ST PLACE!' : `DOMINATION FINISHED // ${youRank === 1 ? '1st' : youRank === 2 ? '2nd' : '3rd'} PLACE`;
+            document.getElementById('modalTitle').textContent = isYouWinner ? 'DOMINATION CHAMPION // 1ST PLACE!' : `DOMINATION FINISHED // ${ordinal(youRank).toUpperCase()} PLACE`;
             document.getElementById('modalSubtitle').textContent = isYouWinner 
                 ? `You conquered the grid with ${youRacer ? youRacer.score : 0} points across ${youRacer ? youRacer.solved : 0} captured cells!`
-                : `${winner.name} won Domination with ${winner.score || 0} pts (${winner.solved || 0} cells). You scored ${youRacer ? youRacer.score : 0} pts.`;
+                : `${safeName(winner.name)} won Domination with ${winner.score || 0} pts (${winner.solved || 0} cells). You scored ${youRacer ? youRacer.score : 0} pts.`;
             
             document.getElementById('vRawTime').textContent = `${youRacer ? youRacer.score : 0} pts (${youRacer ? youRacer.solved : 0} cells)`;
             document.getElementById('vPenalties').textContent = `${errorCount} mistakes`;
-            document.getElementById('vRank').textContent = `${youRank}${youRank === 1 ? 'st' : youRank === 2 ? 'nd' : youRank === 3 ? 'rd' : 'th'} Place`;
-            victoryModal.classList.add('show');
+            document.getElementById('vRank').textContent = `${ordinal(youRank)} Place`;
+            showResultModal();
         }
 
         function checkVictory() {
@@ -3298,52 +3797,34 @@
             }
 
             if (!isCountdownMode) {
-                // STANDARDOKU MODE: Finish when all 81 cells are filled
+                // STANDARDOKU MODE: Finish only when the board is full AND correct
                 let allFilled = true;
+                let wrong = 0;
                 for (let r = 0; r < 9; r++) {
                     for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] === 0) {
-                            allFilled = false;
-                            break;
-                        }
+                        if (boardState[r][c] === 0) allFilled = false;
+                        else if (boardState[r][c] !== gameData.solution[r][c]) wrong++;
                     }
-                    if (!allFilled) break;
                 }
 
                 if (!allFilled) return;
-
-                // Board filled! Calculate final standardoku score based on remaining mistakes
-                isGameFinished = true;
-                clearInterval(timerInterval);
-
-                let standardokuErrors = 0;
-                const errorCells = [];
-                for (let r = 0; r < 9; r++) {
-                    for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] !== gameData.solution[r][c]) {
-                            standardokuErrors++;
-                            errorCells.push({ r, c });
-                        }
-                    }
+                if (wrong > 0) {
+                    showToast(`✗ Board full, but ${wrong} cell${wrong === 1 ? ' is' : 's are'} wrong. Keep going!`);
+                    sound.playError();
+                    return;
                 }
 
-                errorCount = standardokuErrors;
-                standardokuScore -= standardokuErrors; // -1 pt penalty per mistake
-
-                errorCells.forEach(({ r, c }) => {
-                    const cell = document.querySelector(`.sudoku-cell[data-row="${r}"][data-col="${c}"]`);
-                    if (cell) {
-                        cell.classList.add('error-highlight');
-                    }
-                });
-
+                isGameFinished = true;
+                clearInterval(timerInterval);
                 sound.playVictory();
+
+                const finalFormatted = formatElapsed(Date.now() - startTime);
 
                 if (!finishOrder.includes(currentMatchConfig.playerId)) {
                     finishOrder.push(currentMatchConfig.playerId);
                 }
                 const myRank = finishOrder.indexOf(currentMatchConfig.playerId) + 1;
-                const rankText = myRank === 1 ? '1st Place 🏆' : myRank === 2 ? '2nd Place 🥈' : myRank === 3 ? '3rd Place 🥉' : `${myRank}th Place`;
+                const rankText = isMultiplayer ? rankLabel(myRank) : soloRankText(myRank);
 
                 if (isMultiplayer) {
                     broadcastMatchPacket({
@@ -3351,29 +3832,34 @@
                         roomId: currentMatchConfig.room,
                         playerId: currentMatchConfig.playerId,
                         playerName: currentMatchConfig.playerName,
+                        playerColor: currentMatchConfig.playerColor,
+                        finalTime: finalFormatted,
                         finalScore: standardokuScore,
                         maxScore: standardokuMaxScore,
-                        errors: standardokuErrors,
                         rank: myRank
                     });
                 }
 
-                document.getElementById('modalIcon').textContent = (standardokuScore === standardokuMaxScore) ? '🏆' : '🏁';
-                document.getElementById('modalTitle').textContent = standardokuScore === standardokuMaxScore ? 'FLAWLESS STANDARDOKU // PERFECT SCORE!' : `STANDARDOKU FINISHED // ${rankText}!`;
-                document.getElementById('modalSubtitle').textContent = standardokuScore === standardokuMaxScore 
-                    ? `Sensational flawless run! You scored the maximum possible ${standardokuMaxScore} points with no match aids or errors.`
-                    : `Standardoku finished! You scored ${standardokuScore} / ${standardokuMaxScore} points.`;
-                
-                document.getElementById('vRawTimeLabel').textContent = 'Final Score';
-                document.getElementById('vRawTime').textContent = `${standardokuScore} pts`;
-                
-                document.getElementById('vPenaltiesLabel').textContent = 'Penalties Applied';
-                document.getElementById('vPenalties').textContent = standardokuErrors > 0 ? `-${standardokuErrors} pts (${standardokuErrors} end errors)` : '-0 pts (Flawless end)';
-                
+                const isPerfect = standardokuScore === standardokuMaxScore;
+                const aidCost = standardokuMaxScore - standardokuScore;
+                document.getElementById('modalIcon').textContent = myRank === 1 ? '🏆' : '🏁';
+                document.getElementById('modalTitle').textContent = isPerfect && myRank === 1
+                    ? 'FLAWLESS STANDARDOKU // 1ST PLACE!'
+                    : `STANDARDOKU FINISHED // ${rankText}!`;
+                document.getElementById('modalSubtitle').textContent = isPerfect
+                    ? `Solved in ${finalFormatted} with the maximum ${standardokuMaxScore} points and no match aids.`
+                    : `Solved in ${finalFormatted}. You scored ${standardokuScore} / ${standardokuMaxScore} points.`;
+
+                document.getElementById('vRawTimeLabel').textContent = 'Final Time';
+                document.getElementById('vRawTime').textContent = `${finalFormatted} (${standardokuScore} pts)`;
+
+                document.getElementById('vPenaltiesLabel').textContent = 'Aids Used';
+                document.getElementById('vPenalties').textContent = aidCost > 0 ? `-${aidCost} pts` : 'None';
+
                 document.getElementById('vRank').textContent = rankText;
-                
+
                 updateStatsAndProgress();
-                victoryModal.classList.add('show');
+                showResultModal();
             } else {
                 // COUNTDOWN MODE
                 let isComplete = true;
@@ -3392,18 +3878,13 @@
                     clearInterval(timerInterval);
                     sound.playVictory();
 
-                    const elapsedMs = (Date.now() - startTime) + (penaltySeconds * 1000);
-                    const totalSec = Math.floor(elapsedMs / 1000);
-                    const mins = Math.floor(totalSec / 60);
-                    const secs = totalSec % 60;
-                    const ms = Math.floor((elapsedMs % 1000) / 10);
-                    const finalFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+                    const finalFormatted = formatElapsed((Date.now() - startTime) + (penaltySeconds * 1000));
 
                     if (!finishOrder.includes(currentMatchConfig.playerId)) {
                         finishOrder.push(currentMatchConfig.playerId);
                     }
                     const myRank = finishOrder.indexOf(currentMatchConfig.playerId) + 1;
-                    const rankText = myRank === 1 ? '1st Place 🏆' : myRank === 2 ? '2nd Place 🥈' : myRank === 3 ? '3rd Place 🥉' : `${myRank}th Place`;
+                    const rankText = isMultiplayer ? rankLabel(myRank) : soloRankText(myRank);
 
                     if (isMultiplayer) {
                         broadcastMatchPacket({
@@ -3411,6 +3892,7 @@
                             roomId: currentMatchConfig.room,
                             playerId: currentMatchConfig.playerId,
                             playerName: currentMatchConfig.playerName,
+                            playerColor: currentMatchConfig.playerColor,
                             finalTime: finalFormatted,
                             rank: myRank
                         });
@@ -3418,11 +3900,11 @@
 
                     document.getElementById('modalIcon').textContent = myRank === 1 ? '🏆' : '🏁';
                     document.getElementById('modalTitle').textContent = myRank === 1 ? 'VICTORY // COUNTDOWN BEATEN!' : `MATCH FINISHED // ${rankText}!`;
-                    document.getElementById('modalSubtitle').textContent = 'Successfully cleared the symmetrical grid before the countdown expired!';
+                    document.getElementById('modalSubtitle').textContent = 'Successfully cleared the grid before the countdown expired!';
                     document.getElementById('vRawTime').textContent = finalFormatted;
                     document.getElementById('vPenalties').textContent = penaltySeconds > 0 ? `-${penaltySeconds}s (${errorCount} err)` : '0s (Flawless)';
                     document.getElementById('vRank').textContent = rankText;
-                    victoryModal.classList.add('show');
+                    showResultModal();
                 }
             }
         }
@@ -3472,37 +3954,50 @@
             soundIcon.textContent = sound.enabled ? '🔊' : '🔇';
         });
 
-        // Restart Match
+        // Restart Match: in multiplayer only the host can restart, and it restarts for everyone.
+        function hostStartRematch() {
+            const newSeed = Math.floor(Math.random() * 1000000);
+            currentMatchConfig.seed = newSeed;
+            currentMatchConfig.startAt = Date.now() + 4000;
+            broadcastMatchPacket({
+                type: 'REMATCH',
+                roomId: currentMatchConfig.room,
+                playerId: currentMatchConfig.playerId,
+                newSeed: newSeed,
+                startAt: currentMatchConfig.startAt
+            });
+            initMatch();
+        }
+
+        if (isMultiplayer && !currentMatchConfig.isHost) {
+            restartMatchBtn.style.display = 'none';
+        }
+
         restartMatchBtn.addEventListener('click', () => {
             sound.init();
-            if (isMultiplayer && currentMatchConfig.isHost) {
-                const newSeed = Math.floor(Math.random() * 1000000);
-                currentMatchConfig.seed = newSeed;
-                broadcastMatchPacket({
-                    type: 'REMATCH',
-                    roomId: currentMatchConfig.room,
-                    newSeed: newSeed
-                });
+            if (isMultiplayer) {
+                if (!currentMatchConfig.isHost) return;
+                if (!isGameFinished && !window.confirm('Restart the match for everyone with a new puzzle?')) return;
+                hostStartRematch();
+            } else {
+                currentMatchConfig.seed = Math.floor(Math.random() * 1000000);
+                initMatch();
             }
-            initMatch();
         });
 
         modalPlayAgainBtn.addEventListener('click', () => {
-            victoryModal.classList.remove('show');
-            if (isMultiplayer && currentMatchConfig.isHost) {
-                const newSeed = Math.floor(Math.random() * 1000000);
-                currentMatchConfig.seed = newSeed;
-                broadcastMatchPacket({
-                    type: 'REMATCH',
-                    roomId: currentMatchConfig.room,
-                    newSeed: newSeed
-                });
+            if (isMultiplayer) {
+                if (!currentMatchConfig.isHost) return;
+                hostStartRematch();
+            } else {
+                currentMatchConfig.seed = Math.floor(Math.random() * 1000000);
+                initMatch();
             }
-            initMatch();
         });
 
         // Keyboard Controls
         window.addEventListener('keydown', (e) => {
+            if (e.metaKey || e.ctrlKey || e.altKey) return; // leave browser shortcuts alone
             sound.init();
             if (isGameFinished) return;
 
@@ -3557,126 +4052,110 @@
             } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
                 selectCell(selectedCell.row, Math.min(8, selectedCell.col + 1));
                 e.preventDefault();
-            } else if ((e.key === 'h' || e.key === 'H') && !isDominationMode) {
-                useMentalBlockHint();
             }
         });
 
         /* ---------------------------------------------------- */
         /* STANDARDOKU MATCH AIDS LOGIC                         */
         /* ---------------------------------------------------- */
+        function clearConflictingNotes(r, c, val) {
+            const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+            for (let i = 0; i < 9; i++) {
+                notesState[r][i].delete(val);
+                notesState[i][c].delete(val);
+                notesState[br + Math.floor(i / 3)][bc + (i % 3)].delete(val);
+            }
+        }
+
+        function flashCell(r, c, className, ms) {
+            const cellEl = document.querySelector(`.sudoku-cell[data-row="${r}"][data-col="${c}"]`);
+            if (cellEl) {
+                cellEl.classList.add(className);
+                setTimeout(() => cellEl.classList.remove(className), ms);
+            }
+        }
+
+        function chargeAid(cost) {
+            standardokuScore = Math.max(0, standardokuScore - cost);
+        }
+
         function useMatchAid(aidType) {
-            if (isGameFinished || currentMatchConfig.gameMode !== 'Standardoku') return;
+            if (isGameFinished || isStartLocked() || currentMatchConfig.gameMode !== 'Standardoku') return;
             sound.init();
 
-            if (aidType === 'COMPUTE_NOTES') {
-                standardokuScore -= 2;
-                sound.playPencil();
-                for (let r = 0; r < 9; r++) {
-                    for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] === 0) {
-                            notesState[r][c].clear();
-                            for (let v = 1; v <= 9; v++) {
-                                if (isGridValidForCell(r, c, v)) {
-                                    notesState[r][c].add(v);
-                                }
-                            }
-                        }
-                    }
+            const emptyCells = [];
+            const wrongCells = [];
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (boardState[r][c] === 0) emptyCells.push({ r, c });
+                    else if (boardState[r][c] !== gameData.solution[r][c]) wrongCells.push({ r, c });
                 }
+            }
+
+            if (aidType === 'COMPUTE_NOTES') {
+                if (emptyCells.length === 0) return;
+                chargeAid(2);
+                sound.playPencil();
+                emptyCells.forEach(({ r, c }) => {
+                    notesState[r][c].clear();
+                    for (let v = 1; v <= 9; v++) {
+                        if (isGridValidForCell(r, c, v)) notesState[r][c].add(v);
+                    }
+                });
                 renderBoard();
             }
 
             if (aidType === 'STRATEGIC_SOLVE') {
-                standardokuScore -= 3;
-                sound.playStamp();
+                if (emptyCells.length === 0) return;
+                // Reveal the most constrained empty cell: the one with the fewest legal candidates,
+                // i.e. the next cell a strong solver would logically fill.
                 let bestCell = null;
-                let maxRestrictions = -1;
-                for (let r = 0; r < 9; r++) {
-                    for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] === 0) {
-                            let restrictions = 0;
-                            for(let i=0; i<9; i++) {
-                                if (i !== c && boardState[r][i] === 0) restrictions++;
-                                if (i !== r && boardState[i][c] === 0) restrictions++;
-                            }
-                            const sr = Math.floor(r/3)*3;
-                            const sc = Math.floor(c/3)*3;
-                            for(let i=0; i<3; i++) {
-                                for(let j=0; j<3; j++) {
-                                    if ((sr+i) !== r && (sc+j) !== c && boardState[sr+i][sc+j] === 0) {
-                                        restrictions++;
-                                    }
-                                }
-                            }
-                            if (restrictions > maxRestrictions) {
-                                maxRestrictions = restrictions;
-                                bestCell = {r, c};
-                            }
-                        }
-                    }
-                }
+                let fewest = Infinity;
+                emptyCells.forEach(({ r, c }) => {
+                    let n = 0;
+                    for (let v = 1; v <= 9; v++) if (isGridValidForCell(r, c, v)) n++;
+                    if (n < fewest) { fewest = n; bestCell = { r, c }; }
+                });
 
-                if (bestCell) {
-                    const {r, c} = bestCell;
-                    boardState[r][c] = gameData.solution[r][c];
-                    notesState[r][c].clear();
-                    clearConflictingNotes(r, c, boardState[r][c]);
-                    p1Solved++;
-                    totalPlacements++;
-                    
-                    const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
-                    if (cellEl) {
-                        cellEl.classList.add('pulse-anim');
-                        setTimeout(() => cellEl.classList.remove('pulse-anim'), 500);
-                    }
-                    renderBoard();
-                    checkWinCondition();
-                }
+                chargeAid(3);
+                sound.playStamp();
+                const { r, c } = bestCell;
+                boardState[r][c] = gameData.solution[r][c];
+                notesState[r][c].clear();
+                clearConflictingNotes(r, c, boardState[r][c]);
+                p1Solved++;
+                renderBoard();
+                flashCell(r, c, 'pulse-anim', 500);
             }
 
             if (aidType === 'ERROR_SCAN') {
-                standardokuScore -= 2;
-                sound.playError();
-                for (let r = 0; r < 9; r++) {
-                    for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] !== 0 && boardState[r][c] !== gameData.solution[r][c]) {
-                            const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
-                            if (cellEl) {
-                                cellEl.classList.add('error-highlight');
-                                setTimeout(() => cellEl.classList.remove('error-highlight'), 3000);
-                            }
-                        }
-                    }
+                if (wrongCells.length === 0) {
+                    showToast('✓ No wrong digits on the board. No points spent.');
+                    return;
                 }
+                chargeAid(2);
+                sound.playError();
+                wrongCells.forEach(({ r, c }) => flashCell(r, c, 'error-highlight', 3000));
             }
 
             if (aidType === 'AUTO_CORRECT') {
-                standardokuScore -= 5;
+                if (wrongCells.length === 0) {
+                    showToast('✓ Nothing to correct. No points spent.');
+                    return;
+                }
+                chargeAid(5);
                 sound.playStamp();
-                let corrected = false;
-                for (let r = 0; r < 9; r++) {
-                    for (let c = 0; c < 9; c++) {
-                        if (boardState[r][c] !== 0 && boardState[r][c] !== gameData.solution[r][c]) {
-                            boardState[r][c] = gameData.solution[r][c];
-                            notesState[r][c].clear();
-                            clearConflictingNotes(r, c, boardState[r][c]);
-                            corrected = true;
-                            const cellEl = document.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
-                            if (cellEl) {
-                                cellEl.classList.add('pulse-anim');
-                                setTimeout(() => cellEl.classList.remove('pulse-anim'), 500);
-                            }
-                        }
-                    }
-                }
-                if (corrected) {
-                    renderBoard();
-                    checkWinCondition();
-                }
+                wrongCells.forEach(({ r, c }) => {
+                    boardState[r][c] = gameData.solution[r][c];
+                    notesState[r][c].clear();
+                    clearConflictingNotes(r, c, boardState[r][c]);
+                });
+                renderBoard();
+                wrongCells.forEach(({ r, c }) => flashCell(r, c, 'pulse-anim', 500));
             }
-            
+
             updateStatsAndProgress();
+            checkVictory();
         }
 
         const aidComputeNotesBtn = document.getElementById('aidComputeNotesBtn');

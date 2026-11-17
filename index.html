@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPEEDOKU // Match Setup</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9C%8F%EF%B8%8F%3C/text%3E%3C/svg%3E">
     <!-- Google Fonts & PeerJS WebRTC -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1247,6 +1248,19 @@
             opacity: 0.9;
         }
 
+        .slider-track-area {
+            touch-action: none;
+        }
+        @media (max-width: 600px) {
+            /* Only the selected tier's label fits on narrow screens */
+            .slider-point .point-label {
+                visibility: hidden;
+            }
+            .slider-point.active .point-label {
+                visibility: visible;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 860px) {
             body {
@@ -1540,13 +1554,13 @@
                             <div class="room-join-input-card">
                                 <label class="room-code-label" for="joinRoomCodeInput">Enter Room Code to Join:</label>
                                 <div class="room-join-row">
-                                    <input type="text" id="joinRoomCodeInput" class="tactical-input room-code-input" placeholder="e.g. FAST-INK" maxlength="20" />
+                                    <input type="text" id="joinRoomCodeInput" class="tactical-input room-code-input" placeholder="e.g. K7QM2X" maxlength="20" autocapitalize="characters" autocomplete="off" spellcheck="false" />
                                     <button class="btn-room-action" id="joinRoomSubmitBtn">
                                         <span>⚡</span>
                                         <span>Connect</span>
                                     </button>
                                 </div>
-                                <div class="room-join-status" id="joinRoomStatusText">Enter 6-character room code from your host.</div>
+                                <div class="room-join-status" id="joinRoomStatusText">Enter the 6-character room code from your host.</div>
                             </div>
 
                             <div class="player-identity-card">
@@ -1688,7 +1702,7 @@
 
     <!-- Footer Telemetry -->
     <footer>
-        <div>Telemetry: Ready <span class="footer-note">— synced with server</span></div>
+        <div>Telemetry: Ready <span class="footer-note">— peer-to-peer rooms</span></div>
         <div>Build 2026.03 // Speedoku Tactical Zen <span style="color: var(--accent);">★</span></div>
     </footer>
 
@@ -1699,19 +1713,19 @@
             { name: 'Easy', percent: 27.5, clues: '40 Prefilled Cells (Relaxed)', pace: '~01:45.00', clueCount: 40 },
             { name: 'Medium', percent: 50, clues: '34 Prefilled Cells (Standard)', pace: '~02:30.00', clueCount: 34 },
             { name: 'Hard', percent: 72.5, clues: '28 Prefilled Cells (Challenging)', pace: '~03:45.00', clueCount: 28 },
-            { name: 'Super Hard', percent: 95, clues: '22 Prefilled Cells (Grandmaster)', pace: '~05:00.00', clueCount: 22 }
+            { name: 'Super Hard', percent: 95, clues: '~24 Prefilled Cells (Grandmaster)', pace: '~05:00.00', clueCount: 24 }
         ];
 
         // Countdown Minute Slider Tiers (2.5m increments up to 20m, scaled difficulty behind the scenes)
         const countdownTiers = [
             { name: '2.5m', minutes: 2.5, percent: 5, difficulty: 'Super Easy', clues: '48 Prefilled Cells (Standardoku)', pace: '02:30.00 Clock', clueCount: 48 },
-            { name: '5.0m', minutes: 5.0, percent: 17.85, difficulty: 'Easy', clues: '42 Prefilled Cells (Standardoku)', pace: '05:00.00 Clock', clueCount: 42 },
+            { name: '5.0m', minutes: 5.0, percent: 17.85, difficulty: 'Easy', clues: '40 Prefilled Cells (Standardoku)', pace: '05:00.00 Clock', clueCount: 40 },
             { name: '7.5m', minutes: 7.5, percent: 30.71, difficulty: 'Medium-Easy', clues: '38 Prefilled Cells (Standardoku)', pace: '07:30.00 Clock', clueCount: 38 },
             { name: '10.0m', minutes: 10.0, percent: 43.57, difficulty: 'Medium', clues: '34 Prefilled Cells (Standardoku)', pace: '10:00.00 Clock', clueCount: 34 },
             { name: '12.5m', minutes: 12.5, percent: 56.43, difficulty: 'Medium-Hard', clues: '30 Prefilled Cells (Standardoku)', pace: '12:30.00 Clock', clueCount: 30 },
-            { name: '15.0m', minutes: 15.0, percent: 69.28, difficulty: 'Hard', clues: '26 Prefilled Cells (Standardoku)', pace: '15:00.00 Clock', clueCount: 26 },
-            { name: '17.5m', minutes: 17.5, percent: 82.14, difficulty: 'Expert', clues: '24 Prefilled Cells (Standardoku)', pace: '17:30.00 Clock', clueCount: 24 },
-            { name: '20.0m', minutes: 20.0, percent: 95, difficulty: 'Super Hard', clues: '22 Prefilled Cells (Standardoku)', pace: '20:00.00 Clock', clueCount: 22 }
+            { name: '15.0m', minutes: 15.0, percent: 69.28, difficulty: 'Hard', clues: '28 Prefilled Cells (Standardoku)', pace: '15:00.00 Clock', clueCount: 28 },
+            { name: '17.5m', minutes: 17.5, percent: 82.14, difficulty: 'Expert', clues: '~25 Prefilled Cells (Standardoku)', pace: '17:30.00 Clock', clueCount: 25 },
+            { name: '20.0m', minutes: 20.0, percent: 95, difficulty: 'Super Hard', clues: '~24 Prefilled Cells (Standardoku)', pace: '20:00.00 Clock', clueCount: 24 }
         ];
 
         // State Management
@@ -1758,17 +1772,45 @@
         const launchBtn = document.getElementById('launchBtn');
 
         // Multiplayer Room State
-        function generateRoomCode() {
-            const adjectives = ['BLUE', 'FAST', 'QUICK', 'RED', 'NEON', 'SHARP', 'SWIFT', 'BRAVE', 'SMART', 'BOLD', 'CLEAN', 'RAPID', 'SLICK', 'DARK', 'LIGHT', 'WILD', 'CALM', 'GRAND', 'EPIC'];
-            const nouns = ['PENCIL', 'ERASER', 'INK', 'GRID', 'PEN', 'NOTE', 'PAPER', 'LINE', 'BOOK', 'RULER', 'MARKER', 'PAD', 'DASH', 'CRAFT', 'SKETCH', 'DRAFT'];
-            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-            const noun = nouns[Math.floor(Math.random() * nouns.length)];
-            return `${adj}-${noun}`;
+        // Shared helpers: names are user input, so escape them and validate colours
+        function escapeHTML(str) {
+            return String(str == null ? '' : str).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
         }
+        function safeColor(col, fallback = '#3b82f6') {
+            return (typeof col === 'string' && /^#[0-9a-f]{6}$/i.test(col)) ? col : fallback;
+        }
+        function safeName(name, fallback = 'Racer') {
+            const n = String(name == null ? '' : name).trim().slice(0, 15);
+            return n || fallback;
+        }
+        function sanitizePlayer(p) {
+            return {
+                id: String(p && p.id || '').slice(0, 40),
+                name: safeName(p && p.name, 'Guest Racer'),
+                color: safeColor(p && p.color),
+                isHost: Boolean(p && p.isHost),
+                ready: true,
+                peerId: p && p.peerId,
+                lastSeen: Date.now()
+            };
+        }
+
+        // ~887 million codes from an unambiguous alphabet (no 0/O/1/I/L)
+        function generateRoomCode() {
+            const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+            const bytes = crypto.getRandomValues(new Uint8Array(6));
+            return [...bytes].map(b => alphabet[b % alphabet.length]).join('');
+        }
+
+        const PLAYER_COLORS = ['#3b82f6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#6366f1', '#06b6d4', '#ea580c', '#84cc16'];
 
         const roomState = {
             isHost: true,
-            roomCode: generateRoomCode(),
+            roomCode: '',
+            hostCode: generateRoomCode(), // this player's own room, kept separately from any code typed to join
+            joinTimeout: null,
+            heartbeatTimer: null,
+            hostLastSeen: 0,
             myId: 'p_' + Math.random().toString(36).substring(2, 9),
             myName: 'Racer 1',
             myColor: '#3b82f6',
@@ -1779,7 +1821,8 @@
             isConnected: false
         };
 
-        hostRoomCodeVal.textContent = roomState.roomCode;
+        roomState.roomCode = roomState.hostCode;
+        hostRoomCodeVal.textContent = roomState.hostCode;
 
         function getActiveTiers() {
             return matchConfig.gameMode === 'Countdown' ? countdownTiers : standardokuTiers;
@@ -1820,9 +1863,9 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
-                        Start Race for All (${roomState.connectedPlayers.length})
+                        ${roomState.connectedPlayers.length < 2 ? 'Waiting for friends to join…' : `Start Race for All (${roomState.connectedPlayers.length})`}
                     `;
-                    launchBtn.disabled = false;
+                    launchBtn.disabled = roomState.connectedPlayers.length < 2;
                 } else {
                     launchBtn.innerHTML = `
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="status-dot">
@@ -1913,7 +1956,7 @@
         function initRoster() {
             roomState.connectedPlayers = [{
                 id: roomState.myId,
-                name: roomState.isHost ? roomState.myName : (guestPlayerName.value.trim() || 'Guest Racer'),
+                name: roomState.isHost ? roomState.myName : safeName(guestPlayerName.value, 'Guest Racer'),
                 color: roomState.myColor,
                 isHost: roomState.isHost,
                 ready: true
@@ -1932,9 +1975,10 @@
             roomState.connectedPlayers.forEach(p => {
                 const chip = document.createElement('div');
                 chip.className = 'roster-player-chip';
+                const color = safeColor(p.color);
                 chip.innerHTML = `
-                    <span class="roster-player-dot" style="background: ${p.color}; box-shadow: 0 0 6px ${p.color};"></span>
-                    <span>${p.name} ${p.id === roomState.myId ? '(You)' : ''}</span>
+                    <span class="roster-player-dot" style="background: ${color}; box-shadow: 0 0 6px ${color};"></span>
+                    <span>${escapeHTML(p.name)} ${p.id === roomState.myId ? '(You)' : ''}</span>
                     <span class="roster-player-tag">${p.isHost ? 'HOST' : 'READY'}</span>
                 `;
                 listEl.appendChild(chip);
@@ -1944,6 +1988,7 @@
         }
 
         function broadcastLobbyState() {
+            if (!roomState.isHost) return;
             const packet = {
                 type: 'LOBBY_STATE',
                 roomCode: roomState.roomCode,
@@ -1952,7 +1997,7 @@
                 countdownMinutes: matchConfig.countdownMinutes,
                 clueCount: matchConfig.clueCount,
                 currentTierIndex: currentTierIndex,
-                players: roomState.connectedPlayers
+                players: roomState.connectedPlayers.map(({ id, name, color, isHost }) => ({ id, name, color, isHost, ready: true }))
             };
 
             // 1. Broadcast via local BroadcastChannel
@@ -1972,7 +2017,52 @@
             });
         }
 
+        function teardownNetworking() {
+            if (roomState.joinTimeout) { clearTimeout(roomState.joinTimeout); roomState.joinTimeout = null; }
+            if (roomState.heartbeatTimer) { clearInterval(roomState.heartbeatTimer); roomState.heartbeatTimer = null; }
+            roomState.peerConns.forEach(conn => { try { conn.close(); } catch(e){} });
+            roomState.peerConns = new Map();
+            if (roomState.peer) { try { roomState.peer.destroy(); } catch(e){} roomState.peer = null; }
+            if (roomState.broadcastChannel) { try { roomState.broadcastChannel.close(); } catch(e){} roomState.broadcastChannel = null; }
+        }
+
+        // Heartbeats: the host drops guests it has not heard from in ~10s; guests notice a vanished host.
+        function startHeartbeat() {
+            if (roomState.heartbeatTimer) clearInterval(roomState.heartbeatTimer);
+            roomState.heartbeatTimer = setInterval(() => {
+                if (roomState.isHost) {
+                    const now = Date.now();
+                    const before = roomState.connectedPlayers.length;
+                    roomState.connectedPlayers = roomState.connectedPlayers.filter(p => p.isHost || p.id === roomState.myId || now - (p.lastSeen || 0) < 10000);
+                    if (roomState.connectedPlayers.length !== before) renderRoster();
+                    broadcastLobbyState(); // doubles as the host's heartbeat
+                } else {
+                    sendToHost({ type: 'HEARTBEAT', roomCode: roomState.roomCode, playerId: roomState.myId });
+                    if (roomState.hostLastSeen && Date.now() - roomState.hostLastSeen > 10000) {
+                        joinRoomStatusText.textContent = `⚠ Lost connection to ${roomState.roomCode}. Trying to reconnect…`;
+                        joinRoomStatusText.style.color = '#f59e0b';
+                    }
+                }
+            }, 3000);
+        }
+
+        function sendToHost(packet) {
+            if (roomState.broadcastChannel) {
+                try { roomState.broadcastChannel.postMessage(packet); } catch(e){}
+            }
+            const hostPeerId = `spd26-${roomState.roomCode.toLowerCase().replace(/[^a-z0-9]/g, '')}-host`;
+            const conn = roomState.peerConns.get(hostPeerId);
+            if (conn && conn.open) {
+                try { conn.send(packet); } catch(e){}
+            }
+        }
+
         function setupHostNetworking() {
+            teardownNetworking();
+            roomState.isHost = true;
+            roomState.roomCode = roomState.hostCode;
+            hostRoomCodeVal.textContent = roomState.hostCode;
+
             // Setup local BroadcastChannel
             if (roomState.broadcastChannel) roomState.broadcastChannel.close();
             roomState.broadcastChannel = new BroadcastChannel('spd_lobby_' + roomState.roomCode);
@@ -1985,9 +2075,10 @@
                 try {
                     if (roomState.peer) roomState.peer.destroy();
                     const cleanCode = roomState.roomCode.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    roomState.peer = new Peer(`spd26-${cleanCode}-host`, {
+                    const hostPeer = new Peer(`spd26-${cleanCode}-host`, {
                         debug: 0
                     });
+                    roomState.peer = hostPeer;
 
                     roomState.peer.on('open', () => {
                         console.log('Host Peer opened:', roomState.peer.id);
@@ -1995,6 +2086,12 @@
 
                     roomState.peer.on('connection', (conn) => {
                         conn.on('open', () => {
+                            if (roomState.connectedPlayers.length >= 4) {
+                                // Room full: tell the 5th player instead of silently ignoring them
+                                try { conn.send({ type: 'ROOM_FULL', roomCode: roomState.roomCode }); } catch(e){}
+                                setTimeout(() => { try { conn.close(); } catch(e){} }, 500);
+                                return;
+                            }
                             roomState.peerConns.set(conn.peer, conn);
                             // Send initial lobby state
                             broadcastLobbyState();
@@ -2013,8 +2110,15 @@
                         });
                     });
 
-                    roomState.peer.on('error', (err) => {
-                        console.log('Host peer notice (fallback to local channel):', err.type);
+                    hostPeer.on('error', (err) => {
+                        if (roomState.peer !== hostPeer) return;
+                        if (err.type === 'unavailable-id') {
+                            // Someone else already hosts this code: pick a new one
+                            roomState.hostCode = generateRoomCode();
+                            setupHostNetworking();
+                        } else {
+                            console.log('Host peer notice (fallback to local channel):', err.type);
+                        }
                     });
                 } catch(err) {
                     console.log('Peer init exception:', err);
@@ -2023,85 +2127,126 @@
 
             initRoster();
             broadcastLobbyState();
+            startHeartbeat();
+        }
+
+        function guestJoinPacket(targetCode) {
+            return {
+                type: 'PLAYER_JOIN',
+                roomCode: targetCode,
+                player: {
+                    id: roomState.myId,
+                    name: safeName(guestPlayerName.value, 'Guest Racer'),
+                    color: roomState.myColor,
+                    isHost: false,
+                    ready: true
+                }
+            };
+        }
+
+        function setJoinFailed(message) {
+            if (roomState.joinTimeout) { clearTimeout(roomState.joinTimeout); roomState.joinTimeout = null; }
+            roomState.isConnected = false;
+            guestRosterBox.style.display = 'none';
+            joinRoomStatusText.textContent = message;
+            joinRoomStatusText.style.color = '#ef4444';
+            joinRoomSubmitBtn.disabled = false;
+            joinRoomSubmitBtn.innerHTML = '<span>↻</span><span>Retry</span>';
+            teardownNetworking();
         }
 
         function setupGuestNetworking(targetCode) {
-            targetCode = targetCode.trim().toUpperCase();
+            targetCode = targetCode.trim().toUpperCase().replace(/\s+/g, '');
+            teardownNetworking();
             roomState.roomCode = targetCode;
             roomState.isHost = false;
+            roomState.isConnected = false;
+            roomState.hostLastSeen = 0;
+            roomState.connectedPlayers = [];
 
-            joinRoomStatusText.textContent = `Connecting to ${targetCode}...`;
+            joinRoomStatusText.textContent = `Connecting to ${targetCode}…`;
             joinRoomStatusText.style.color = 'var(--accent)';
+            guestRosterBox.style.display = 'none';
+
+            // Give up after ~8s without hearing from a host
+            roomState.joinTimeout = setTimeout(() => {
+                if (!roomState.isConnected) setJoinFailed(`✗ No room with code ${targetCode} answered. Check the code and press Retry.`);
+            }, 8000);
 
             // 1. Setup local BroadcastChannel
-            if (roomState.broadcastChannel) roomState.broadcastChannel.close();
             roomState.broadcastChannel = new BroadcastChannel('spd_lobby_' + targetCode);
             roomState.broadcastChannel.onmessage = (e) => {
                 handleNetworkMessage(e.data);
             };
 
             // Send Join Request via BroadcastChannel
-            roomState.broadcastChannel.postMessage({
-                type: 'PLAYER_JOIN',
-                roomCode: targetCode,
-                player: {
-                    id: roomState.myId,
-                    name: guestPlayerName.value.trim() || 'Guest Racer',
-                    color: roomState.myColor,
-                    isHost: false,
-                    ready: true
-                }
-            });
+            roomState.broadcastChannel.postMessage(guestJoinPacket(targetCode));
 
             // 2. Setup WebRTC PeerJS
             if (window.Peer) {
                 try {
-                    if (roomState.peer) roomState.peer.destroy();
                     const cleanCode = targetCode.toLowerCase().replace(/[^a-z0-9]/g, '');
                     const guestId = `spd26-${cleanCode}-p${Math.random().toString(36).substring(2, 7)}`;
-                    roomState.peer = new Peer(guestId, { debug: 0 });
+                    const guestPeer = new Peer(guestId, { debug: 0 });
+                    roomState.peer = guestPeer;
+                    const hostPeerId = `spd26-${cleanCode}-host`;
 
-                    roomState.peer.on('open', () => {
-                        const hostPeerId = `spd26-${cleanCode}-host`;
-                        const conn = roomState.peer.connect(hostPeerId, { reliable: true });
+                    guestPeer.on('open', () => {
+                        const conn = guestPeer.connect(hostPeerId, { reliable: true });
 
                         conn.on('open', () => {
                             roomState.peerConns.set(hostPeerId, conn);
-                            conn.send({
-                                type: 'PLAYER_JOIN',
-                                roomCode: targetCode,
-                                player: {
-                                    id: roomState.myId,
-                                    name: guestPlayerName.value.trim() || 'Guest Racer',
-                                    color: roomState.myColor,
-                                    isHost: false,
-                                    ready: true
-                                }
-                            });
+                            conn.send(guestJoinPacket(targetCode));
                         });
 
                         conn.on('data', (data) => {
                             handleNetworkMessage(data);
                         });
 
-                        conn.on('error', (err) => {
-                            console.log('Guest conn notice:', err);
+                        conn.on('close', () => {
+                            roomState.peerConns.delete(hostPeerId);
+                            if (roomState.isConnected && roomState.peer === guestPeer) {
+                                joinRoomStatusText.textContent = `⚠ Host of ${targetCode} disconnected.`;
+                                joinRoomStatusText.style.color = '#f59e0b';
+                            }
                         });
+                    });
+
+                    guestPeer.on('error', (err) => {
+                        if (roomState.peer !== guestPeer) return;
+                        if (err.type === 'peer-unavailable' && !roomState.isConnected) {
+                            // A same-browser host can still answer over BroadcastChannel; give it a moment
+                            setTimeout(() => {
+                                if (!roomState.isConnected && roomState.peer === guestPeer) {
+                                    setJoinFailed(`✗ No room with code ${targetCode}. Check the code with your host.`);
+                                }
+                            }, 1500);
+                        } else {
+                            console.log('Guest peer notice:', err.type);
+                        }
                     });
                 } catch(e){}
             }
 
-            guestRosterBox.style.display = 'flex';
-            joinRoomStatusText.textContent = `🟢 Connected to ${targetCode}! Synchronizing match rules...`;
-            joinRoomStatusText.style.color = '#10b981';
+            startHeartbeat();
         }
 
         function handleNetworkMessage(data, conn) {
             if (!data || !data.type) return;
 
+            if (data.roomCode && data.roomCode !== roomState.roomCode) return; // stale packet for another room
+
             if (data.type === 'PLAYER_JOIN' && roomState.isHost) {
-                const incoming = data.player;
+                const incoming = sanitizePlayer(data.player);
+                if (!incoming.id || incoming.id === roomState.myId) return;
                 if (conn) incoming.peerId = conn.peer;
+                incoming.isHost = false;
+
+                // Give each player a distinct colour: keep theirs if free, else assign the first free one
+                const taken = roomState.connectedPlayers.filter(p => p.id !== incoming.id).map(p => p.color.toLowerCase());
+                if (taken.includes(incoming.color.toLowerCase())) {
+                    incoming.color = PLAYER_COLORS.find(c => !taken.includes(c)) || incoming.color;
+                }
 
                 // Check if already in roster
                 const existingIdx = roomState.connectedPlayers.findIndex(p => p.id === incoming.id);
@@ -2109,17 +2254,52 @@
                     roomState.connectedPlayers[existingIdx] = incoming;
                 } else if (roomState.connectedPlayers.length < 4) {
                     roomState.connectedPlayers.push(incoming);
+                } else if (conn) {
+                    try { conn.send({ type: 'ROOM_FULL', roomCode: roomState.roomCode, playerId: incoming.id }); } catch(e){}
+                    return;
+                } else if (roomState.broadcastChannel) {
+                    try { roomState.broadcastChannel.postMessage({ type: 'ROOM_FULL', roomCode: roomState.roomCode, playerId: incoming.id }); } catch(e){}
+                    return;
                 }
                 renderRoster();
                 broadcastLobbyState();
             }
 
+            if (data.type === 'HEARTBEAT' && roomState.isHost) {
+                const p = roomState.connectedPlayers.find(x => x.id === data.playerId);
+                if (p) p.lastSeen = Date.now();
+            }
+
+            if (data.type === 'ROOM_FULL' && !roomState.isHost && (!data.playerId || data.playerId === roomState.myId)) {
+                setJoinFailed(`✗ Room ${roomState.roomCode} is full (4/4 racers).`);
+            }
+
             if (data.type === 'LOBBY_STATE' && !roomState.isHost) {
-                // Sync options from Host
-                if (data.players) {
-                    roomState.connectedPlayers = data.players;
-                    renderRoster();
+                // Ignore the host's roster until it includes us (our join may still be in flight)
+                const players = (data.players || []).map(sanitizePlayer);
+                const me = players.find(p => p.id === roomState.myId);
+                if (!me) {
+                    sendToHost(guestJoinPacket(roomState.roomCode));
+                    return;
                 }
+                if (!roomState.isConnected) {
+                    roomState.isConnected = true;
+                    if (roomState.joinTimeout) { clearTimeout(roomState.joinTimeout); roomState.joinTimeout = null; }
+                    joinRoomSubmitBtn.disabled = false;
+                    joinRoomSubmitBtn.innerHTML = '<span>⚡</span><span>Connect</span>';
+                }
+                roomState.hostLastSeen = Date.now();
+
+                // The host may have assigned us a different colour
+                if (me.color.toLowerCase() !== roomState.myColor.toLowerCase()) {
+                    roomState.myColor = me.color;
+                    document.querySelectorAll('#guestColorSwatches .color-swatch-btn').forEach(b => {
+                        b.classList.toggle('active', b.dataset.color.toLowerCase() === me.color.toLowerCase());
+                    });
+                }
+
+                roomState.connectedPlayers = players;
+                renderRoster();
 
                 if (data.gameMode && data.gameMode !== matchConfig.gameMode) {
                     matchConfig.gameMode = data.gameMode;
@@ -2134,14 +2314,15 @@
                 }
 
                 guestRosterBox.style.display = 'flex';
-                joinRoomStatusText.textContent = `🟢 Connected to ${data.roomCode} (${roomState.connectedPlayers.length}/4 Racers)!`;
+                joinRoomStatusText.textContent = `🟢 Connected to ${roomState.roomCode} (${roomState.connectedPlayers.length}/4 Racers)!`;
                 joinRoomStatusText.style.color = '#10b981';
                 updateSummary();
             }
 
-            if (data.type === 'MATCH_LAUNCH') {
+            if (data.type === 'MATCH_LAUNCH' && !roomState.isHost && roomState.isConnected) {
                 // Synchronized Launch Trigger for all connected racers!
-                sessionStorage.setItem('speedoku_lobby_players', JSON.stringify(data.players || roomState.connectedPlayers));
+                if (roomState.heartbeatTimer) { clearInterval(roomState.heartbeatTimer); roomState.heartbeatTimer = null; }
+                sessionStorage.setItem('speedoku_lobby_players', JSON.stringify((data.players || roomState.connectedPlayers).map(sanitizePlayer)));
                 launchBtn.innerHTML = `
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -2149,9 +2330,7 @@
                     Grid Launching!
                 `;
 
-                const myPlayer = roomState.isHost
-                    ? { name: hostPlayerName.value.trim() || 'Racer 1', color: roomState.myColor }
-                    : { name: guestPlayerName.value.trim() || 'Guest Racer', color: roomState.myColor };
+                const myPlayer = { name: safeName(guestPlayerName.value, 'Guest Racer'), color: roomState.myColor };
 
                 const params = new URLSearchParams({
                     playType: 'Play with friends',
@@ -2161,6 +2340,7 @@
                     playerName: myPlayer.name,
                     playerColor: myPlayer.color,
                     seed: data.seed,
+                    startAt: data.startAt || 0,
                     gameMode: data.gameMode || matchConfig.gameMode,
                     difficulty: data.difficulty || matchConfig.difficulty,
                     countdownMinutes: data.countdownMinutes || matchConfig.countdownMinutes,
@@ -2174,42 +2354,61 @@
         }
 
         // Host / Join Tab Switching
+        function colorFromActiveSwatch(panelId) {
+            const active = document.querySelector(`#${panelId} .color-swatch-btn.active`);
+            return active ? safeColor(active.dataset.color) : roomState.myColor;
+        }
+
         tabHostRoom.addEventListener('click', () => {
-            roomState.isHost = true;
+            if (roomState.isHost && roomState.peer && tabHostRoom.classList.contains('active')) return;
             tabHostRoom.classList.add('active');
             tabJoinRoom.classList.remove('active');
             hostRoomPanel.style.display = 'block';
             joinRoomPanel.style.display = 'none';
+            roomState.myColor = colorFromActiveSwatch('hostColorSwatches');
             setupHostNetworking();
         });
 
         tabJoinRoom.addEventListener('click', () => {
+            // Stop hosting: we are about to join someone else's room
+            teardownNetworking();
             roomState.isHost = false;
+            roomState.isConnected = false;
+            roomState.connectedPlayers = [];
             tabJoinRoom.classList.add('active');
             tabHostRoom.classList.remove('active');
             joinRoomPanel.style.display = 'block';
             hostRoomPanel.style.display = 'none';
+            roomState.myColor = colorFromActiveSwatch('guestColorSwatches');
             updateSummary();
         });
 
         // Copy Room Code & Invite Link
         copyRoomCodeBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(roomState.roomCode).then(() => {
+            const reset = () => setTimeout(() => {
+                copyRoomCodeBtn.innerHTML = '<span id="copyCodeIcon">📋</span><span>Copy Code</span>';
+            }, 1800);
+            Promise.resolve().then(() => navigator.clipboard.writeText(roomState.hostCode)).then(() => {
                 copyRoomCodeBtn.innerHTML = '<span>✓</span><span>Copied!</span>';
-                setTimeout(() => {
-                    copyRoomCodeBtn.innerHTML = '<span id="copyCodeIcon">📋</span><span>Copy Code</span>';
-                }, 1800);
+                reset();
+            }).catch(() => {
+                copyRoomCodeBtn.innerHTML = `<span>✗</span><span>Copy failed: ${escapeHTML(roomState.hostCode)}</span>`;
+                reset();
             });
         });
 
         copyInviteLinkBtn.addEventListener('click', () => {
             const url = new URL(window.location.href);
-            url.searchParams.set('room', roomState.roomCode);
-            navigator.clipboard.writeText(url.toString()).then(() => {
+            url.searchParams.set('room', roomState.hostCode);
+            const reset = () => setTimeout(() => {
+                copyInviteLinkBtn.innerHTML = '<span id="copyLinkIcon">🔗</span><span>Copy Link</span>';
+            }, 1800);
+            Promise.resolve().then(() => navigator.clipboard.writeText(url.toString())).then(() => {
                 copyInviteLinkBtn.innerHTML = '<span>✓</span><span>Link Copied!</span>';
-                setTimeout(() => {
-                    copyInviteLinkBtn.innerHTML = '<span id="copyLinkIcon">🔗</span><span>Copy Link</span>';
-                }, 1800);
+                reset();
+            }).catch(() => {
+                copyInviteLinkBtn.innerHTML = '<span>✗</span><span>Copy failed</span>';
+                reset();
             });
         });
 
@@ -2237,7 +2436,7 @@
         });
 
         hostPlayerName.addEventListener('input', () => {
-            roomState.myName = hostPlayerName.value.trim() || 'Racer 1';
+            roomState.myName = safeName(hostPlayerName.value, 'Racer 1');
             if (roomState.connectedPlayers[0]) {
                 roomState.connectedPlayers[0].name = roomState.myName;
                 renderRoster();
@@ -2250,35 +2449,14 @@
         });
 
         function broadcastGuestUpdate() {
-            if (roomState.isHost) return;
-            const packet = {
-                type: 'PLAYER_JOIN',
-                roomCode: roomState.roomCode,
-                player: {
-                    id: roomState.myId,
-                    name: guestPlayerName.value.trim() || 'Guest Racer',
-                    color: roomState.myColor,
-                    isHost: false,
-                    ready: true
-                }
-            };
-            if (roomState.broadcastChannel) {
-                try { roomState.broadcastChannel.postMessage(packet); } catch(e){}
-            }
-            if (roomState.peer) {
-                // Send to the host
-                const hostPeerId = `spd26-${roomState.roomCode.toLowerCase().replace(/[^a-z0-9]/g, '')}-host`;
-                const conn = roomState.peerConns.get(hostPeerId);
-                if (conn && conn.open) {
-                    try { conn.send(packet); } catch(e){}
-                }
-            }
+            if (roomState.isHost || !roomState.isConnected) return;
+            sendToHost(guestJoinPacket(roomState.roomCode));
         }
 
         joinRoomSubmitBtn.addEventListener('click', () => {
             let targetCode = joinRoomCodeInput.value.trim().toUpperCase();
             if (!targetCode) {
-                joinRoomStatusText.textContent = 'Please enter a valid room code (e.g. FAST-INK).';
+                joinRoomStatusText.textContent = 'Please enter a valid room code (e.g. K7QM2X).';
                 joinRoomStatusText.style.color = '#ef4444';
                 return;
             }
@@ -2316,40 +2494,23 @@
             handleTrackInteraction(e.clientX);
         });
 
-        // Dragging Support
+        // Dragging Support (pointer events cover mouse, pen and touch; touch-action: none stops page scroll)
         let isDragging = false;
-        sliderThumb.addEventListener('mousedown', (e) => {
+        sliderTrackArea.addEventListener('pointerdown', (e) => {
             if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
             isDragging = true;
+            try { sliderTrackArea.setPointerCapture(e.pointerId); } catch(err){}
+            handleTrackInteraction(e.clientX);
             e.preventDefault();
         });
 
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                handleTrackInteraction(e.clientX);
-            }
+        sliderTrackArea.addEventListener('pointermove', (e) => {
+            if (isDragging) handleTrackInteraction(e.clientX);
         });
 
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        // Touch support for tablet/mobile
-        sliderTrackArea.addEventListener('touchstart', (e) => {
-            if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
-            isDragging = true;
-            handleTrackInteraction(e.touches[0].clientX);
-        });
-
-        window.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                handleTrackInteraction(e.touches[0].clientX);
-            }
-        });
-
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-        });
+        const endDrag = () => { isDragging = false; };
+        sliderTrackArea.addEventListener('pointerup', endDrag);
+        sliderTrackArea.addEventListener('pointercancel', endDrag);
 
         // Keyboard navigation (Arrow keys, Home, End)
         sliderTrackArea.addEventListener('keydown', (e) => {
@@ -2393,9 +2554,13 @@
                 if (group === 'playType') {
                     if (value === 'Play with friends') {
                         multiplayerRoomHub.style.display = 'flex';
-                        if (roomState.isHost) setupHostNetworking();
+                        if (tabHostRoom.classList.contains('active')) setupHostNetworking();
                     } else {
                         multiplayerRoomHub.style.display = 'none';
+                        // Practising alone: release the room ID on the public PeerJS server
+                        teardownNetworking();
+                        roomState.isHost = true;
+                        roomState.isConnected = false;
                     }
                     updateSummary();
                 } else if (group === 'gameMode') {
@@ -2411,8 +2576,11 @@
             if (!roomState.isHost && matchConfig.playType === 'Play with friends') return;
 
             const matchSeed = Math.floor(Math.random() * 1000000);
+            if (matchConfig.playType === 'Play with friends' && roomState.connectedPlayers.length < 2) return;
+            launchBtn.disabled = true;
+            const startAt = Date.now() + 5000; // everyone's board unlocks at the same moment
             const myPlayer = {
-                name: hostPlayerName.value.trim() || 'Racer 1',
+                name: safeName(hostPlayerName.value, 'Racer 1'),
                 color: roomState.myColor
             };
 
@@ -2426,7 +2594,8 @@
                     difficulty: matchConfig.difficulty,
                     countdownMinutes: matchConfig.countdownMinutes,
                     clues: matchConfig.clueCount,
-                    players: roomState.connectedPlayers
+                    startAt: startAt,
+                    players: roomState.connectedPlayers.map(({ id, name, color, isHost }) => ({ id, name, color, isHost }))
                 };
 
                 sessionStorage.setItem('speedoku_lobby_players', JSON.stringify(roomState.connectedPlayers));
@@ -2463,6 +2632,7 @@
                     playerName: myPlayer.name,
                     playerColor: myPlayer.color,
                     seed: matchSeed,
+                    startAt: matchConfig.playType === 'Play with friends' ? startAt : 0,
                     gameMode: matchConfig.gameMode,
                     difficulty: matchConfig.difficulty,
                     countdownMinutes: matchConfig.countdownMinutes,
